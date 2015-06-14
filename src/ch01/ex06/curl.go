@@ -1,5 +1,3 @@
-//!+
-// Curl displays the content found at a URL.
 package main
 
 import (
@@ -16,10 +14,12 @@ func main() {
 		url = "http://" + url
 	}
 	resp, err := http.Get(url)
+
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "curl: %v\n", err)
 		os.Exit(1)
 	}
+
 	_, err = io.Copy(os.Stdout, resp.Body)
 	resp.Body.Close()
 	if err != nil {
@@ -27,5 +27,3 @@ func main() {
 		os.Exit(1)
 	}
 }
-
-//!-
