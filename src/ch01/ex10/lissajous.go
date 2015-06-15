@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"image"
 	"image/color"
 	"image/gif"
@@ -8,6 +9,7 @@ import (
 	"math"
 	"math/rand"
 	"net/http"
+	"strconv"
 )
 
 var palette = []color.Color{color.Black,
@@ -52,8 +54,15 @@ func lissajous(out io.Writer, cycles float64) {
 
 func main() {
 	handler := func(w http.ResponseWriter, r *http.Request) {
-		lissajous(w, 5)
+		value := r.URL.Query().Get("cycles")
+		cycles, err := strconv.Atoi(value)
+		if err != nil {
+			fmt.Fprintf(w, "%v", err)
+			return
+		}
+		lissajous(w, float64(cycles))
 	}
+
 	http.HandleFunc("/", handler)
 	http.ListenAndServe("localhost:8000", nil)
 	// NB: no error handling
