@@ -24,3 +24,11 @@ func TestCToK(t *testing.T) {
 		t.Error(fmt.Sprint(tempconv.CToK(0)))
 	}
 }
+
+func TestFToK(t *testing.T) {
+	expected := tempconv.FToC(0) - tempconv.AbsoluteZeroC
+
+	if tempconv.FToK(0) != tempconv.Kelvin(expected) {
+		t.Error(fmt.Sprint(tempconv.FToK(0)))
+	}
+}

@@ -7,10 +7,10 @@ func CToF(c Celsius) Fahrenheit { return Fahrenheit(c*9.0/5.0 + 32) }
 func FToC(f Fahrenheit) Celsius { return Celsius((f - 32.0) * 5.0 / 9.0) }
 
 // KToF converts a Kelvin temperature to Fahrentheit.
-func KToF(k Kelvin) Fahrenheit { panic("Not Implmeneted Yet") }
+func KToF(k Kelvin) Fahrenheit { return CToF(KToC(k)) }
 
 // FToK converts a Fahrenheit temperature to Kelvin.
-func FToK(f Fahrenheit) Kelvin { panic("Not Implemented Yet") }
+func FToK(f Fahrenheit) Kelvin { return CToK(FToC(f)) }
 
 // KToC converts a Kelvin temperature to Celsius.
 func KToC(k Kelvin) Celsius { return Celsius(k) + AbsoluteZeroC }
