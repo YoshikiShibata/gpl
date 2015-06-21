@@ -42,3 +42,14 @@ func PopCountByClearingBit(x uint64) int {
 	}
 	return count
 }
+
+func BitCount(i uint64) int {
+	// HD, Figure 5-14
+	i = i - ((i >> 1) & 0x5555555555555555)
+	i = (i & 0x3333333333333333) + ((i >> 2) & 0x3333333333333333)
+	i = (i + (i >> 4)) & 0x0f0f0f0f0f0f0f0f
+	i = i + (i >> 8)
+	i = i + (i >> 16)
+	i = i + (i >> 32)
+	return int(i & 0x7f)
+}
