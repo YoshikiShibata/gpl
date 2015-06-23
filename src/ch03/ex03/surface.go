@@ -1,20 +1,17 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"math"
 	"net/http"
+	"net/url"
+	"strconv"
 )
 
 const (
-	width   = 600                 // width of the canvas in pixels
-	height  = 320                 // height of the canvas in pixels
-	cells   = 100                 // number of grid cells
-	xyrange = 30.0                // x, y axis range (-xyrange..+xyrange)
-	xyscale = width / 2 / xyrange // pixels per x or y unit
-	zscale  = height * 0.4        // pixels per z unit
-	angle   = math.Pi / 6         // angle of x, y axes (=30°)
+	angle = math.Pi / 6 // angle of x, y axes (=30°)
 
 	maxHeight = 1.0
 	minHeight = -0.22
@@ -23,23 +20,105 @@ const (
 	blue = 0x000000ff
 )
 
-var sin30, cos30 = math.Sin(angle), math.Cos(angle) // sin(30°), cos(30°)
+type constants struct {
+	sin30   float64
+	cos30   float64
+	width   int
+	height  int
+	cells   int
+	xyrange float64
+	xyscale float64
+	zscale  float64
+	w       http.ResponseWriter
+}
+
+func newConstants(w http.ResponseWriter) *constants {
+	var c constants
+
+	c.w = w
+
+	c.sin30 = math.Sin(angle) // sin(30°)
+	c.cos30 = math.Cos(angle) // cos(30°)
+	c.width = 600             // width of the canvas in pixels
+	c.height = 320            // height of the canvas in pixels
+	c.cells = 100             // number of grid cells
+	c.xyrange = 30.0          // x, y axis range (-xyrange..+xyrange)
+	c.computeScales()
+	return &c
+}
+
+func (c *constants) computeScales() {
+	c.xyscale = float64(c.width) / 2 / c.xyrange // pixels per x or y unit
+	c.zscale = float64(c.height) * 0.4           // pixels per z unit
+}
+
+func (c *constants) setWidth(values url.Values) error {
+	key := "width"
+
+	if !containsKey(values, key) {
+		return nil
+	}
+
+	width, err := c.extractPositiveIntValue(values, key)
+	if err != nil {
+		return err
+	}
+	c.width = width
+	c.computeScales()
+	return nil
+}
+
+func (c *constants) setHeight(values url.Values) error {
+	key := "height"
+
+	if !containsKey(values, key) {
+		return nil
+	}
+
+	height, err := c.extractPositiveIntValue(values, key)
+	if err != nil {
+		return err
+	}
+	c.height = height
+	c.computeScales()
+	return nil
+}
+
+func containsKey(values url.Values, key string) bool {
+	return len(values.Get(key)) != 0
+}
+
+func (c *constants) extractPositiveIntValue(values url.Values, key string) (int, error) {
+	value, err := strconv.Atoi(values.Get(key))
+
+	if err != nil {
+		fmt.Fprintf(c.w, "%v", err)
+		return -1, err
+	}
+
+	if value <= 0 {
+		err := errors.New(fmt.Sprintf("invalid %s: %d", key, value))
+		fmt.Fprintf(c.w, "%v", err)
+		return -1, err
+	}
+	return value, nil
+}
 
 func f(x, y float64) float64 {
 	r := math.Hypot(x, y) // distance from (0, 0)
 	return math.Sin(r) / r
 }
 
-func corner(i, j int) (float64, float64, float64) {
+func (c *constants) corner(i, j int) (float64, float64, float64) {
 	// find point (x,y) at corner of cell (i,j)
-	x := xyrange * (float64(i)/cells - 0.5)
-	y := xyrange * (float64(j)/cells - 0.5)
+	x := c.xyrange * (float64(i)/float64(c.cells) - 0.5)
+	y := c.xyrange * (float64(j)/float64(c.cells) - 0.5)
 
 	z := f(x, y) // computer surface height z
 
 	// project (x,y,z) isometrically onto 2-D SV canvas (sx,sy)
-	sx := width/2 + (x-y)*cos30*xyscale
-	sy := height/2 + (x+y)*sin30*xyscale - z*zscale
+	sx := float64(c.width)/2 + (x-y)*c.cos30*c.xyscale
+	sy := float64(c.height)/2 + (x+y)*c.sin30*c.xyscale - z*c.zscale
 	return sx, sy, z
 }
 
@@ -63,16 +142,16 @@ func prependZeros(hex string) string {
 	return result
 }
 
-func surface(out io.Writer) {
+func surface(out io.Writer, c *constants) {
 	fmt.Fprintf(out, "<svg xmlns='http://www.w3.org/2000/svg' "+
 		"style='stroke: grey; fill: white; stroke-width: 0.7' "+
-		"width='%d' height='%d'>", width, height)
-	for i := 0; i < cells; i++ {
-		for j := 0; j < cells; j++ {
-			ax, ay, h1 := corner(i+1, j)
-			bx, by, h2 := corner(i, j)
-			cx, cy, h3 := corner(i, j+1)
-			dx, dy, h4 := corner(i+1, j+2)
+		"width='%d' height='%d'>", c.width, c.height)
+	for i := 0; i < c.cells; i++ {
+		for j := 0; j < c.cells; j++ {
+			ax, ay, h1 := c.corner(i+1, j)
+			bx, by, h2 := c.corner(i, j)
+			cx, cy, h3 := c.corner(i, j+1)
+			dx, dy, h4 := c.corner(i+1, j+2)
 			fmt.Fprintf(out, "<polygon points='%g,%g %g,%g %g,%g %g,%g' fill='#%s' />\n",
 				ax, ay, bx, by, cx, cy, dx, dy, color(h1, h2, h3, h4))
 		}
@@ -82,8 +161,15 @@ func surface(out io.Writer) {
 
 func main() {
 	handler := func(w http.ResponseWriter, r *http.Request) {
+		c := newConstants(w)
+		values := r.URL.Query()
+		if c.setWidth(values) != nil ||
+			c.setHeight(values) != nil {
+			return
+		}
+
 		w.Header().Add("Content-Type", "image/svg+xml")
-		surface(w)
+		surface(w, c)
 	}
 
 	http.HandleFunc("/", handler)
