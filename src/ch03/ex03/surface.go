@@ -1,3 +1,5 @@
+// Copyright (C) 2015 Yoshiki Shibata. All rights reserved.
+
 package main
 
 import (
@@ -16,20 +18,23 @@ const (
 	maxHeight = 1.0
 	minHeight = -0.22
 
-	red  = 0x00ff0000
-	blue = 0x000000ff
+	redShift   = 16
+	greenShift = 8
+	blueShift  = 0
 )
 
 type constants struct {
-	sin30   float64
-	cos30   float64
-	width   int
-	height  int
-	cells   int
-	xyrange float64
-	xyscale float64
-	zscale  float64
-	w       http.ResponseWriter
+	sin30            float64
+	cos30            float64
+	width            int
+	height           int
+	cells            int
+	xyrange          float64
+	xyscale          float64
+	zscale           float64
+	topColorShift    uint
+	bottomColorShift uint
+	w                http.ResponseWriter
 }
 
 func newConstants(w http.ResponseWriter) *constants {
@@ -43,6 +48,8 @@ func newConstants(w http.ResponseWriter) *constants {
 	c.height = 320            // height of the canvas in pixels
 	c.cells = 100             // number of grid cells
 	c.xyrange = 30.0          // x, y axis range (-xyrange..+xyrange)
+	c.topColorShift = redShift
+	c.bottomColorShift = blueShift
 	c.computeScales()
 	return &c
 }
@@ -84,6 +91,50 @@ func (c *constants) setHeight(values url.Values) error {
 	return nil
 }
 
+func (c *constants) setTopColor(values url.Values) error {
+	key := "topColor"
+
+	if !containsKey(values, key) {
+		return nil
+	}
+
+	color := values.Get(key)
+	shift, err := toColorShift(color)
+	c.topColorShift = shift
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (c *constants) setBottomColor(values url.Values) error {
+	key := "bottomColor"
+
+	if !containsKey(values, key) {
+		return nil
+	}
+
+	color := values.Get(key)
+	shift, err := toColorShift(color)
+	c.bottomColorShift = shift
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func toColorShift(color string) (uint, error) {
+	switch color {
+	case "red", "RED":
+		return redShift, nil
+	case "green", "GREEN":
+		return greenShift, nil
+	case "blue", "BLUE":
+		return blueShift, nil
+	}
+	return 0, errors.New(fmt.Sprintf("unknown color: %s", color))
+}
+
 func containsKey(values url.Values, key string) bool {
 	return len(values.Get(key)) != 0
 }
@@ -122,7 +173,7 @@ func (c *constants) corner(i, j int) (float64, float64, float64) {
 	return sx, sy, z
 }
 
-func color(h1, h2, h3, h4 float64) string {
+func (c *constants) color(h1, h2, h3, h4 float64) string {
 	height := (h1 + h2 + h3 + h4) / 4
 	if height > maxHeight || minHeight > height {
 		panic(fmt.Sprintf("illegal height : %g", height))
@@ -130,8 +181,8 @@ func color(h1, h2, h3, h4 float64) string {
 
 	delta := uint32((maxHeight - height) / (maxHeight - minHeight) * 255)
 
-	c := (red - delta<<16) + delta
-	return prependZeros(fmt.Sprintf("%X", c))
+	color := (0xff-delta)<<c.topColorShift + delta<<c.bottomColorShift
+	return prependZeros(fmt.Sprintf("%X", color))
 }
 
 func prependZeros(hex string) string {
@@ -153,18 +204,29 @@ func surface(out io.Writer, c *constants) {
 			cx, cy, h3 := c.corner(i, j+1)
 			dx, dy, h4 := c.corner(i+1, j+2)
 			fmt.Fprintf(out, "<polygon points='%g,%g %g,%g %g,%g %g,%g' fill='#%s' />\n",
-				ax, ay, bx, by, cx, cy, dx, dy, color(h1, h2, h3, h4))
+				ax, ay, bx, by, cx, cy, dx, dy, c.color(h1, h2, h3, h4))
 		}
 	}
 	fmt.Fprintln(out, "</svg>")
 }
 
+func (c *constants) setOptions(values url.Values) error {
+	setters := []func(url.Values) error{
+		c.setWidth, c.setHeight, c.setTopColor, c.setBottomColor}
+	for _, setter := range setters {
+		if err := setter(values); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func main() {
 	handler := func(w http.ResponseWriter, r *http.Request) {
 		c := newConstants(w)
-		values := r.URL.Query()
-		if c.setWidth(values) != nil ||
-			c.setHeight(values) != nil {
+		err := c.setOptions(r.URL.Query())
+		if err != nil {
+			fmt.Fprintf(w, "%v", err)
 			return
 		}
 
