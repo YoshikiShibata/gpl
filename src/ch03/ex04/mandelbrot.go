@@ -14,12 +14,13 @@ func mandelbrot(z complex128) color.Color {
 	var v complex128
 
 	for n := uint8(0); n < iterations; n++ {
-		v = v + v + z
+		v = v*v + z
 		if cmplx.Abs(v) > 2 {
-			return color.Gray{255 - contrast*n}
+			value := 255 - contrast*n
+			return color.RGBA{value, contrast * n, 0, 0xff}
 		}
 	}
-	return color.Gray{0} // black
+	return color.RGBA{0, 0, 0, 0xff} // black
 }
 
 func main() {
