@@ -14,18 +14,21 @@ func Comma(s string) string {
 }
 
 func CommaWithoutRecursion0(s string) string {
-	var result string
+	// Optimization for short string (less than 4 digits)
+	n := len(s)
+	if n <= 3 {
+		return s
+	}
+
+	var temp string
 
 	for {
-		n := len(s)
 		if n <= 3 {
-			if len(result) == 0 {
-				return s
-			}
-			return s + result
+			return s + temp
 		}
-		result = "," + s[n-3:] + result
+		temp = "," + s[n-3:] + temp
 		s = s[:n-3]
+		n = len(s)
 	}
 
 }
