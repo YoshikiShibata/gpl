@@ -17,9 +17,27 @@ func TestComma(t *testing.T) {
 	}
 }
 
-func TestCommaWithoutRecursion(t *testing.T) {
+func TestCommaWithoutRecursion0(t *testing.T) {
 	for i := 0; i < len(inputs); i++ {
-		result := comma.CommaWithoutRecursion(inputs[i])
+		result := comma.CommaWithoutRecursion0(inputs[i])
+		if result != expecteds[i] {
+			t.Errorf("Result is %s, want %s", result, expecteds[i])
+		}
+	}
+}
+
+func TestCommaWithoutRecursion1(t *testing.T) {
+	for i := 0; i < len(inputs); i++ {
+		result := comma.CommaWithoutRecursion1(inputs[i])
+		if result != expecteds[i] {
+			t.Errorf("Result is %s, want %s", result, expecteds[i])
+		}
+	}
+}
+
+func TestCommaWithoutRecursion2(t *testing.T) {
+	for i := 0; i < len(inputs); i++ {
+		result := comma.CommaWithoutRecursion2(inputs[i])
 		if result != expecteds[i] {
 			t.Errorf("Result is %s, want %s", result, expecteds[i])
 		}
@@ -34,10 +52,26 @@ func BenchmarkComma(b *testing.B) {
 	}
 }
 
-func BenchmarkCommaWithoutRecursion(b *testing.B) {
+func BenchmarkCommaWithoutRecursion0(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		for _, input := range inputs {
-			comma.CommaWithoutRecursion(input)
+			comma.CommaWithoutRecursion0(input)
+		}
+	}
+}
+
+func BenchmarkCommaWithoutRecursion1(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		for _, input := range inputs {
+			comma.CommaWithoutRecursion1(input)
+		}
+	}
+}
+
+func BenchmarkCommaWithoutRecursion2(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		for _, input := range inputs {
+			comma.CommaWithoutRecursion1(input)
 		}
 	}
 }
