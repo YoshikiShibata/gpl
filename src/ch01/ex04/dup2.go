@@ -46,7 +46,5 @@ func countLines(f *os.File, counts map[string]int, fileName string, fileNames ma
 				fileNames[text] += " " + fileName
 			}
 		}
-
 	}
-
 }
