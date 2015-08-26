@@ -16,15 +16,14 @@ func main() {
 	resp, err := http.Get(url)
 
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "curl: %v\n", err)
+		fmt.Fprintf(os.Stderr, "fetch: %v\n", err)
 		os.Exit(1)
 	}
 
-	fmt.Println("Status Code =", resp.StatusCode)
 	_, err = io.Copy(os.Stdout, resp.Body)
 	resp.Body.Close()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "curl: copying %s: %v\n", url, err)
+		fmt.Fprintf(os.Stderr, "fetch: copying %s: %v\n", url, err)
 		os.Exit(1)
 	}
 }

@@ -5,14 +5,10 @@ import (
 	"io"
 	"net/http"
 	"os"
-	"strings"
 )
 
 func main() {
 	url := os.Args[1]
-	if !strings.HasPrefix(url, "http://") {
-		url = "http://" + url
-	}
 	resp, err := http.Get(url)
 
 	if err != nil {
