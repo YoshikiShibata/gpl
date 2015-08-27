@@ -3,9 +3,9 @@ package main
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -13,8 +13,8 @@ import (
 func main() {
 	start := time.Now()
 	ch := make(chan string)
-	for _, url := range os.Args[1:] {
-		go fetch(url, ch) // start a goroutine
+	for i, url := range os.Args[1:] {
+		go fetch(url, ch, "out."+strconv.Itoa(i)) // start a goroutine
 	}
 	for range os.Args[1:] {
 		fmt.Println(<-ch) // receive from channel
@@ -22,7 +22,7 @@ func main() {
 	fmt.Printf("%.2fs elapsed\n", time.Since(start).Seconds())
 }
 
-func fetch(url string, ch chan<- string) {
+func fetch(url string, ch chan<- string, ofile string) {
 	start := time.Now()
 	if !strings.HasPrefix(url, "http://") {
 		url = "http://" + url
@@ -33,7 +33,12 @@ func fetch(url string, ch chan<- string) {
 		return
 	}
 	fmt.Println("Status Code =", resp.StatusCode)
-	nbytes, err := io.Copy(ioutil.Discard, resp.Body)
+	file, err := os.Create(ofile)
+	if err != nil {
+		ch <- fmt.Sprint(err)
+		return
+	}
+	nbytes, err := io.Copy(file, resp.Body)
 	resp.Body.Close() // don't leak resources
 	if err != nil {
 		ch <- fmt.Sprintf("while reading %s: %v", url, err)
