@@ -39,6 +39,7 @@ func fetch(url string, ch chan<- string, ofile string) {
 		return
 	}
 	nbytes, err := io.Copy(file, resp.Body)
+	file.Close()
 	resp.Body.Close() // don't leak resources
 	if err != nil {
 		ch <- fmt.Sprintf("while reading %s: %v", url, err)
