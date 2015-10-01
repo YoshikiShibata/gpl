@@ -1,3 +1,5 @@
+// Copyright © 2015 Yoshiki Shibata. All rights reserved.
+
 package concat_test
 
 import (
@@ -25,7 +27,7 @@ func TestConcatWithTreeElements(t *testing.T) {
 }
 
 func BenchmarkConcat(b *testing.B) {
-	data := strings.Split("Go is an open source programming langu age that makes it easy to bui ld simple, reliable, and efficient software", " ")
+	data := strings.Split("Go is an open source programming language that makes it easy to build simple, reliable, and efficient software", " ")
 
 	for i := 0; i < b.N; i++ {
 		concat.Concat(data)
@@ -33,7 +35,7 @@ func BenchmarkConcat(b *testing.B) {
 }
 
 func BenchmarkJoin(b *testing.B) {
-	data := strings.Split("Go is an open source programming langu age that makes it easy to bui ld simple, reliable, and efficient software", " ")
+	data := strings.Split("Go is an open source programming language that makes it easy to build simple, reliable, and efficient software", " ")
 
 	for i := 0; i < b.N; i++ {
 		strings.Join(data, " ")

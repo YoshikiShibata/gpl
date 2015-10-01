@@ -1,0 +1,5 @@
+$ go test -bench=. ch01/ex03/concat
+PASS
+BenchmarkConcat-8    1000000          1478 ns/op
+BenchmarkJoin-8      5000000           358 ns/op
+ok      ch01/ex03/concat    3.661s
