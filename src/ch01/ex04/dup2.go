@@ -1,3 +1,5 @@
+// Copyright © 2015 Yoshiki Shibata. All rights reserved.
+
 package main
 
 import (
@@ -18,7 +20,6 @@ func main() {
 		for _, arg := range files {
 			f, err := os.Open(arg)
 			if err != nil {
-				f.Close()
 				fmt.Fprintf(os.Stderr, "dup2: %v\n", err)
 				continue
 			}
@@ -26,6 +27,7 @@ func main() {
 			f.Close()
 		}
 	}
+
 	for line, n := range counts {
 		if n > 1 {
 			fmt.Printf("%d\t%s\n", n, line)
