@@ -1,7 +1,8 @@
+// Copyright © 2015 Yoshiki Shibata. All rights reserved.
+
 package main
 
 import (
-	"fmt"
 	"image"
 	"image/color"
 	"image/gif"
@@ -59,8 +60,7 @@ func main() {
 		value := r.URL.Query().Get("cycles")
 		cycles, err := strconv.Atoi(value)
 		if err != nil {
-			fmt.Fprintf(w, "%v", err)
-			return
+			cycles = 5 // cycles is not specified. use the default
 		}
 		lissajous(w, float64(cycles))
 	}

@@ -1,14 +1,19 @@
+// Copyright © 2015 Yoshiki Shibata. All rights reserved.
+
 package main
 
 import (
 	"fmt"
-	"io"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 )
+
+var wg sync.WaitGroup
 
 func main() {
 	start := time.Now()
@@ -20,6 +25,7 @@ func main() {
 		fmt.Println(<-ch) // receive from channel
 	}
 	fmt.Printf("%.2fs elapsed\n", time.Since(start).Seconds())
+	wg.Wait()
 }
 
 func fetch(url string, ch chan<- string, ofile string) {
@@ -33,18 +39,26 @@ func fetch(url string, ch chan<- string, ofile string) {
 		return
 	}
 	fmt.Println("Status Code =", resp.StatusCode)
-	file, err := os.Create(ofile)
+	b, err := ioutil.ReadAll(resp.Body)
+	resp.Body.Close()
+
 	if err != nil {
-		ch <- fmt.Sprint(err)
+		ch <- fmt.Sprintf("fetch: reading %s: %v\n", url, err)
 		return
 	}
-	nbytes, err := io.Copy(file, resp.Body)
-	file.Close()
-	resp.Body.Close() // don't leak resources
-	if err != nil {
-		ch <- fmt.Sprintf("while reading %s: %v", url, err)
-		return
-	}
+
+	wg.Add(1)
+	go func() {
+		file, err := os.Create(ofile)
+		if err != nil {
+			ch <- fmt.Sprint(err)
+			return
+		}
+		file.Write(b)
+		file.Close()
+		wg.Done()
+	}()
+
 	secs := time.Since(start).Seconds()
-	ch <- fmt.Sprintf("%.2fs  %7d  %s", secs, nbytes, url)
+	ch <- fmt.Sprintf("%.2fs  %7d  %s", secs, len(b), url)
 }
