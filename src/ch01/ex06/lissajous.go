@@ -51,5 +51,6 @@ func lissajous(out io.Writer) {
 }
 
 func main() {
+	rand.Seed(time.Now().UTC().UnixNano())
 	lissajous(os.Stdout)
 }

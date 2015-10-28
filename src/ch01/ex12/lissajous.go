@@ -53,6 +53,8 @@ func lissajous(out io.Writer, cycles float64) {
 }
 
 func main() {
+	rand.Seed(time.Now().UTC().UnixNano())
+
 	handler := func(w http.ResponseWriter, r *http.Request) {
 		value := r.URL.Query().Get("cycles")
 		cycles, err := strconv.Atoi(value)
