@@ -1,3 +1,5 @@
+// Copyright © 2015 Yoshiki Shibata. All rights reserved.
+
 package tempconv_test
 
 import (

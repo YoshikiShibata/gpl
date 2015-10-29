@@ -1,3 +1,5 @@
+// Copyright © 2015 Yoshiki Shibata. All rights reserved.
+
 package tempconv
 
 // CToF converts a Celsius temperature to Fahrenheit.
