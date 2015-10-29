@@ -1,7 +1,7 @@
 package popcount_test
 
 import (
-	"ch02/ex03/popcount"
+	"ch02/ex05/popcount"
 
 	"testing"
 )
@@ -113,3 +113,10 @@ func BenchmarkBitCount(b *testing.B) {
 		popcount.BitCount(0x1234567890ABCDEF)
 	}
 }
+
+/*
+BenchmarkPopCount-8          	200000000	        5.66 ns/op
+BenchmarkPopCountByShifting-8	20000000	        67.6 ns/op
+BenchmarkPopByClearingBit-8  	50000000	        28.2 ns/op
+BenchmarkBitCount-8          	1000000000	        2.29 ns/op
+*/
