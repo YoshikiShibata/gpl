@@ -1,7 +1,7 @@
 package popcount_test
 
 import (
-	"ch02/ex02/popcount"
+	"ch02/ex04/popcount"
 
 	"testing"
 )
@@ -91,3 +91,8 @@ func BenchmarkPopCountByShifting(b *testing.B) {
 		popcount.PopCountByShifting(0x1234567890ABCDEF)
 	}
 }
+
+/*
+BenchmarkPopCount-8          	300000000	        5.62 ns/op
+BenchmarkPopCountByShifting-8	20000000	        67.6 ns/op
+*/
