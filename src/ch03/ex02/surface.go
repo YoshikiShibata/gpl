@@ -1,3 +1,7 @@
+// Copyright © 2016 Alan A. A. Donovan & Brian W. Kernighan.
+// Copyright © 2015 Yoshiki Shibata
+// License: https://creativecommons.org/licenses/by-nc-sa/4.0/
+
 package main
 
 import (
