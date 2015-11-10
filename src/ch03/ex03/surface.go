@@ -74,9 +74,20 @@ func main() {
 			bx, by, h2 := corner(i, j)
 			cx, cy, h3 := corner(i, j+1)
 			dx, dy, h4 := corner(i+1, j+2)
+			if isFinite(ax) && isFinite(ay) &&
+				isFinite(bx) && isFinite(by) &&
+				isFinite(cx) && isFinite(cy) &&
+				isFinite(dx) && isFinite(dy) {
+				fmt.Printf("<polygon points='%g,%g %g,%g %g,%g %g,%g'/>\n",
 			fmt.Printf("<polygon points='%g,%g %g,%g %g,%g %g,%g' fill='#%s' />\n",
 				ax, ay, bx, by, cx, cy, dx, dy, color(h1, h2, h3, h4))
+		}
 		}
 	}
 	fmt.Println("</svg>")
 }
+
+func isFinite(f float64) bool {
+	return !math.IsInf(f, 0)
+}
+
