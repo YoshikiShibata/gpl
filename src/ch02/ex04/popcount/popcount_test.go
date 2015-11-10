@@ -1,3 +1,5 @@
+// Copyright © 2015 Yoshiki Shibata
+
 package popcount_test
 
 import (
