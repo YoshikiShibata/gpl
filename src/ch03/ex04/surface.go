@@ -1,4 +1,6 @@
-// Copyright (C) 2015 Yoshiki Shibata. All rights reserved.
+// Copyright © 2016 Alan A. A. Donovan & Brian W. Kernighan.
+// Copyright © 2015 Yoshiki Shibata
+// License: https://creativecommons.org/licenses/by-nc-sa/4.0/
 
 package main
 
@@ -123,6 +125,18 @@ func (c *constants) setBottomColor(values url.Values) error {
 	return nil
 }
 
+func (c *constants) help(values url.Values) error {
+	key := "help"
+
+	_, ok := values[key]
+	if !ok {
+		return nil
+	}
+	return fmt.Errorf("available options: topColor, bottomColor, width, height\n" +
+		"available colors: RED, GREEN, BLUE\n" +
+		"default values: topColor=RED, bottomColor=BLUE, width=320, height=600")
+}
+
 func toColorShift(color string) (uint, error) {
 	switch color {
 	case "red", "RED":
@@ -212,7 +226,7 @@ func surface(out io.Writer, c *constants) {
 
 func (c *constants) setOptions(values url.Values) error {
 	setters := []func(url.Values) error{
-		c.setWidth, c.setHeight, c.setTopColor, c.setBottomColor}
+		c.setWidth, c.setHeight, c.setTopColor, c.setBottomColor, c.help}
 	for _, setter := range setters {
 		if err := setter(values); err != nil {
 			return err
@@ -235,5 +249,8 @@ func main() {
 	}
 
 	http.HandleFunc("/", handler)
-	http.ListenAndServe("localhost:8000", nil)
+	err := http.ListenAndServe("localhost:8000", nil)
+	if err != nil {
+		fmt.Printf("%v\n", err)
+	}
 }
