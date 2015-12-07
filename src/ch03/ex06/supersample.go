@@ -33,9 +33,9 @@ func superSampledBy4SubPixels(srcImage *image.RGBA, x, y int) color.Color {
 	var sumR, sumG, sumB uint32
 	for _, rgba := range pixels {
 		r, g, b, _ := rgba.RGBA()
-		sumR += r
-		sumG += g
-		sumB += b
+		sumR += r >> 8
+		sumG += g >> 8
+		sumB += b >> 8
 	}
 	return color.RGBA{uint8(sumR / 4), uint8(sumG / 4), uint8(sumB / 4), 0xff}
 }
