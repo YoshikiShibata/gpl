@@ -62,7 +62,7 @@ func (c *constants) computeScales() {
 }
 
 func (c *constants) setWidth(values url.Values) error {
-	key := "width"
+	const key = "width"
 
 	if !containsKey(values, key) {
 		return nil
@@ -78,7 +78,7 @@ func (c *constants) setWidth(values url.Values) error {
 }
 
 func (c *constants) setHeight(values url.Values) error {
-	key := "height"
+	const key = "height"
 
 	if !containsKey(values, key) {
 		return nil
@@ -94,7 +94,7 @@ func (c *constants) setHeight(values url.Values) error {
 }
 
 func (c *constants) setTopColor(values url.Values) error {
-	key := "topColor"
+	const key = "topColor"
 
 	if !containsKey(values, key) {
 		return nil
@@ -110,7 +110,7 @@ func (c *constants) setTopColor(values url.Values) error {
 }
 
 func (c *constants) setBottomColor(values url.Values) error {
-	key := "bottomColor"
+	const key = "bottomColor"
 
 	if !containsKey(values, key) {
 		return nil
@@ -126,7 +126,7 @@ func (c *constants) setBottomColor(values url.Values) error {
 }
 
 func (c *constants) help(values url.Values) error {
-	key := "help"
+	const key = "help"
 
 	_, ok := values[key]
 	if !ok {
