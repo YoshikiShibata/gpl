@@ -16,27 +16,30 @@ import (
 
 var aType = flag.String("type", "complex128",
 	"arithmetic type: complex64, complex128, float, rat")
-var resolution = flag.Int("res", 1024, "resolution")
+var zoom = flag.Int("zoom", 100, "zoom percent")
 
 const usage = `usage: newton [-type=arithemeticType] [-res=resolution]
     type: complex64, complex128, float, rat. Default is complex128
-    res: positive int value.Default is 1024.`
-
-var width int = 1024
-var height int = 1024
+    zoom: percent. Default 100%`
 
 const (
-	xmin, ymin, xmax, ymax = -2, -2, +2, +2
+	width, height = 1024, 1024
 )
+
+var xmin, ymin, xmax, ymax float64 = -2, -2, +2, +2
+var zoomFactor float64
 
 func main() {
 	flag.Parse()
 	validateParams()
 	fmt.Fprintf(os.Stderr, "type = %s\n", *aType)
-	fmt.Fprintf(os.Stderr, "resolution = %d\n", *resolution)
+	fmt.Fprintf(os.Stderr, "zoom = %d\n", *zoom)
 
-	width = *resolution
-	height = *resolution
+	zoomFactor = 100.0 / float64(*zoom)
+	xmin *= zoomFactor
+	xmax *= zoomFactor
+	ymin *= zoomFactor
+	ymax *= zoomFactor
 
 	switch *aType {
 	case "complex128":
@@ -47,12 +50,12 @@ func main() {
 }
 
 func mainComplex64() {
-	fmt.Fprintf(os.Stderr, "width=%d, height=%d\n", width, height)
+	fmt.Fprintf(os.Stderr, "factor=%g\n", zoomFactor)
 	img := image.NewRGBA(image.Rect(0, 0, width, height))
 	for py := 0; py < height; py++ {
-		y := float32(py)/float32(height)*(ymax-ymin) + ymin
+		y := float32(py)/height*float32((ymax-ymin)) + float32(ymin)
 		for px := 0; px < width; px++ {
-			x := float32(px)/float32(width)*(xmax-xmin) + xmin
+			x := float32(px)/width*float32((xmax-xmin)) + float32(xmin)
 			z := complex(x, y)
 			// Image point (px, py) represents complex value z.
 			img.Set(px, py, newton64(z))
@@ -62,12 +65,12 @@ func mainComplex64() {
 }
 
 func mainComplex128() {
-	fmt.Fprintf(os.Stderr, "width=%d, height=%d\n", width, height)
+	fmt.Fprintf(os.Stderr, "factor=%g\n", zoomFactor)
 	img := image.NewRGBA(image.Rect(0, 0, width, height))
 	for py := 0; py < height; py++ {
-		y := float64(py)/float64(height)*(ymax-ymin) + ymin
+		y := float64(py)/height*(ymax-ymin) + ymin
 		for px := 0; px < width; px++ {
-			x := float64(px)/float64(width)*(xmax-xmin) + xmin
+			x := float64(px)/width*(xmax-xmin) + xmin
 			z := complex(x, y)
 			// Image point (px, py) represents complex value z.
 			img.Set(px, py, newton128(z))
@@ -83,7 +86,7 @@ func validateParams() {
 		showUsage()
 	}
 
-	if *resolution < 0 {
+	if *zoom < 0 {
 		showUsage()
 	}
 }
