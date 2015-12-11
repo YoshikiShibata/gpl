@@ -18,7 +18,7 @@ var aType = flag.String("type", "complex128",
 	"arithmetic type: complex64, complex128, float, rat")
 var zoom = flag.Int("zoom", 100, "zoom percent")
 
-const usage = `usage: newton [-type=arithemeticType] [-res=resolution]
+const usage = `usage: newton [-type=arithemeticType] [-zoom=percent]
     type: complex64, complex128, float, rat. Default is complex128
     zoom: percent. Default 100%`
 
@@ -80,6 +80,11 @@ func mainComplex128() {
 }
 
 func validateParams() {
+	args := flag.Args()
+	if len(args) != 0 {
+		fmt.Fprintf(os.Stderr, "invalid arguments: %v\n\n", args)
+		showUsage()
+	}
 	switch *aType {
 	case "complex64", "complex128", "floa", "rat":
 	default:
