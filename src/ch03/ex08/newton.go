@@ -46,10 +46,13 @@ func main() {
 		mainComplex128()
 	case "complex64":
 		mainComplex64()
+	case "float":
+		mainFloat()
 	}
 }
 
 func mainComplex64() {
+	fmt.Fprintf(os.Stderr, "=== complex64 ===\n")
 	fmt.Fprintf(os.Stderr, "factor=%g\n", zoomFactor)
 	img := image.NewRGBA(image.Rect(0, 0, width, height))
 	for py := 0; py < height; py++ {
@@ -65,6 +68,7 @@ func mainComplex64() {
 }
 
 func mainComplex128() {
+	fmt.Fprintf(os.Stderr, "=== complex128 ===\n")
 	fmt.Fprintf(os.Stderr, "factor=%g\n", zoomFactor)
 	img := image.NewRGBA(image.Rect(0, 0, width, height))
 	for py := 0; py < height; py++ {
@@ -79,6 +83,22 @@ func mainComplex128() {
 	png.Encode(os.Stdout, img) // NOTE: ignoring errors
 }
 
+func mainFloat() {
+	fmt.Fprintf(os.Stderr, "=== Float ===\n")
+	fmt.Fprintf(os.Stderr, "factor=%g\n", zoomFactor)
+	img := image.NewRGBA(image.Rect(0, 0, width, height))
+	for py := 0; py < height; py++ {
+		y := float64(py)/height*(ymax-ymin) + ymin
+		for px := 0; px < width; px++ {
+			x := float64(px)/width*(xmax-xmin) + xmin
+			z := NewFloatComplex(x, y)
+			// Image point (px, py) represents complex value z.
+			img.Set(px, py, newtonFloat(z))
+		}
+	}
+	png.Encode(os.Stdout, img) // NOTE: ignoring errors
+}
+
 func validateParams() {
 	args := flag.Args()
 	if len(args) != 0 {
@@ -86,7 +106,7 @@ func validateParams() {
 		showUsage()
 	}
 	switch *aType {
-	case "complex64", "complex128", "floa", "rat":
+	case "complex64", "complex128", "float", "rat":
 	default:
 		showUsage()
 	}
@@ -124,6 +144,22 @@ func newton128(z complex128) color.Color {
 	for i := uint8(0); i < iterations; i++ {
 		z -= (z - 1/(z*z*z)) / 4
 		if cmplx.Abs(z*z*z*z-1) < 1e-6 {
+			return color.RGBA{255 - contrast*i, contrast * i, 0, 0xff}
+		}
+	}
+	return color.Black
+}
+
+func newtonFloat(z *FloatComplex) color.Color {
+	const iterations = 37
+	const contrast = 7
+	c1 := NewFloatComplex(1.0, 0)
+	c4 := NewFloatComplex(4.0, 0)
+	for i := uint8(0); i < iterations; i++ {
+		// z -= (z - 1/(z*z*z)) / 4
+		z.Sub(z.Sub(c1.Quo(z.Mul(z).Mul(z))).Quo(c4))
+		// if cmplx.Abs(z*z*z*z-1) < 1e-6 {
+		if z.Mul(z).Mul(z).Mul(z).Sub(c1).Abs() < 1e-6 {
 			return color.RGBA{255 - contrast*i, contrast * i, 0, 0xff}
 		}
 	}
