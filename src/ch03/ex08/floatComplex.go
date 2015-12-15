@@ -93,7 +93,7 @@ func (fc *FloatComplex) Quo(o *FloatComplex) *FloatComplex {
 	r3.Mul(c, c)
 	r4 := new(big.Float)
 	r4.Mul(d, d)
-	r3.Add(r3, r3)
+	r3.Add(r3, r4)
 
 	r1.Quo(r1, r3)
 
