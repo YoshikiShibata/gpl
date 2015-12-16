@@ -12,6 +12,7 @@ import (
 	"image/png"
 	"math/cmplx"
 	"os"
+	"sync"
 )
 
 var aType = flag.String("type", "complex128",
@@ -87,15 +88,28 @@ func mainFloat() {
 	fmt.Fprintf(os.Stderr, "=== Float ===\n")
 	fmt.Fprintf(os.Stderr, "factor=%g\n", zoomFactor)
 	img := image.NewRGBA(image.Rect(0, 0, width, height))
+
+	var wg sync.WaitGroup
+	var mutex sync.Mutex
+
 	for py := 0; py < height; py++ {
+		fmt.Fprintf(os.Stderr, "%d\n", py)
 		y := float64(py)/height*(ymax-ymin) + ymin
 		for px := 0; px < width; px++ {
-			x := float64(px)/width*(xmax-xmin) + xmin
-			z := NewFloatComplex(x, y)
-			// Image point (px, py) represents complex value z.
-			img.Set(px, py, newtonFloat(z))
+			wg.Add(1)
+			go func(px, py int) {
+				defer wg.Done()
+				x := float64(px)/width*(xmax-xmin) + xmin
+				z := NewFloatComplex(x, y)
+				// Image point (px, py) represents complex value z.
+				nwz := newtonFloat(z)
+				mutex.Lock()
+				img.Set(px, py, nwz)
+				mutex.Unlock()
+			}(px, py)
 		}
 	}
+	wg.Wait()
 	png.Encode(os.Stdout, img) // NOTE: ignoring errors
 }
 
@@ -156,10 +170,14 @@ func newtonFloat(z *FloatComplex) color.Color {
 	c1 := NewFloatComplex(1.0, 0)
 	c4 := NewFloatComplex(4.0, 0)
 	for i := uint8(0); i < iterations; i++ {
+		if z.IsZero() {
+			return color.Black
+		}
 		// z -= (z - 1/(z*z*z)) / 4
 		z.Sub(z.Sub(c1.Quo(z.Mul(z).Mul(z))).Quo(c4))
 		// if cmplx.Abs(z*z*z*z-1) < 1e-6 {
 		if z.Mul(z).Mul(z).Mul(z).Sub(c1).Abs() < 1e-6 {
+			fmt.Fprintf(os.Stderr, "c\n")
 			return color.RGBA{255 - contrast*i, contrast * i, 0, 0xff}
 		}
 	}

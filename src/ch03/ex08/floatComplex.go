@@ -31,6 +31,12 @@ func (fc *FloatComplex) floats() (*big.Float, *big.Float) {
 	return fc.real_, fc.imag_
 }
 
+func (fc *FloatComplex) IsZero() bool {
+	r, _ := fc.real_.Float64()
+	i, _ := fc.real_.Float64()
+	return r == 0.0 && i == 0.0
+}
+
 func (fc *FloatComplex) Mul(o *FloatComplex) *FloatComplex {
 	// (a + bi)(c + di) = (ac - bd)+(bc +ad)i
 	a, b := fc.floats()
