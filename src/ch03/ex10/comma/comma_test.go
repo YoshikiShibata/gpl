@@ -36,20 +36,20 @@ func execute(t *testing.T, f func(string) string) {
 	}
 }
 
-func TestCommaWithBuffer(t *testing.T) {
-	execute(t, comma.CommaWithBuffer)
+func TestCommaWithBuffer0(t *testing.T) {
+	execute(t, comma.CommaWithBuffer0)
 }
 
-func TestCommaWithoutRecursion0(t *testing.T) {
-	execute(t, comma.CommaWithoutRecursion0)
+func TestCommaWithBuffer1(t *testing.T) {
+	execute(t, comma.CommaWithBuffer1)
 }
 
-func TestCommaWithoutRecursion1(t *testing.T) {
-	execute(t, comma.CommaWithoutRecursion1)
+func TestCommaWithBuffer2(t *testing.T) {
+	execute(t, comma.CommaWithBuffer2)
 }
 
-func TestCommaWithoutRecursion2(t *testing.T) {
-	execute(t, comma.CommaWithoutRecursion2)
+func TestCommaWithoutBuffer(t *testing.T) {
+	execute(t, comma.CommaWithoutBuffer)
 }
 
 func BenchmarkComma(b *testing.B) {
@@ -60,40 +60,40 @@ func BenchmarkComma(b *testing.B) {
 	}
 }
 
-func BenchmarkCommaWithBuffer(b *testing.B) {
+func BenchmarkCommaWithoutBuffer(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		for _, d := range data {
-			comma.CommaWithBuffer(d.input)
+			comma.CommaWithoutBuffer(d.input)
 		}
 	}
 }
 
-func BenchmarkCommaWithoutRecursion0(b *testing.B) {
+func BenchmarkCommaWithBuffer0(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		for _, d := range data {
-			comma.CommaWithoutRecursion0(d.input)
+			comma.CommaWithBuffer0(d.input)
 		}
 	}
 }
 
-func BenchmarkCommaWithoutRecursion1(b *testing.B) {
+func BenchmarkCommaWithBuffer1(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		for _, d := range data {
-			comma.CommaWithoutRecursion1(d.input)
+			comma.CommaWithBuffer1(d.input)
 		}
 	}
 }
 
-func BenchmarkCommaWithoutRecursion2(b *testing.B) {
+func BenchmarkCommaWithBuffer2(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		for _, d := range data {
-			comma.CommaWithoutRecursion1(d.input)
+			comma.CommaWithBuffer2(d.input)
 		}
 	}
 }
 
-// BenchmarkComma-8                 	 2000000	       879 ns/op
-// BenchmarkCommaWithBuffer-8       	 1000000	      2395 ns/op
-// BenchmarkCommaWithoutRecursion0-8	 1000000	      1441 ns/op
-// BenchmarkCommaWithoutRecursion1-8	 1000000	      2703 ns/op
-// BenchmarkCommaWithoutRecursion2-8	  500000	      2918 ns/op
+// BenchmarkComma-8             	 1000000	      1013 ns/op
+// BenchmarkCommaWithoutBuffer-8	 1000000	      1459 ns/op
+// BenchmarkCommaWithBuffer0-8  	 1000000	      2394 ns/op
+// BenchmarkCommaWithBuffer1-8  	 1000000	      2845 ns/op
+// BenchmarkCommaWithBuffer2-8  	  500000	      2966 ns/op

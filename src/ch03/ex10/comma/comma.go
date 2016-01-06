@@ -13,7 +13,7 @@ func Comma(s string) string {
 	return Comma(s[:n-3]) + "," + s[n-3:]
 }
 
-func CommaWithBuffer(s string) string {
+func CommaWithBuffer0(s string) string {
 	var buf bytes.Buffer
 	runes := []byte(s)
 
@@ -34,7 +34,7 @@ func CommaWithBuffer(s string) string {
 	return buf.String()
 }
 
-func CommaWithoutRecursion0(s string) string {
+func CommaWithoutBuffer(s string) string {
 	// Optimization for short string (less than 4 digits)
 	n := len(s)
 	if n <= 3 {
@@ -54,7 +54,7 @@ func CommaWithoutRecursion0(s string) string {
 
 }
 
-func CommaWithoutRecursion1(s string) string {
+func CommaWithBuffer1(s string) string {
 	n := len(s)
 	start, end := 0, n%3
 	if end == 0 {
@@ -73,7 +73,7 @@ func CommaWithoutRecursion1(s string) string {
 	return buf.String()
 }
 
-func CommaWithoutRecursion2(s string) string {
+func CommaWithBuffer2(s string) string {
 	b := ([]byte)(s)
 	n := len(b)
 	start, end := 0, n%3
