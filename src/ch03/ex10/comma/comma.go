@@ -92,9 +92,3 @@ func CommaWithoutRecursion2(s string) string {
 	}
 	return buf.String()
 }
-
-// BenchmarkComma-8                 	 3000000	       466 ns/op
-// BenchmarkCommaWithBuffer-8       	 1000000	      1710 ns/op
-// BenchmarkCommaWithoutRecursion0-8	 2000000	       870 ns/op
-// BenchmarkCommaWithoutRecursion1-8	 1000000	      1897 ns/op
-// BenchmarkCommaWithoutRecursion2-8	 1000000	      1877 ns/op

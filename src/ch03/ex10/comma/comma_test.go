@@ -5,9 +5,6 @@ import (
 	"testing"
 )
 
-var inputs = []string{"1", "123", "1234", "123456", "1234567"}
-var expecteds = []string{"1", "123", "1,234", "123,456", "1,234,567"}
-
 var data = []struct {
 	input    string
 	expected string
@@ -57,40 +54,46 @@ func TestCommaWithoutRecursion2(t *testing.T) {
 
 func BenchmarkComma(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		for _, input := range inputs {
-			comma.Comma(input)
+		for _, d := range data {
+			comma.Comma(d.input)
 		}
 	}
 }
 
 func BenchmarkCommaWithBuffer(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		for _, input := range inputs {
-			comma.CommaWithBuffer(input)
+		for _, d := range data {
+			comma.CommaWithBuffer(d.input)
 		}
 	}
 }
 
 func BenchmarkCommaWithoutRecursion0(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		for _, input := range inputs {
-			comma.CommaWithoutRecursion0(input)
+		for _, d := range data {
+			comma.CommaWithoutRecursion0(d.input)
 		}
 	}
 }
 
 func BenchmarkCommaWithoutRecursion1(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		for _, input := range inputs {
-			comma.CommaWithoutRecursion1(input)
+		for _, d := range data {
+			comma.CommaWithoutRecursion1(d.input)
 		}
 	}
 }
 
 func BenchmarkCommaWithoutRecursion2(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		for _, input := range inputs {
-			comma.CommaWithoutRecursion1(input)
+		for _, d := range data {
+			comma.CommaWithoutRecursion1(d.input)
 		}
 	}
 }
+
+// BenchmarkComma-8                 	 2000000	       879 ns/op
+// BenchmarkCommaWithBuffer-8       	 1000000	      2395 ns/op
+// BenchmarkCommaWithoutRecursion0-8	 1000000	      1441 ns/op
+// BenchmarkCommaWithoutRecursion1-8	 1000000	      2703 ns/op
+// BenchmarkCommaWithoutRecursion2-8	  500000	      2918 ns/op
