@@ -1,10 +1,7 @@
 // Copyright © 2016 Alan A. A. Donovan & Brian W. Kernighan.
+// Copyright © 2016 Yoshiki Shibata.
 // License: https://creativecommons.org/licenses/by-nc-sa/4.0/
 
-// See page 61.
-//!+
-
-// Mandelbrot emits a PNG image of the Mandelbrot fractal.
 package main
 
 import (
@@ -18,16 +15,19 @@ import (
 	"strconv"
 )
 
+const (
+	width  = 1024
+	height = 1024
+)
+
 type parameters struct {
 	renderer func(complex128) color.Color
 	w        http.ResponseWriter
 
-	xmin   float64
-	ymin   float64
-	xmax   float64
-	ymax   float64
-	width  int
-	height int
+	xmin float64
+	ymin float64
+	xmax float64
+	ymax float64
 }
 
 func newParameters(w http.ResponseWriter) *parameters {
@@ -40,8 +40,6 @@ func newParameters(w http.ResponseWriter) *parameters {
 	p.ymin = -2
 	p.xmax = +2
 	p.ymax = +2
-	p.width = 1024
-	p.height = 1024
 
 	return &p
 }
@@ -139,11 +137,11 @@ func main() {
 }
 
 func render(p *parameters) {
-	img := image.NewRGBA(image.Rect(0, 0, p.width, p.height))
-	for py := 0; py < p.height; py++ {
-		y := float64(py)/float64(p.height)*(p.ymax-p.ymin) + p.ymin
-		for px := 0; px < p.width; px++ {
-			x := float64(px)/float64(p.width)*(p.xmax-p.xmin) + p.xmin
+	img := image.NewRGBA(image.Rect(0, 0, width, height))
+	for py := 0; py < height; py++ {
+		y := float64(py)/float64(height)*(p.ymax-p.ymin) + p.ymin
+		for px := 0; px < width; px++ {
+			x := float64(px)/float64(width)*(p.xmax-p.xmin) + p.xmin
 			z := complex(x, y)
 			// Image point (px, py) represents complex value z.
 			img.Set(px, py, p.renderer(z))
