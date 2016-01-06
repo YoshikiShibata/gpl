@@ -28,6 +28,9 @@ type parameters struct {
 	ymin float64
 	xmax float64
 	ymax float64
+
+	xstart int
+	ystart int
 }
 
 func newParameters(w http.ResponseWriter) *parameters {
@@ -40,6 +43,9 @@ func newParameters(w http.ResponseWriter) *parameters {
 	p.ymin = -2
 	p.xmax = +2
 	p.ymax = +2
+
+	p.xstart = 0
+	p.ystart = 0
 
 	return &p
 }
@@ -91,6 +97,38 @@ func (p *parameters) setZoom(values url.Values) error {
 	return nil
 }
 
+func (p *parameters) setX(values url.Values) error {
+	const key = "x"
+
+	if !containsKey(values, key) {
+		return nil
+	}
+
+	x, err := strconv.Atoi(values.Get(key))
+	if err != nil {
+		return fmt.Errorf("x error: %v", err)
+	}
+
+	p.xstart = x
+	return nil
+}
+
+func (p *parameters) setY(values url.Values) error {
+	const key = "y"
+
+	if !containsKey(values, key) {
+		return nil
+	}
+
+	y, err := strconv.Atoi(values.Get(key))
+	if err != nil {
+		return fmt.Errorf("y error: %v", err)
+	}
+
+	p.ystart = y
+	return nil
+}
+
 func containsKey(values url.Values, key string) bool {
 	return len(values.Get(key)) != 0
 }
@@ -102,13 +140,16 @@ func (p *parameters) help(values url.Values) error {
 	if !ok {
 		return nil
 	}
-	return fmt.Errorf("available options: fractal\n" +
-		"available fractals: mandelbrot (default), newton, acos, sqrt")
+	return fmt.Errorf(`available options: fractal, zoom, x, and y +
+fractal: "mandelbrot" (default), "newton", "acos", "sqrt"
+   zoom: positive integer, default is 100 
+     x : x coordinate of the center, default is 0
+     y : y coordinate of the center, default is 0`)
 }
 
 func (p *parameters) setOptions(values url.Values) error {
 	setters := []func(url.Values) error{
-		p.setFractal, p.setZoom, p.help}
+		p.setFractal, p.setZoom, p.setX, p.setY, p.help}
 	for _, setter := range setters {
 		if err := setter(values); err != nil {
 			return err
@@ -139,9 +180,9 @@ func main() {
 func render(p *parameters) {
 	img := image.NewRGBA(image.Rect(0, 0, width, height))
 	for py := 0; py < height; py++ {
-		y := float64(py)/float64(height)*(p.ymax-p.ymin) + p.ymin
+		y := float64(py+p.ystart)/float64(height)*(p.ymax-p.ymin) + p.ymin
 		for px := 0; px < width; px++ {
-			x := float64(px)/float64(width)*(p.xmax-p.xmin) + p.xmin
+			x := float64(px+p.xstart)/float64(width)*(p.xmax-p.xmin) + p.xmin
 			z := complex(x, y)
 			// Image point (px, py) represents complex value z.
 			img.Set(px, py, p.renderer(z))
