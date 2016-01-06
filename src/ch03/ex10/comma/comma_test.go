@@ -20,15 +20,6 @@ var data = []struct {
 	{"0123456789", "0,123,456,789"},
 }
 
-func TestComma(t *testing.T) {
-	for _, d := range data {
-		result := comma.Comma(d.input)
-		if result != d.expected {
-			t.Errorf("Result is %s, want %s", result, d.expected)
-		}
-	}
-}
-
 func execute(t *testing.T, f func(string) string) {
 	for _, d := range data {
 		result := f(d.input)
@@ -36,6 +27,10 @@ func execute(t *testing.T, f func(string) string) {
 			t.Errorf("Result is %s, want %s", result, d.expected)
 		}
 	}
+}
+
+func TestComma(t *testing.T) {
+	execute(t, comma.Comma)
 }
 
 func TestCommaWithBuffer0(t *testing.T) {
