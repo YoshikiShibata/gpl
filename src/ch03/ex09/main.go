@@ -15,6 +15,7 @@ import (
 	"math/cmplx"
 	"net/http"
 	"net/url"
+	"strconv"
 )
 
 type parameters struct {
@@ -69,6 +70,29 @@ func (p *parameters) setFractal(values url.Values) error {
 	return nil
 }
 
+func (p *parameters) setZoom(values url.Values) error {
+	const key = "zoom"
+
+	if !containsKey(values, key) {
+		return nil
+	}
+
+	zoom, err := strconv.Atoi(values.Get(key))
+	if err != nil {
+		return fmt.Errorf("zoom error: %v", err)
+	}
+
+	if zoom <= 0 {
+		return fmt.Errorf("invalid zoom %d: must be greater than zero", zoom)
+	}
+
+	p.xmin *= 100 / float64(zoom)
+	p.xmax *= 100 / float64(zoom)
+	p.ymin *= 100 / float64(zoom)
+	p.ymax *= 100 / float64(zoom)
+	return nil
+}
+
 func containsKey(values url.Values, key string) bool {
 	return len(values.Get(key)) != 0
 }
@@ -86,7 +110,7 @@ func (p *parameters) help(values url.Values) error {
 
 func (p *parameters) setOptions(values url.Values) error {
 	setters := []func(url.Values) error{
-		p.setFractal, p.help}
+		p.setFractal, p.setZoom, p.help}
 	for _, setter := range setters {
 		if err := setter(values); err != nil {
 			return err
