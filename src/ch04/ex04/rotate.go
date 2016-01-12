@@ -41,7 +41,7 @@ func RotateCycles(data []int, rotateRightSize int) {
 
 	n := gcd(len(data), rotateRightSize)
 	for i := 0; i < n; i++ {
-		cycleTo(0+i,
+		cycleTo(i,
 			func(i int) int {
 				return (i + rotateRightSize) % len(data)
 			},
