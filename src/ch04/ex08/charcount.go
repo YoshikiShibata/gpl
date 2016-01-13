@@ -72,6 +72,7 @@ func main() {
 			}
 		}
 	}
+
 	fmt.Println("rune\tcount")
 	for c, n := range counts {
 		fmt.Printf("%c\t%d\n", c, n)
