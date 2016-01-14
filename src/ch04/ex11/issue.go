@@ -32,7 +32,7 @@ import (
 func main() {
 	user, password := credentials()
 
-	fmt.Printf("use = %s, password = %s\n", user, password)
+	fmt.Printf("user = %s, password = %s\n", user, password)
 
 	panic("Not Implemented Yet")
 }
@@ -40,15 +40,16 @@ func main() {
 func credentials() (string, string) {
 	reader := bufio.NewReader(os.Stdin)
 
-	fmt.Print("Username: ")
+	fmt.Print("Username for 'https://github.com': ")
 	username, _ := reader.ReadString('\n')
+	username = strings.TrimSpace(username)
 
-	fmt.Print("Password: ")
+	fmt.Print(fmt.Sprintf("Password for 'https://%s@github.com': ", username))
 	bytePassword, err := terminal.ReadPassword(int(syscall.Stdin))
 	if err != nil {
 		fmt.Println("\nPassword Error: %v\n", err)
 	}
 	password := string(bytePassword)
 
-	return strings.TrimSpace(username), strings.TrimSpace(password)
+	return username, strings.TrimSpace(password)
 }
