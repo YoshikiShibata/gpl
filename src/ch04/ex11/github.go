@@ -4,7 +4,7 @@ package main
 
 import "time"
 
-const GitHubAPIURL = "https://api.github.com/repos"
+const GitHubAPIURL = "https://api.github.com"
 
 type Issue struct {
 	Number    int
@@ -22,12 +22,12 @@ type User struct {
 }
 
 type CreateIssue struct {
-	Title string
-	Body  string
+	Title string `json:"title"`
+	Body  string `json:"body"`
 }
 
 type EditIssue struct {
-	Title string
-	Body  string
-	State string // "open" or "close"
+	Title string `json:"title"`
+	Body  string `json:"body"`
+	State string `json:"state"` // "open" or "close"
 }

@@ -34,6 +34,11 @@ func main() {
 
 	fmt.Printf("user = %s, password = %s\n", user, password)
 
+	issue := CreateIssue{
+		"bug",
+		"This is a bug"}
+
+	createIssue("", &issue)
 	panic("Not Implemented Yet")
 }
 
