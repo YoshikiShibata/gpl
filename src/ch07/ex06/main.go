@@ -1,7 +1,7 @@
 package main
 
 import (
-	"ch07/ex03/tempflag"
+	"ch07/ex06/tempflag"
 	"flag"
 	"fmt"
 )

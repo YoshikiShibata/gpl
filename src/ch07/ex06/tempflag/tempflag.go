@@ -1,7 +1,7 @@
 package tempflag
 
 import (
-	"ch07/ex03/tempconv"
+	"ch07/ex06/tempconv"
 	"flag"
 	"fmt"
 )
