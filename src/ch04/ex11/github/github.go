@@ -1,6 +1,6 @@
 // Copyright © 2016 Yoshiki Shibata
 
-package main
+package github
 
 import (
 	"fmt"

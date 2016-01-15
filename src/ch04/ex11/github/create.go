@@ -1,6 +1,6 @@
 // Copyright © 2016 Yoshiki Shibata
 
-package main
+package github
 
 import (
 	"bytes"
@@ -9,8 +9,9 @@ import (
 	"net/http"
 )
 
-func createIssue(repo string, issue *CreateIssue, user *credentials) (*Issue, error) {
-	b, err := json.Marshal(issue)
+func Create(repo, title, body string, user *Credentials) (*Issue, error) {
+	issue := CreateIssue{title, body}
+	b, err := json.Marshal(&issue)
 	if err != nil {
 		fmt.Printf("%v\n", err)
 		return nil, err

@@ -1,6 +1,6 @@
 // Copyright © 2016 Yoshiki Shibata
 
-package main
+package github
 
 import (
 	"bufio"
@@ -12,12 +12,12 @@ import (
 	"golang.org/x/crypto/ssh/terminal"
 )
 
-type credentials struct {
+type Credentials struct {
 	username string
 	password string
 }
 
-func (c *credentials) Query() {
+func (c *Credentials) Query() {
 	reader := bufio.NewReader(os.Stdin)
 
 	fmt.Print("Username for 'https://github.com': ")
