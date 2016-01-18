@@ -32,6 +32,7 @@ import (
 var issueNo = flag.Int("issue", 0, "issue number")
 var title = flag.String("title", "", "title for the issue")
 var body = flag.String("body", "", "issue body")
+var state = flag.String("state", "open", "open or close")
 
 var createFlag = flag.Bool("create", false, "create an issue")
 var deleteFlag = flag.Bool("delete", false, "delete an issue")
@@ -58,9 +59,9 @@ func main() {
 		if err != nil {
 			fmt.Printf("%v\n", err)
 		}
-		fmt.Println(issue)
+		fmt.Printf("%v\n", issue)
 	case *deleteFlag:
-		if *issueNo == 0 {
+		if !isFlagSpecified("issue") {
 			fmt.Print("Please specify -issue <issueNo>")
 			os.Exit(1)
 		}
@@ -69,10 +70,29 @@ func main() {
 			fmt.Printf("%v\n", err)
 		}
 	case *printFlag:
-		panic("Not Implemented Yet")
+		if !isFlagSpecified("issue") {
+			fmt.Print("Please specifiy -issue <issueNo>")
+			os.Exit(1)
+		}
+		issue, err := github.Get(repository, *issueNo, &user)
+		if err != nil {
+			fmt.Printf("%v\n", err)
+		}
+		fmt.Printf("%v\n", issue)
 	case *editFlag:
-		panic("Not Implemented Yet")
-
+		if !isFlagSpecified("issue") {
+			fmt.Print("Please specifiy -issue <issueNo>")
+			os.Exit(1)
+		}
+		b := *body
+		if !isFlagSpecified("body") {
+			b = invokeEditor()
+		}
+		issue, err := github.Edit(repository, *title, b, *state, *issueNo, &user)
+		if err != nil {
+			fmt.Printf("%v\n", err)
+		}
+		fmt.Printf("%v\n", issue)
 	}
 }
 

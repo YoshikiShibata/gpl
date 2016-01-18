@@ -3,7 +3,6 @@
 package github
 
 import (
-	"fmt"
 	"io"
 	"net/http"
 	"time"
@@ -21,10 +20,12 @@ type Issue struct {
 	Body      string    // in Markdown format
 }
 
+/*
 func (i *Issue) String() string {
 	return fmt.Sprintf("#%-5d %9.9s %.55s",
 		i.Number, i.User.Login, i.Title)
 }
+*/
 
 type User struct {
 	Login   string
