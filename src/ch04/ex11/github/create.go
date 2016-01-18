@@ -16,12 +16,13 @@ func Create(repo, title, body string, user *Credentials) (*Issue, error) {
 		fmt.Printf("%v\n", err)
 		return nil, err
 	}
-	fmt.Printf("json = %s\n", string(b))
-	restAPIURL := GitHubAPIURL + "/repos/" + repo + "/issues"
+	//	fmt.Printf("json = %s\n", string(b))
+	restAPIURL := issuesURL(repo)
 	fmt.Printf("Rest API URL = %s\n", restAPIURL)
-	req, err := http.NewRequest("POST", restAPIURL, bytes.NewReader(b))
-	req.Header.Set("Accept", "application/vnd.github.v3.text-match+json")
-	req.SetBasicAuth(user.username, user.password)
+	req, err := newRequest("POST", restAPIURL, bytes.NewReader(b), user)
+	if err != nil {
+		return nil, fmt.Errorf("NewReuqest failed: %v", err)
+	}
 
 	resp, err := http.DefaultClient.Do(req)
 

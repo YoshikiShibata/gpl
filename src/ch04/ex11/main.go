@@ -46,11 +46,24 @@ func main() {
 	var user github.Credentials
 	user.Query()
 
-	issue, err := github.Create(repository, *title, *body, &user)
-	if err != nil {
-		fmt.Printf("%v\n", err)
+	switch true {
+	case *createFlag:
+		issue, err := github.Create(repository, *title, *body, &user)
+		if err != nil {
+			fmt.Printf("%v\n", err)
+		}
+		fmt.Println(issue)
+	case *deleteFlag:
+		if *issueNo == 0 {
+			fmt.Print("Please specify -issue <issueNo>")
+			os.Exit(1)
+		}
+		err := github.Delete(repository, *issueNo, &user)
+		if err != nil {
+			fmt.Printf("%v\n", err)
+		}
+
 	}
-	fmt.Println(issue)
 }
 
 func validateOperationFlags() {
