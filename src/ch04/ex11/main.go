@@ -5,7 +5,9 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"os"
+	"os/exec"
 
 	"ch04/ex11/github"
 )
@@ -48,7 +50,11 @@ func main() {
 
 	switch true {
 	case *createFlag:
-		issue, err := github.Create(repository, *title, *body, &user)
+		b := *body
+		if !isFlagSpecified("body") {
+			b = invokeEditor()
+		}
+		issue, err := github.Create(repository, *title, b, &user)
 		if err != nil {
 			fmt.Printf("%v\n", err)
 		}
@@ -62,8 +68,46 @@ func main() {
 		if err != nil {
 			fmt.Printf("%v\n", err)
 		}
+	case *printFlag:
+		panic("Not Implemented Yet")
+	case *editFlag:
+		panic("Not Implemented Yet")
 
 	}
+}
+
+func invokeEditor() string {
+	f, err := ioutil.TempFile("", "body.")
+	if err != nil {
+		panic(fmt.Errorf("Cannot crete a temp file: %v", err))
+	}
+
+	name := f.Name()
+	f.Close() // ignore Error
+
+	cmd := exec.Command("vim", name)
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err = cmd.Run()
+	if err != nil {
+		panic(fmt.Errorf("Cannot invoke vim: %v", err))
+	}
+
+	bytes, err := ioutil.ReadFile(name)
+	if err != nil {
+		panic(fmt.Errorf("Cannot read a temp file: %v", err))
+	}
+	return string(bytes)
+}
+
+func isFlagSpecified(name string) (specified bool) {
+	flag.Visit(func(f *flag.Flag) {
+		if f.Name == name {
+			specified = true
+		}
+	})
+	return
 }
 
 func validateOperationFlags() {
