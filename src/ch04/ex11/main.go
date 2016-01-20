@@ -20,22 +20,21 @@ import (
 // 		issue [-create -title TITLE -body BODY] REPOSITORY
 //		if -body is omitted, then an editor will be invoked.
 //
-// 2. Delete an issue
-//		issue [-delete -issue ISSUE_NO] REPOSITORY
+// 2. Close an issue
+//		issue [-close -issue ISSUE_NO] REPOSITORY
 //
 // 3. Print an issue
 //		issue [-print -issue ISSUE_NO] REPOSITORY
 //
 // 4. Edit an issue
-// 		issue [-edit -issue ISSUE_NO -title TITLE -body BODY -state [open | close]] REPOSITORY
+// 		issue [-edit -issue ISSUE_NO -title TITLE -body BODY] REPOSITORY
 
 var issueNo = flag.Int("issue", 0, "issue number")
 var title = flag.String("title", "", "title for the issue")
 var body = flag.String("body", "", "issue body")
-var state = flag.String("state", "open", "open or close")
 
 var createFlag = flag.Bool("create", false, "create an issue")
-var deleteFlag = flag.Bool("delete", false, "delete an issue")
+var closeFlag = flag.Bool("close", false, "close an issue")
 var editFlag = flag.Bool("edit", false, "edit an issue")
 var printFlag = flag.Bool("print", false, "print an issue")
 
@@ -60,15 +59,16 @@ func main() {
 			fmt.Printf("%v\n", err)
 		}
 		fmt.Printf("%v\n", issue)
-	case *deleteFlag:
+	case *closeFlag:
 		if !isFlagSpecified("issue") {
 			fmt.Print("Please specify -issue <issueNo>")
 			os.Exit(1)
 		}
-		err := github.Delete(repository, *issueNo, &user)
+		issue, err := github.Close(repository, *issueNo, &user)
 		if err != nil {
 			fmt.Printf("%v\n", err)
 		}
+		fmt.Printf("%v\n", issue)
 	case *printFlag:
 		if !isFlagSpecified("issue") {
 			fmt.Print("Please specifiy -issue <issueNo>")
@@ -88,7 +88,7 @@ func main() {
 		if !isFlagSpecified("body") {
 			b = invokeEditor()
 		}
-		issue, err := github.Edit(repository, *title, b, *state, *issueNo, &user)
+		issue, err := github.Edit(repository, *title, b, *issueNo, &user)
 		if err != nil {
 			fmt.Printf("%v\n", err)
 		}
@@ -131,7 +131,7 @@ func isFlagSpecified(name string) (specified bool) {
 }
 
 func validateOperationFlags() {
-	flags := []bool{*createFlag, *deleteFlag, *editFlag, *printFlag}
+	flags := []bool{*createFlag, *closeFlag, *editFlag, *printFlag}
 
 	trueCount := 0
 	for _, flag := range flags {

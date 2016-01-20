@@ -40,7 +40,10 @@ type CreateIssue struct {
 type EditIssue struct {
 	Title string `json:"title"`
 	Body  string `json:"body"`
-	State string `json:"state"` // "open" or "close"
+}
+
+type CloseIssue struct {
+	State string `json:"state"`
 }
 
 func issuesURL(repo string) string {
