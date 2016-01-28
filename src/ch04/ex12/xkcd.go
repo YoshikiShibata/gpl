@@ -4,59 +4,15 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strconv"
+	"strings"
+	"sync"
 )
-
-func main() {
-	var comics []*Comic
-
-	num := 0
-	notFoundCount := 0
-	for {
-		num++
-
-		if exists(comicFilePath(num)) {
-			fmt.Printf("Reading %5d ... ", num)
-			comic := readComic(num)
-			fmt.Printf("done\n")
-			comics = append(comics, comic)
-			continue
-		}
-
-		fmt.Printf("Fetching %5d ... ", num)
-		comic, err, notFound := getComic(num)
-		if err != nil {
-			if notFound {
-				fmt.Printf("Not Found - skipped\n")
-				notFoundCount++
-				if notFoundCount <= 10 {
-					continue
-				}
-
-				fmt.Println("Probably no more comic")
-				break
-
-			}
-			fmt.Printf("%v\n", err)
-		}
-		comics = append(comics, comic)
-		fmt.Printf("done\n")
-	}
-}
-
-func exists(filepath string) bool {
-	_, err := os.Stat(filepath)
-	if err != nil {
-		if os.IsNotExist(err) {
-			return false
-		}
-		panic(fmt.Errorf("os.Stat: %v", err))
-	}
-	return true
-}
 
 const (
 	xkcdURL      = "https://xkcd.com/"
@@ -77,6 +33,124 @@ type Comic struct {
 	Transcript string
 	Alt        string
 	Img        string
+}
+
+type cacheResult struct {
+	num   int
+	comic *Comic
+	ok    bool
+}
+
+const concurrencyLevel = 10 // Concurrency Level and Max Not Found
+const lastComicNumber = 1635
+
+var vFlag = flag.Bool("v", false, "verbose message")
+
+func main() {
+	flag.Parse()
+	args := flag.Args()
+	if len(args) == 0 {
+		fmt.Fprintf(os.Stderr, "No word specified\n")
+		os.Exit(1)
+	}
+	fmt.Printf("Building indexes ... ")
+	comics := fetchAllComics()
+	fmt.Printf("Done\n")
+	findWords(comics, flag.Args())
+}
+
+func findWords(comics map[int]*Comic, words []string) {
+topLoop:
+	for i := 1; i <= lastComicNumber; i++ {
+		comic := comics[i]
+		if comic == nil {
+			continue
+		}
+
+		for _, word := range words {
+			if !strings.Contains(comic.Transcript, word) {
+				continue topLoop
+			}
+		}
+		fmt.Printf("\n==== Matched =====\nURL: %s\n", xkcdURL+strconv.Itoa(i))
+		fmt.Printf("Transcript: %s\n", comic.Transcript)
+	}
+}
+
+var wg sync.WaitGroup
+
+func fetchAllComics() map[int]*Comic {
+	var comics = make(map[int]*Comic)
+	var results = make(chan *cacheResult, concurrencyLevel)
+
+	num := 0
+	num++
+	for i := 0; i < concurrencyLevel; i++ {
+		wg.Add(1)
+		go cacheComic(results, num)
+		num++
+	}
+
+	chanelClosed := false
+	for result := range results {
+		if result.ok {
+			vPrintf("caching %5d ... done\n", result.num)
+			comics[result.num] = result.comic
+		}
+		wg.Add(1)
+		go cacheComic(results, num)
+		num++
+		if num > lastComicNumber && !chanelClosed {
+			vPrintf("Waiting ... \n")
+			wg.Wait()
+			close(results)
+			chanelClosed = true
+			vPrintf("Done \n")
+		}
+	}
+	return comics
+}
+
+func vPrintf(format string, args ...interface{}) {
+	if *vFlag {
+		fmt.Printf(format, args...)
+	}
+}
+
+func cacheComic(comics chan<- *cacheResult, num int) {
+	defer wg.Done()
+
+	if exists(comicFilePath(num)) {
+		vPrintf("Reading %5d ...  \n", num)
+		comic := readComic(num)
+		comics <- &cacheResult{num, comic, true}
+		return
+	}
+
+	vPrintf("Fetching %5d ... \n", num)
+	comic, err, notFound := getComic(num)
+	if err != nil {
+		if notFound {
+			vPrintf("%5d ... not found\n", num)
+			comics <- &cacheResult{num, nil, false}
+			return
+		}
+		vPrintf("%v\n", err)
+		comics <- &cacheResult{num, nil, false}
+		return
+	}
+	comics <- &cacheResult{num, comic, true}
+}
+
+func exists(filepath string) bool {
+	_, err := os.Stat(filepath)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return false
+		}
+		panic(fmt.Errorf("os.Stat: %v", err))
+	}
+	return true
 }
 
 func getComic(num int) (*Comic, error, bool) {
