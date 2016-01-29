@@ -1,3 +1,5 @@
+// Copyright © 2016 Yoshiki Shibata
+
 package main
 
 import (
@@ -8,7 +10,7 @@ import (
 )
 
 // visit appends to links each link found in n and returns the result
-func visit(n *html.Node, links []string) []string {
+func visit(links []string, n *html.Node) []string {
 	if n == nil {
 		return links
 	}
@@ -21,8 +23,8 @@ func visit(n *html.Node, links []string) []string {
 		}
 	}
 
-	links = visit(n.FirstChild, links)
-	links = visit(n.NextSibling, links)
+	links = visit(links, n.FirstChild)
+	links = visit(links, n.NextSibling)
 
 	return links
 }
@@ -33,7 +35,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "findlinks: %v\n", err)
 		os.Exit(1)
 	}
-	for _, link := range visit(doc, nil) {
+	for _, link := range visit(nil, doc) {
 		fmt.Println(link)
 	}
 }
