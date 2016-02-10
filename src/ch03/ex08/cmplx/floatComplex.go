@@ -18,11 +18,8 @@ func (fc *FloatComplex) String() string {
 
 var precision uint = 0
 
-func SetPrecision(prec int) {
-	if prec <= 0 {
-		panic(fmt.Sprintf("prec(%d) is zero or negative", prec))
-	}
-	precision = uint(prec)
+func SetPrecision(prec uint) {
+	precision = prec
 }
 
 func NewFloatComplex(r, i float64) *FloatComplex {
