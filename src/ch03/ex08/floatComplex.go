@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"math"
 	"math/big"
 )
@@ -11,11 +12,28 @@ type FloatComplex struct {
 	imag_ *big.Float
 }
 
+func (fc *FloatComplex) String() string {
+	return fmt.Sprintf("{%s, %s}", fc.real_.String(), fc.imag_.String())
+}
+
+var precision uint = 0
+
+func setPrecision(prec int) {
+	if prec <= 0 {
+		panic(fmt.Sprintf("prec(%d) is zero or negative", prec))
+	}
+	precision = uint(prec)
+}
+
 func NewFloatComplex(r, i float64) *FloatComplex {
 	var fc FloatComplex
 
 	fc.real_ = big.NewFloat(r)
 	fc.imag_ = big.NewFloat(i)
+	if precision > 0 {
+		fc.real_.SetPrec(precision)
+		fc.imag_.SetPrec(precision)
+	}
 	return &fc
 }
 
@@ -33,7 +51,7 @@ func (fc *FloatComplex) floats() (*big.Float, *big.Float) {
 
 func (fc *FloatComplex) IsZero() bool {
 	r, _ := fc.real_.Float64()
-	i, _ := fc.real_.Float64()
+	i, _ := fc.imag_.Float64()
 	return r == 0.0 && i == 0.0
 }
 
@@ -84,23 +102,35 @@ func (fc *FloatComplex) Sub(o *FloatComplex) *FloatComplex {
 }
 
 func (fc *FloatComplex) Quo(o *FloatComplex) *FloatComplex {
+	if fc.IsZero() && o.IsZero() {
+		panic("Cannot Handle This")
+	}
+
+	if o.IsZero() {
+		inf := math.Inf(0)
+		return &FloatComplex{big.NewFloat(inf), big.NewFloat(inf)}
+	}
+
 	// (a + bi) / (c + di)
 	//     = ((ac + bd)/(c*c + d*d)) + ((bc - ad)/(c*c + d*d))i
 	a, b := fc.floats()
 	c, d := o.floats()
 
+	// r1 = (ac + ab)
 	r1 := new(big.Float)
 	r1.Mul(a, c)
 	r2 := new(big.Float)
 	r2.Mul(b, d)
 	r1.Add(r1, r2)
 
+	// r3 = (c*c + d*d)
 	r3 := new(big.Float)
 	r3.Mul(c, c)
 	r4 := new(big.Float)
 	r4.Mul(d, d)
 	r3.Add(r3, r4)
 
+	// r1 = ((ac + bd) / (c*c + d*d))
 	r1.Quo(r1, r3)
 
 	i1 := new(big.Float)

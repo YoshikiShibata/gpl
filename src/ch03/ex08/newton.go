@@ -12,6 +12,7 @@ import (
 	"image/png"
 	"math/cmplx"
 	"os"
+	"runtime"
 	"sync"
 )
 
@@ -92,10 +93,12 @@ func mainFloat() {
 	var wg sync.WaitGroup
 	var mutex sync.Mutex
 
+	limiter := make(chan struct{}, runtime.NumCPU()*2)
+
 	for py := 0; py < height; py++ {
-		fmt.Fprintf(os.Stderr, "%d\n", py)
 		y := float64(py)/height*(ymax-ymin) + ymin
 		for px := 0; px < width; px++ {
+			limiter <- struct{}{}
 			wg.Add(1)
 			go func(px, py int) {
 				defer wg.Done()
@@ -106,6 +109,7 @@ func mainFloat() {
 				mutex.Lock()
 				img.Set(px, py, nwz)
 				mutex.Unlock()
+				<-limiter
 			}(px, py)
 		}
 	}
@@ -164,20 +168,23 @@ func newton128(z complex128) color.Color {
 	return color.Black
 }
 
-func newtonFloat(z *FloatComplex) color.Color {
+func newtonFloat(z *FloatComplex) (c color.Color) {
+	defer func() {
+		if x := recover(); x != nil {
+			fmt.Fprintf(os.Stderr, "Ignore: %v\n", x)
+			c = color.Black
+		}
+	}()
+
 	const iterations = 37
 	const contrast = 7
 	c1 := NewFloatComplex(1.0, 0)
 	c4 := NewFloatComplex(4.0, 0)
 	for i := uint8(0); i < iterations; i++ {
-		if z.IsZero() {
-			return color.Black
-		}
 		// z -= (z - 1/(z*z*z)) / 4
-		z.Sub(z.Sub(c1.Quo(z.Mul(z).Mul(z))).Quo(c4))
+		z = z.Sub(z.Sub(c1.Quo(z.Mul(z).Mul(z))).Quo(c4))
 		// if cmplx.Abs(z*z*z*z-1) < 1e-6 {
 		if z.Mul(z).Mul(z).Mul(z).Sub(c1).Abs() < 1e-6 {
-			fmt.Fprintf(os.Stderr, "c\n")
 			return color.RGBA{255 - contrast*i, contrast * i, 0, 0xff}
 		}
 	}
