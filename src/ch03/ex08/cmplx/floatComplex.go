@@ -1,4 +1,4 @@
-package main
+package cmplx
 
 import (
 	"fmt"
@@ -18,7 +18,7 @@ func (fc *FloatComplex) String() string {
 
 var precision uint = 0
 
-func setPrecision(prec int) {
+func SetPrecision(prec int) {
 	if prec <= 0 {
 		panic(fmt.Sprintf("prec(%d) is zero or negative", prec))
 	}

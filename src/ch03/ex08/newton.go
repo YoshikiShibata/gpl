@@ -14,6 +14,8 @@ import (
 	"os"
 	"runtime"
 	"sync"
+
+	mc "ch03/ex08/cmplx"
 )
 
 var aType = flag.String("type", "complex128",
@@ -103,7 +105,7 @@ func mainFloat() {
 			go func(px, py int) {
 				defer wg.Done()
 				x := float64(px)/width*(xmax-xmin) + xmin
-				z := NewFloatComplex(x, y)
+				z := mc.NewFloatComplex(x, y)
 				// Image point (px, py) represents complex value z.
 				nwz := newtonFloat(z)
 				mutex.Lock()
@@ -168,7 +170,7 @@ func newton128(z complex128) color.Color {
 	return color.Black
 }
 
-func newtonFloat(z *FloatComplex) (c color.Color) {
+func newtonFloat(z *mc.FloatComplex) (c color.Color) {
 	defer func() {
 		if x := recover(); x != nil {
 			fmt.Fprintf(os.Stderr, "Ignore: %v\n", x)
@@ -178,8 +180,8 @@ func newtonFloat(z *FloatComplex) (c color.Color) {
 
 	const iterations = 37
 	const contrast = 7
-	c1 := NewFloatComplex(1.0, 0)
-	c4 := NewFloatComplex(4.0, 0)
+	c1 := mc.NewFloatComplex(1.0, 0)
+	c4 := mc.NewFloatComplex(4.0, 0)
 	for i := uint8(0); i < iterations; i++ {
 		// z -= (z - 1/(z*z*z)) / 4
 		z = z.Sub(z.Sub(c1.Quo(z.Mul(z).Mul(z))).Quo(c4))
