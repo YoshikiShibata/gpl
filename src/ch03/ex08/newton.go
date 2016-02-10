@@ -38,8 +38,8 @@ var zoomFactor float64
 func main() {
 	flag.Parse()
 	validateParams()
-	fmt.Fprintf(os.Stderr, "type = %s\n", *aType)
-	fmt.Fprintf(os.Stderr, "zoom = %d\n", *zoom)
+
+	showHeader()
 
 	if *cpuprofile != "" {
 		f, err := os.Create(*cpuprofile)
@@ -87,8 +87,22 @@ func main() {
 	fmt.Fprintf(os.Stderr, "Duration := %v\n", end.Sub(start))
 }
 
+func showHeader() {
+	title := "unknown"
+	switch *aType {
+	case "complex64":
+		title = "complex64"
+	case "complex128":
+		title = "complex128"
+	case "Float":
+		title = "big.Float"
+	}
+
+	fmt.Fprintf(os.Stderr, "\n=== %s ===\n", title)
+	fmt.Fprintf(os.Stderr, "zoom = %d\n", *zoom)
+}
+
 func mainComplex64(w io.Writer) {
-	fmt.Fprintf(os.Stderr, "\n=== complex64 ===\n")
 	img := image.NewRGBA(image.Rect(0, 0, width, height))
 	for py := 0; py < height; py++ {
 		y := float32(py)/height*float32((ymax-ymin)) + float32(ymin)
@@ -103,7 +117,6 @@ func mainComplex64(w io.Writer) {
 }
 
 func mainComplex128(w io.Writer) {
-	fmt.Fprintf(os.Stderr, "\n=== complex128 ===\n")
 	img := image.NewRGBA(image.Rect(0, 0, width, height))
 	for py := 0; py < height; py++ {
 		y := float64(py)/height*(ymax-ymin) + ymin
@@ -118,7 +131,6 @@ func mainComplex128(w io.Writer) {
 }
 
 func mainFloat(w io.Writer) {
-	fmt.Fprintf(os.Stderr, "\n=== big.Float ===\n")
 	img := image.NewRGBA(image.Rect(0, 0, width, height))
 
 	var wg sync.WaitGroup

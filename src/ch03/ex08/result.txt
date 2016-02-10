@@ -1,0 +1,77 @@
+
+=== complex64 ===
+zoom = 100
+Duration := 1.009827875s
+
+=== complex64 ===
+zoom = 200
+Duration := 1.096716519s
+
+=== complex64 ===
+zoom = 300
+Duration := 1.280592162s
+
+=== complex64 ===
+zoom = 400
+Duration := 1.388317723s
+
+=== complex128 ===
+zoom = 100
+Duration := 823.579289ms
+
+=== complex128 ===
+zoom = 200
+Duration := 991.634496ms
+
+=== complex128 ===
+zoom = 300
+Duration := 1.235477301s
+
+=== complex128 ===
+zoom = 400
+Duration := 1.193003774s
+
+=== big.Float ===
+zoom = 100
+Ignore: multiplication of zero with infinity
+Duration := 27.538038354s
+
+=== big.Float ===
+zoom = 200
+Ignore: multiplication of zero with infinity
+Duration := 30.314752202s
+
+=== big.Float ===
+zoom = 300
+Ignore: multiplication of zero with infinity
+Duration := 37.168348363s
+
+=== big.Float ===
+zoom = 400
+Ignore: multiplication of zero with infinity
+Duration := 37.744245385s
+
+=== big.Float ===
+zoom = 100
+precision = 256
+Ignore: multiplication of zero with infinity
+Duration := 36.920919937s
+
+=== big.Float ===
+zoom = 200
+precision = 256
+Ignore: multiplication of zero with infinity
+Duration := 41.828708592s
+
+=== big.Float ===
+zoom = 300
+precision = 256
+Ignore: multiplication of zero with infinity
+Duration := 53.057122566s
+
+=== big.Float ===
+zoom = 400
+precision = 256
+Ignore: multiplication of zero with infinity
+Duration := 52.733665408s
+
