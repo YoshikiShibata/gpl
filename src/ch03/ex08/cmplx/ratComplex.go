@@ -42,6 +42,14 @@ func (rf *RatFloat) String() string {
 	return fmt.Sprintf("%v", rf.f)
 }
 
+func (rf *RatFloat) Float64() float64 {
+	if rf.v == nil {
+		return rf.f
+	}
+	f, _ := rf.v.Float64()
+	return f
+}
+
 type RatComplex struct {
 	real_ *RatFloat
 	imag_ *RatFloat
@@ -58,4 +66,23 @@ func NewRatComplex(r, i float64) *RatComplex {
 	rc.real_ = NewRatFloat(r)
 	rc.imag_ = NewRatFloat(i)
 	return &rc
+}
+
+func (rc *RatComplex) real() *RatFloat {
+	return rc.real_
+}
+
+func (rc *RatComplex) imag() *RatFloat {
+	return rc.imag_
+}
+
+func (rc *RatComplex) floats() (*RatFloat, *RatFloat) {
+	return rc.real_, rc.imag_
+}
+
+func (rc *RatComplex) IsZero() bool {
+	r := rc.real_.Float64()
+	i := rc.imag_.Float64()
+
+	return r == 0.0 && i == 0.0
 }
