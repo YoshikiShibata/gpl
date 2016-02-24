@@ -170,7 +170,7 @@ func mainRat(w io.Writer) {
 	var wg sync.WaitGroup
 	var mutex sync.Mutex
 
-	limiter := make(chan struct{}, 1 /*runtime.NumCPU()*2*/)
+	limiter := make(chan struct{}, runtime.NumCPU()/2)
 
 	for py := 0; py < height; py++ {
 		y := float64(py)/height*(ymax-ymin) + ymin
