@@ -20,7 +20,7 @@ func TestNew(t *testing.T) {
 	}
 }
 
-func TestMul(t *testing.T) {
+func TestMulFloat(t *testing.T) {
 	for _, test := range []struct {
 		r1, i1 float64
 		op     rune
@@ -64,11 +64,11 @@ func TestMul(t *testing.T) {
 			t.Fatalf("Undefined op = %v", test.op)
 		}
 
-		verify(t, fc, cplx)
+		verifyFloatComplex(t, fc, cplx)
 	}
 }
 
-func verify(t *testing.T, fc *FloatComplex, cplx complex128) {
+func verifyFloatComplex(t *testing.T, fc *FloatComplex, cplx complex128) {
 	fcReal, _ := fc.real().Float64()
 	fcImag, _ := fc.imag().Float64()
 
