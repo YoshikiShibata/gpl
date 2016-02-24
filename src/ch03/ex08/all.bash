@@ -20,3 +20,8 @@ go build -o newton
 ./newton -type=Float -precision=256 -zoom=200 -output=newtonFloat256_200.png
 ./newton -type=Float -precision=256 -zoom=300 -output=newtonFloat256_300.png
 ./newton -type=Float -precision=256 -zoom=400 -output=newtonFloat256_400.png
+
+./newton -type=Rat -output=newtonRat_100.png
+./newton -type=Rat -zoom=200 -output=newtonRat_200.png
+./newton -type=Rat -zoom=300 -output=newtonRat_300.png
+./newton -type=Rat -zoom=400 -output=newtonRat_400.png
