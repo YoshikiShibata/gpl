@@ -174,9 +174,9 @@ func mainRat(w io.Writer) {
 
 	for py := 0; py < height; py++ {
 		y := float64(py)/height*(ymax-ymin) + ymin
-		fmt.Printf("py = %d\n", py)
+		fmt.Printf("py : %d\n", py)
 		for px := 0; px < width; px++ {
-			fmt.Printf("    px = %d\n", px)
+			fmt.Printf("\tpx : %d\n", px)
 			limiter <- struct{}{}
 			wg.Add(1)
 			go func(px, py int) {
@@ -276,16 +276,16 @@ func newtonRat(z *mc.RatComplex) (c color.Color) {
 	c1 := mc.NewRatComplex(1.0, 0)
 	c4 := mc.NewRatComplex(4.0, 0)
 	for i := uint8(0); i < iterations; i++ {
-		fmt.Printf("\t\ti : %d %v\n", i, time.Now())
+		fmt.Printf("\t\t[1]%d: %v\n", i, time.Now())
 		// z -= (z - 1/(z*z*z)) / 4
 		z = z.Sub(z.Sub(c1.Quo(z.Mul(z).Mul(z))).Quo(c4))
-		fmt.Printf("\t\t\t: %v\n", time.Now())
-		// fmt.Printf("\t\t\t%v\n", z)
+		fmt.Printf("\t\t[2]%d: %v\n", i, time.Now())
 		// if cmplx.Abs(z*z*z*z-1) < 1e-6 {
 		if z.Mul(z).Mul(z).Mul(z).Sub(c1).Abs() < 1e-6 {
+			fmt.Printf("\t\t[9]%d: %v\n", i, time.Now())
 			return color.RGBA{255 - contrast*i, contrast * i, 0, 0xff}
 		}
-		fmt.Printf("\t\t\t: %v\n", time.Now())
+		fmt.Printf("\t\t[3]%d: %v\n", i, time.Now())
 	}
 	return color.Black
 }
