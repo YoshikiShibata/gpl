@@ -1,3 +1,5 @@
+// Copyright © 2016 Yoshiki Shibata. All rights reserved.
+
 package main
 
 import (
@@ -21,18 +23,20 @@ func main() {
 	if i != 0 {
 		panic("i != 0")
 	}
-	fmt.Printf("%d goroutines are created\n", MAX_GOROUTINES)
+	fmt.Printf("\n%d goroutines are created\n", MAX_GOROUTINES)
+	oneByOneSending(next, final)
+	continousSending(next, final)
+}
 
+func oneByOneSending(next chan<- int, final <-chan int) {
 	var total int64
 
 	for v := 1; v <= MEASURE_COUNT; v++ {
 		start := time.Now()
 		next <- v
-		r := <-final
+		<-final
 		end := time.Now()
-		if v != r {
-			panic(fmt.Errorf("%d recevied, but want %d", r, v))
-		}
+
 		diff := end.Sub(start)
 		fmt.Printf("%3d: %v\n", v, diff)
 		total += diff.Nanoseconds()
@@ -40,6 +44,25 @@ func main() {
 
 	fmt.Printf("average round trip time = %d nano seconds\n",
 		total/MEASURE_COUNT)
+	fmt.Printf("average switching time = %d nano seconds\n",
+		total/(MEASURE_COUNT*MAX_GOROUTINES))
+}
+
+func continousSending(next chan<- int, final <-chan int) {
+	start := time.Now()
+	go func() {
+		for i := 0; i < MEASURE_COUNT; i++ {
+			next <- i
+		}
+	}()
+
+	for i := 0; i < MEASURE_COUNT; i++ {
+		<-final
+	}
+	end := time.Now()
+	diff := end.Sub(start)
+	fmt.Printf("elapsed time for sending %d values ... %d nano seconds\n",
+		MEASURE_COUNT, diff.Nanoseconds())
 }
 
 func pipe(prev <-chan int, stages int, final chan<- int) {
@@ -65,5 +88,6 @@ func pipe(prev <-chan int, stages int, final chan<- int) {
 }
 
 // Linux 16GB Memory
+// CPU: Core i7 Quad Core and Hyper Threading
 // 14,886,828 bytes free
 // 14.15 GB 5,600,000 goroutines
