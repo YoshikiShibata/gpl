@@ -49,8 +49,12 @@ func pingPong(in <-chan struct{}, out chan<- struct{},
 	}
 }
 
-// Result with Intel(R) Core(TM) i7-3770 CPU @ 3.40GHz
-//
+// Intel(R) Core(TM) i7-3770 CPU @ 3.40GHz, Linux(Ubuntu 15.0)
 // Elapsed Time = 1m40.000249347s
 // 542444 per second
 // 542444 per second
+
+// 1.3GHz Interl Core M, MacOS X
+// Elapsed Time = 1m40.000289819s
+// 555193 per second
+// 555193 per second
