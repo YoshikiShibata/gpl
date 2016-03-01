@@ -8,7 +8,10 @@
 // This implementation uses a monitor goroutine.
 package memo
 
-import "errors"
+import (
+	"errors"
+	"strings"
+)
 
 // Func is the type of the function to memoize.
 // Closing done channel means the cancellation of this func.
@@ -22,7 +25,7 @@ type result struct {
 
 // ErrCancelled indicates that Get operation is cancelled by the client
 // and no cache is updated.
-var ErrCancelled = errors.New("cancelled")
+var ErrCanceled = errors.New("request canceled")
 
 type entry struct {
 	res   result
@@ -49,7 +52,7 @@ func (memo *Memo) Get(key string, done <-chan struct{}) (interface{}, error) {
 	response := make(chan result)
 	memo.requests <- request{key, response, done}
 	res := <-response
-	if res.err == ErrCancelled {
+	if res.err == ErrCanceled {
 		select {
 		case <-done:
 			// client cancelled
@@ -72,7 +75,7 @@ func (memo *Memo) server(f Func) {
 		if e != nil {
 			select {
 			case <-e.ready:
-				if e.res.err == ErrCancelled {
+				if e.res.err == ErrCanceled {
 					// Previous one was cancelled
 					delete(cache, req.key)
 					e = nil
@@ -95,6 +98,10 @@ func (memo *Memo) server(f Func) {
 func (e *entry) call(f Func, key string, done <-chan struct{}) {
 	// Evaluate the function.
 	e.res.value, e.res.err = f(key, done)
+	if e.res.err != nil &&
+		strings.Contains(e.res.err.Error(), "request canceled") {
+		e.res.err = ErrCanceled
+	}
 	// Broadcast the ready condition.
 	close(e.ready)
 }
