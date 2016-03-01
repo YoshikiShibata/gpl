@@ -1,3 +1,5 @@
+// Copyright © 2016 Yoshiki Shibata. All rights reserved.
+
 package bank
 
 type withdrawReq struct {
@@ -6,18 +8,18 @@ type withdrawReq struct {
 }
 
 var (
-	depc      = make(chan int)          // send amount to deposit
-	balc      = make(chan int)          // receive balance
-	withdrawc = make(chan *withdrawReq) // withdraw
+	deposits  = make(chan int)          // send amount to deposit
+	balances  = make(chan int)          // receive balance
+	withdraws = make(chan *withdrawReq) // withdraw
 )
 
-func Deposit(amount int) { depc <- amount }
-func Balance() int       { return <-balc }
+func Deposit(amount int) { deposits <- amount }
+func Balance() int       { return <-balances }
 
 func Withdraw(amount int) bool {
 	resultc := make(chan bool)
 	var req = withdrawReq{amount, resultc}
-	withdrawc <- &req
+	withdraws <- &req
 	return <-resultc
 }
 
@@ -25,10 +27,10 @@ func teller() {
 	var balance int // balance is confined to teller goroutine
 	for {
 		select {
-		case amount := <-depc:
+		case amount := <-deposits:
 			balance += amount
-		case balc <- balance:
-		case req := <-withdrawc:
+		case balances <- balance:
+		case req := <-withdraws:
 			if balance >= req.amount {
 				balance -= req.amount
 				req.resultc <- true
@@ -39,4 +41,6 @@ func teller() {
 	}
 }
 
-func init() { go teller() }
+func init() {
+	go teller() // start the monitor goroutine
+}
