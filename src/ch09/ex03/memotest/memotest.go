@@ -70,10 +70,11 @@ func Sequential(t *testing.T, m M) {
 		value, err := m.Get(url, nil)
 		if err != nil {
 			log.Print(err)
-		} else {
-			fmt.Printf("%s, %s, %d bytes\n",
-				url, time.Since(start), len(value.([]byte)))
+			continue
 		}
+
+		fmt.Printf("%s, %s, %d bytes\n",
+			url, time.Since(start), len(value.([]byte)))
 	}
 }
 
@@ -89,10 +90,11 @@ func SequentialCancel(t *testing.T, m M) {
 		value, err := m.Get(url, done)
 		if err != nil {
 			fmt.Printf("%s: %v\n", url, err)
-		} else {
-			fmt.Printf("%s, %s, %d bytes\n",
-				url, time.Since(start), len(value.([]byte)))
+			continue
 		}
+
+		fmt.Printf("%s, %s, %d bytes\n",
+			url, time.Since(start), len(value.([]byte)))
 	}
 }
 
@@ -101,15 +103,17 @@ func Concurrent(t *testing.T, m M) {
 	for url := range incomingURLs() {
 		n.Add(1)
 		go func(url string) {
+			defer n.Done()
+
 			start := time.Now()
 			value, err := m.Get(url, nil)
 			if err != nil {
 				log.Print(err)
-			} else {
-				fmt.Printf("%s, %s, %d bytes\n",
-					url, time.Since(start), len(value.([]byte)))
+				return
 			}
-			n.Done()
+
+			fmt.Printf("%s, %s, %d bytes\n",
+				url, time.Since(start), len(value.([]byte)))
 		}(url)
 	}
 	n.Wait()
@@ -120,6 +124,7 @@ func ConcurrentCancel(t *testing.T, m M) {
 	for url := range incomingURLs() {
 		n.Add(1)
 		go func(url string) {
+			defer n.Done()
 			start := time.Now()
 			done := make(chan struct{})
 			go func() {
@@ -130,11 +135,11 @@ func ConcurrentCancel(t *testing.T, m M) {
 			value, err := m.Get(url, done)
 			if err != nil {
 				fmt.Printf("%s: %v\n", url, err)
-			} else {
-				fmt.Printf("%s, %s, %d bytes\n",
-					url, time.Since(start), len(value.([]byte)))
+				return
 			}
-			n.Done()
+
+			fmt.Printf("%s, %s, %d bytes\n",
+				url, time.Since(start), len(value.([]byte)))
 		}(url)
 	}
 	n.Wait()
