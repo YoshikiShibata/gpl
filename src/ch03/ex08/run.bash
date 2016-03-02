@@ -3,7 +3,12 @@
 # Copyright (C) 2016 Yoshiki Shibata. All rights reserved.
 
 rm *.png
-go build -o newton
+go build -o newton newton.go commonMain.go
+go build -o mandelbrot mandelbrot.go commonMain.go
+
+./mandelbrot -type=complex128 -output=mandelbrot128_100.png
+./mandelbrot -type=Float -output=mandelbrotFloat_100.png
+./mandelbrot -type=Rat -output=mandelbrotRat_100.png
 
 ./newton -type=complex64 -output=newton64_100.png
 ./newton -type=complex64 -zoom=200 -output=newton64_200.png

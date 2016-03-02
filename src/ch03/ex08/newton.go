@@ -5,7 +5,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"image"
 	"image/color"
@@ -14,68 +13,18 @@ import (
 	"math/cmplx"
 	"os"
 	"runtime"
-	"runtime/pprof"
 	"sync"
 	"time"
 
 	mc "ch03/ex08/cmplx"
 )
 
-var aType = flag.String("type", "complex128",
-	"arithmetic type: complex64, complex128, Float, Rat")
-var zoom = flag.Int("zoom", 100, "zoom percent")
-var precision = flag.Uint("precision", 0, "precision for Float")
-var output = flag.String("output", "", "output png to file")
-var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
-
-const (
-	width, height = 1024, 1024
-)
-
-var xmin, ymin, xmax, ymax float64 = -2, -2, +2, +2
-var zoomFactor float64
-
 func main() {
-	flag.Parse()
-	validateParams()
+	commonMain(executeNewton)
+}
 
-	showHeader()
-
-	if *cpuprofile != "" {
-		f, err := os.Create(*cpuprofile)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "%v\n", err)
-			os.Exit(1)
-		}
-		pprof.StartCPUProfile(f)
-		defer pprof.StopCPUProfile()
-	}
-
-	var w io.Writer = os.Stderr
-
-	if *output != "" {
-		f, err := os.Create(*output)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "%v\n", err)
-			os.Exit(1)
-		}
-		w = f
-		defer f.Close()
-	}
-
-	zoomFactor = 100.0 / float64(*zoom)
-	xmin *= zoomFactor
-	xmax *= zoomFactor
-	ymin *= zoomFactor
-	ymax *= zoomFactor
-
-	if *precision > 0 {
-		mc.SetPrecision(*precision)
-		fmt.Fprintf(os.Stderr, "precision = %d\n", *precision)
-	}
-
-	start := time.Now()
-	switch *aType {
+func executeNewton(w io.Writer) {
+	switch *floatType {
 	case "complex128":
 		mainComplex128(w)
 	case "complex64":
@@ -85,34 +34,15 @@ func main() {
 	case "Rat":
 		mainRat(w)
 	}
-	end := time.Now()
-	fmt.Fprintf(os.Stderr, "Duration := %v\n", end.Sub(start))
-}
-
-func showHeader() {
-	title := "unknown"
-	switch *aType {
-	case "complex64":
-		title = "complex64"
-	case "complex128":
-		title = "complex128"
-	case "Float":
-		title = "big.Float"
-	case "Rat":
-		title = "big.Rat"
-	}
-
-	fmt.Fprintf(os.Stderr, "\n=== %s ===\n", title)
-	fmt.Fprintf(os.Stderr, "zoom = %d\n", *zoom)
 }
 
 func mainComplex64(w io.Writer) {
-	img := image.NewRGBA(image.Rect(0, 0, width, height))
-	for py := 0; py < height; py++ {
-		y := float32(py)/height*float32((ymax-ymin)) + float32(ymin)
-		for px := 0; px < width; px++ {
-			x := float32(px)/width*float32((xmax-xmin)) + float32(xmin)
-			z := complex(x, y)
+	img := image.NewRGBA(image.Rect(0, 0, *width, *height))
+	for py := 0; py < *height; py++ {
+		y := float32(py)/float32(*height)*float32((ymax-ymin)) + float32(ymin)
+		for px := 0; px < *width; px++ {
+			x := float32(px)/float32(*width)*float32((xmax-xmin)) + float32(xmin)
+			z := complex64(x, y)
 			// Image point (px, py) represents complex value z.
 			img.Set(px, py, newton64(z))
 		}
@@ -121,11 +51,11 @@ func mainComplex64(w io.Writer) {
 }
 
 func mainComplex128(w io.Writer) {
-	img := image.NewRGBA(image.Rect(0, 0, width, height))
-	for py := 0; py < height; py++ {
-		y := float64(py)/height*(ymax-ymin) + ymin
-		for px := 0; px < width; px++ {
-			x := float64(px)/width*(xmax-xmin) + xmin
+	img := image.NewRGBA(image.Rect(0, 0, *width, *height))
+	for py := 0; py < *height; py++ {
+		y := float64(py)/float64(*height)*(ymax-ymin) + ymin
+		for px := 0; px < *width; px++ {
+			x := float64(px)/float64(*width)*(xmax-xmin) + xmin
 			z := complex(x, y)
 			// Image point (px, py) represents complex value z.
 			img.Set(px, py, newton128(z))
@@ -135,21 +65,21 @@ func mainComplex128(w io.Writer) {
 }
 
 func mainFloat(w io.Writer) {
-	img := image.NewRGBA(image.Rect(0, 0, width, height))
+	img := image.NewRGBA(image.Rect(0, 0, *width, *height))
 
 	var wg sync.WaitGroup
 	var mutex sync.Mutex
 
 	limiter := make(chan struct{}, runtime.NumCPU()*2)
 
-	for py := 0; py < height; py++ {
-		y := float64(py)/height*(ymax-ymin) + ymin
-		for px := 0; px < width; px++ {
+	for py := 0; py < *height; py++ {
+		y := float64(py)/float64(*height)*(ymax-ymin) + ymin
+		for px := 0; px < *width; px++ {
 			limiter <- struct{}{}
 			wg.Add(1)
 			go func(px, py int) {
 				defer wg.Done()
-				x := float64(px)/width*(xmax-xmin) + xmin
+				x := float64(px)/float64(*width)*(xmax-xmin) + xmin
 				z := mc.NewFloatComplex(x, y)
 				// Image point (px, py) represents complex value z.
 				nwz := newtonFloat(z)
@@ -165,23 +95,23 @@ func mainFloat(w io.Writer) {
 }
 
 func mainRat(w io.Writer) {
-	img := image.NewRGBA(image.Rect(0, 0, width, height))
+	img := image.NewRGBA(image.Rect(0, 0, *width, *height))
 
 	var wg sync.WaitGroup
 	var mutex sync.Mutex
 
 	limiter := make(chan struct{}, runtime.NumCPU())
 
-	for py := 0; py < height; py++ {
-		y := float64(py)/height*(ymax-ymin) + ymin
+	for py := 0; py < *height; py++ {
+		y := float64(py)/float64(*height)*(ymax-ymin) + ymin
 		fmt.Printf("py : %d\n", py)
-		for px := 0; px < width; px++ {
+		for px := 0; px < *width; px++ {
 			fmt.Printf("\tpx : %d\n", px)
 			limiter <- struct{}{}
 			wg.Add(1)
 			go func(px, py int) {
 				defer wg.Done()
-				x := float64(px)/width*(xmax-xmin) + xmin
+				x := float64(px)/float64(*width)*(xmax-xmin) + xmin
 				z := mc.NewRatComplex(x, y)
 				// Image point (px, py) represents complex value z.
 				nwz := newtonRat(z)
@@ -194,28 +124,6 @@ func mainRat(w io.Writer) {
 	}
 	wg.Wait()
 	png.Encode(w, img) // NOTE: ignoring errors
-}
-
-func validateParams() {
-	args := flag.Args()
-	if len(args) != 0 {
-		fmt.Fprintf(os.Stderr, "invalid arguments: %v\n\n", args)
-		showUsage()
-	}
-	switch *aType {
-	case "complex64", "complex128", "Float", "Rat":
-	default:
-		showUsage()
-	}
-
-	if *zoom < 0 {
-		showUsage()
-	}
-}
-
-func showUsage() {
-	flag.PrintDefaults()
-	os.Exit(1)
 }
 
 // f(x) = x^4 - 1
