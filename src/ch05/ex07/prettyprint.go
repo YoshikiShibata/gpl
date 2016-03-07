@@ -1,16 +1,14 @@
 // Copyright © 2016 Alan A. A. Donovan & Brian W. Kernighan.
 // License: https://creativecommons.org/licenses/by-nc-sa/4.0/
 
-// See page 133.
-
 // Outline prints the outline of an HTML document tree.
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"net/http"
 	"os"
-	"strings"
 
 	"golang.org/x/net/html"
 )
@@ -33,19 +31,17 @@ func outline(url string) error {
 		return err
 	}
 
-	//!+call
-	forEachNode(doc, startElement, endElement)
-	//!-call
+	forEachNode(doc, startNode, endNode)
 
 	return nil
 }
 
-//!+forEachNode
 // forEachNode calls the functions pre(x) and post(x) for each node
 // x in the tree rooted at n. Both functions are optional.
 // pre is called before the children are visited (preorder) and
 // post is called after (postorder).
-func forEachNode(n *html.Node, pre, post func(n *html.Node)) {
+func forEachNode(n *html.Node,
+	pre, post func(n *html.Node)) {
 	if pre != nil {
 		pre(n)
 	}
@@ -59,36 +55,127 @@ func forEachNode(n *html.Node, pre, post func(n *html.Node)) {
 	}
 }
 
-//!-forEachNode
-
-//!+startend
 var depth int
 
-func startElement(n *html.Node) {
-	if n.Type == html.ElementNode {
-		if n.FirstChild != nil {
-			fmt.Printf("%*s<%s>\n", depth*2, "", n.Data)
-		} else {
-			fmt.Printf("%*s<%s ", depth*2, "", n.Data)
-		}
-		depth++
-	} else {
+func startNode(n *html.Node) {
+	switch n.Type {
+	case html.ErrorNode:
+	case html.TextNode:
+		startTextNode(n)
+		return
+	case html.DocumentNode:
+	case html.ElementNode:
+		startElementNode(n)
+		return
+	case html.CommentNode:
+	case html.DoctypeNode:
+	}
+}
+
+func startTextNode(n *html.Node) {
+	/*
 		text := strings.TrimSpace(n.Data)
 		if text != "" {
-			fmt.Printf("%*s[%s]\n", depth*2, "", text)
+			fmt.Printf("%s", text)
 		}
+	*/
+	fmt.Printf("%s", n.Data)
+}
+
+func startElementNode(n *html.Node) {
+	depth++
+	if n.FirstChild == nil {
+		return
+	}
+
+	attrs := attributes(n.Attr)
+	if attrs == "" {
+		fmt.Printf("\n%*s<%s>", depth, "", n.Data)
+	} else {
+		fmt.Printf("\n%*s<%s %s>", depth, "", n.Data, attrs)
 	}
 }
 
-func endElement(n *html.Node) {
-	if n.Type == html.ElementNode {
-		depth--
-		if n.FirstChild != nil {
-			fmt.Printf("%*s</%s>\n", depth*2, "", n.Data)
+func endElementNode(n *html.Node) {
+	if n.FirstChild == nil {
+		attrs := attributes(n.Attr)
+		if attrs == "" {
+			switch n.Data {
+			case "br":
+				fmt.Printf("<%s/>\n", n.Data)
+			default:
+				fmt.Printf("\n%*s<%s />", depth, "", n.Data)
+			}
 		} else {
-			fmt.Printf(" />\n")
+			fmt.Printf("\n%*s<%s %s />", depth, "", n.Data, attrs)
 		}
+	} else {
+		switch n.Data {
+		case "a", "code", "title", "tt", "h1":
+			fmt.Printf("</%s>", n.Data)
+		default:
+			fmt.Printf("\n%*s</%s>", depth, "", n.Data)
+		}
+	}
+	depth--
+}
+
+func endNode(n *html.Node) {
+	switch n.Type {
+	case html.ErrorNode:
+	case html.TextNode:
+		return // don't pop
+	case html.DocumentNode:
+	case html.ElementNode:
+		endElementNode(n)
+		return
+	case html.CommentNode:
+	case html.DoctypeNode:
 	}
 }
 
-//!-startend
+func attributes(attr []html.Attribute) string {
+	var buf bytes.Buffer
+
+	for i, a := range attr {
+		if i != 0 {
+			buf.WriteString(" ")
+		}
+		if a.Namespace == "" {
+			buf.WriteString(a.Key)
+			buf.WriteString(`="`)
+			buf.WriteString(a.Val)
+			buf.WriteString(`"`)
+		} else {
+			buf.WriteString(a.Namespace)
+			buf.WriteString(":")
+			buf.WriteString(a.Key)
+			buf.WriteString(`="`)
+			buf.WriteString(a.Val)
+			buf.WriteString(`"`)
+		}
+	}
+	return buf.String()
+}
+
+func printDoctype(n *html.Node) {
+	if n.Type != html.DoctypeNode {
+		panic("Illegal Argument")
+	}
+
+	var buf bytes.Buffer
+
+	buf.WriteString("<!DOCTYPE ")
+	buf.WriteString(n.Namespace)
+
+	for i, a := range n.Attr {
+		if i != 0 {
+			buf.WriteString(" ")
+		}
+
+		if a.Key == "public" {
+			buf.WriteString("PUBLIC ")
+			buf.WriteString(`"`)
+		}
+	}
+}
