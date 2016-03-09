@@ -3,6 +3,7 @@
 package cmplx
 
 import (
+	"fmt"
 	"math"
 	"testing"
 )
@@ -99,4 +100,63 @@ func verifyRatComplex(t *testing.T, rc *RatComplex, cplx complex128) {
 	if rcImag != imag(cplx) {
 		t.Errorf("img is %g, want %g", rcImag, imag(cplx))
 	}
+}
+
+func TestMulRatM(t *testing.T) {
+	for _, test := range []struct {
+		r1, i1 float64
+		op     rune
+		r2, i2 float64
+	}{
+		{0.0, 0.0, '*', 0.0, 0.0},
+		{0.0, 0.0, '+', 0.0, 0.0},
+		{1.0, 1.0, '*', 2.0, 2.0},
+		{1.0, 1.0, '+', 2.0, 2.0},
+		{128.0, 128.0, '*', 256.0, 256.0},
+		{128.0, 128.0, '+', 256.0, 256.0},
+	} {
+		var rc *RatComplexM
+		var cplx complex128
+
+		rc1 := NewRatComplexM(test.r1, test.i1)
+		rc2 := NewRatComplexM(test.r2, test.i2)
+		cplx1 := complex(test.r1, test.i1)
+		cplx2 := complex(test.r2, test.i2)
+
+		switch test.op {
+		case '*':
+			rc = rc1.Mul(rc2)
+			cplx = cplx1 * cplx2
+		case '+':
+			rc = rc1.Add(rc2)
+			cplx = cplx1 + cplx2
+		default:
+			t.Fatalf("Undefined op = %v", test.op)
+		}
+
+		fmt.Printf("%g %g %c %g %g",
+			test.r1, test.i1, test.op, test.r2, test.i2)
+		if verifyRatComplexM(t, rc, cplx) {
+			fmt.Println(" OK")
+		} else {
+			fmt.Println(" NG")
+		}
+
+	}
+}
+
+func verifyRatComplexM(t *testing.T, rc *RatComplexM, cplx complex128) bool {
+	rcReal, _ := rc.real_.Float64()
+	rcImag, _ := rc.imag_.Float64()
+
+	if rcReal != real(cplx) {
+		t.Errorf("real is %g, want %g", rcReal, real(cplx))
+		return false
+	}
+
+	if rcImag != imag(cplx) {
+		t.Errorf("img is %g, want %g", rcImag, imag(cplx))
+		return false
+	}
+	return true
 }

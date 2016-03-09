@@ -96,7 +96,7 @@ func mainRat(w io.Writer) {
 			go func(px, py int) {
 				defer wg.Done()
 				x := float64(px)/float64(*width)*(xmax-xmin) + xmin
-				z := mc.NewRatComplex(x, y)
+				z := mc.NewRatComplexM(x, y)
 				// Image point (px, py) represents complex value z.
 				mz := mandelbrotRat(z)
 				mutex.Lock()
@@ -139,16 +139,17 @@ func mandelbrotFloat(z *mc.FloatComplex) color.Color {
 	return color.Black
 }
 
-func mandelbrotRat(z *mc.RatComplex) color.Color {
+func mandelbrotRat(z *mc.RatComplexM) color.Color {
 	const iterations = 200
 	const contrast = 15
 
-	v := mc.NewRatComplex(0, 0)
+	v := mc.NewRatComplexM(0, 0)
 	for n := uint8(0); n < iterations; n++ {
 		fmt.Printf("\t\tn: %d\n", n)
 		// v = v*v + z
 		v = v.Mul(v).Add(z)
 		if v.Abs() > 2 {
+			fmt.Printf("\t\t\tGray[%d]\n", 255-contrast*n)
 			return color.Gray{255 - contrast*n}
 		}
 	}
