@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 # Copyright (C) 2016 Yoshiki Shibata. All rights reserved.
 
