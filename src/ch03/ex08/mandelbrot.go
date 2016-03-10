@@ -140,7 +140,8 @@ func mandelbrotFloat(z *mc.FloatComplex) color.Color {
 }
 
 func mandelbrotRat(z *mc.RatComplexM) color.Color {
-	const iterations = 200
+	// const iterations = 200
+	const iterations = 10
 	const contrast = 15
 
 	v := mc.NewRatComplexM(0, 0)
