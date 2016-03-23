@@ -1,4 +1,4 @@
-// Copyright © 2016 Yoshiki Shibata
+// Copyright © 2016 Yoshiki Shibata. All rights reserved.
 
 package main
 
