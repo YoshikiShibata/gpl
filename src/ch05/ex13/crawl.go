@@ -8,7 +8,9 @@ package main
 import (
 	"fmt"
 	"log"
+	"net/url"
 	"os"
+	"strings"
 
 	"gopl.io/ch5/links"
 )
@@ -25,15 +27,26 @@ func breadthFirst(f func(item string) []string, worklist []string) {
 		for _, item := range items {
 			if !seen[item] {
 				seen[item] = true
-				worklist = append(worklist, f(item)...)
+				if isSameDomain(item) {
+					worklist = append(worklist, f(item)...)
+				}
 			}
 		}
 	}
 }
 
-//!-breadthFirst
+var initialURL *url.URL
 
-//!+crawl
+func isSameDomain(item string) bool {
+	u, err := url.Parse(item)
+	if err != nil {
+		fmt.Printf("%v\n", err)
+		return false
+	}
+
+	return strings.HasSuffix(u.Host, initialURL.Host)
+}
+
 func crawl(url string) []string {
 	fmt.Println(url)
 	list, err := links.Extract(url)
@@ -43,13 +56,22 @@ func crawl(url string) []string {
 	return list
 }
 
-//!-crawl
-
-//!+main
 func main() {
 	// Crawl the web breadth-first,
 	// starting from the command-line arguments.
-	breadthFirst(crawl, os.Args[1:])
-}
 
-//!-main
+	if len(os.Args) != 2 {
+		fmt.Println("usage: crawl <url>")
+		os.Exit(1)
+	}
+	var err error
+
+	initialURL, err = url.Parse(os.Args[1])
+	if err != nil {
+		fmt.Printf("%v\n", err)
+	} else {
+		fmt.Println(*initialURL)
+	}
+
+	breadthFirst(crawl, []string{os.Args[1]})
+}
