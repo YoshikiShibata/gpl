@@ -7,9 +7,12 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"log"
+	"net/http"
 	"net/url"
 	"os"
+	"path"
 	"strings"
 
 	"gopl.io/ch5/links"
@@ -28,6 +31,7 @@ func breadthFirst(f func(item string) []string, worklist []string) {
 			if !seen[item] {
 				seen[item] = true
 				if isSameDomain(item) {
+					go download(item)
 					worklist = append(worklist, f(item)...)
 				}
 			}
@@ -47,8 +51,49 @@ func isSameDomain(item string) bool {
 	return strings.HasSuffix(u.Host, initialURL.Host)
 }
 
+func download(item string) {
+	resp, err := http.Get(item)
+	if err != nil {
+		fmt.Printf("%v\n", err)
+		return
+	}
+	defer resp.Body.Close()
+
+	local := path.Base(resp.Request.URL.Path)
+	dir := path.Dir(resp.Request.URL.Path)
+	if local == "/" {
+		local = "index.html"
+	}
+
+	if strings.HasSuffix(item, "/") {
+		if strings.HasSuffix(dir, local) {
+			local = "index.html"
+		}
+	}
+
+	fmt.Printf("cached/%s%s %s\n", resp.Request.URL.Host, dir, local)
+
+	fullDir := "cached/" + resp.Request.URL.Host + dir
+
+	if err := os.MkdirAll(fullDir, os.ModePerm); err != nil {
+		fmt.Printf("%v\n", err)
+		return
+	}
+
+	if f, err := os.Create(fullDir + "/" + local); err != nil {
+		fmt.Printf("%v\n", err)
+		return
+	} else {
+		defer f.Close()
+		_, err = io.Copy(f, resp.Body)
+		if err != nil {
+			fmt.Printf("%v\n", err)
+		}
+	}
+}
+
 func crawl(url string) []string {
-	fmt.Println(url)
+	// fmt.Println(url)
 	list, err := links.Extract(url)
 	if err != nil {
 		log.Print(err)
