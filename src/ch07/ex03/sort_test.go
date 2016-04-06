@@ -4,11 +4,10 @@
 package treesort_test
 
 import (
+	"ch07/ex03"
 	"math/rand"
 	"sort"
 	"testing"
-
-	"gopl.io/ch4/treesort"
 )
 
 func TestSort(t *testing.T) {

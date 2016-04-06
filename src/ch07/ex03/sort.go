@@ -2,14 +2,11 @@
 // License: https://creativecommons.org/licenses/by-nc-sa/4.0/
 // Copyright © 2016 Yoshiki Shibata. All rights reserved.
 
-// See page 101.
-
 // Package treesort provides insertion sort using an unbalanced binary tree.
 package treesort
 
 import "fmt"
 
-//!+
 type tree struct {
 	value       int
 	left, right *tree
@@ -72,5 +69,3 @@ func (t *tree) toString() string {
 	}
 	return result
 }
-
-//!-
