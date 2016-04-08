@@ -158,7 +158,6 @@ func bitCount32(x uint32) int {
 	x = (x + (x >> 4)) & 0x0f0f0f0f
 	x = x + (x >> 8)
 	x = x + (x >> 16)
-	x = x + (x >> 32)
 	return int(x & 0x7f)
 }
 
