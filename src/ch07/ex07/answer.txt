@@ -1,0 +1,1 @@
+func CelsiusFlag registers an instance of struct celsiusFlag which has the default value. The instance implicitly supports String() method which is the String() method of type Celsius. So the String() method of type Celsius is invoked and the output includes °.
