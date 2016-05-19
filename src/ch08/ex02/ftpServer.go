@@ -1,3 +1,5 @@
+// Copyright © 2016 Yoshiki Shibata. All rights reserved.
+
 package main
 
 import (
@@ -9,7 +11,6 @@ import (
 	"net/textproto"
 	"os"
 	"os/exec"
-	"strconv"
 	"strings"
 )
 
@@ -24,7 +25,8 @@ const (
 	StatusLoggedIn              = 230
 	StatusPathCreated           = 257
 
-	StatusUserOK = 331
+	StatusUserOK                   = 331
+	StatusCommandNotImplemented502 = 502
 )
 
 const (
@@ -130,39 +132,13 @@ func handleConnection(conn net.Conn) {
 				log.Printf("%v", err)
 			}
 		case "PWD":
+			log.Printf("pwd = %s", pwd)
 			err = cc.writeResponse(StatusPathCreated, pwd)
 			if err != nil {
 				log.Printf("%v", err)
 			}
 		case "PORT":
-			ipInfo := strings.Split(cmds[1], ",")
-			if len(ipInfo) != 6 {
-				log.Printf("Unexpected ipInfo: %v", ipInfo)
-				continue
-			}
-			ph, err := strconv.Atoi(ipInfo[4])
-			if err != nil {
-				log.Printf("%v", err)
-				continue
-			}
-			pl, err := strconv.Atoi(ipInfo[5])
-			if err != nil {
-				log.Printf("%v", err)
-				continue
-			}
-
-			port := ph*256 + pl
-			ipadd := fmt.Sprintf("%s.%s.%s.%s:%d",
-				ipInfo[0], ipInfo[1], ipInfo[2], ipInfo[3], port)
-			fmt.Printf("ip add [%s]\n", ipadd)
-			dataConn, err = net.Dial("tcp", ipadd)
-			if err != nil {
-				log.Printf("%v", err)
-				continue
-			}
-			log.Printf("Data Connect established\n")
-			err = cc.writeResponseCode(StatusCommandOk)
-			if err != nil {
+			if dataConn, err = cmdPort(cmds, cc); err != nil {
 				log.Printf("%v", err)
 			}
 
@@ -189,6 +165,11 @@ func handleConnection(conn net.Conn) {
 			dataConn.Close()
 			dataConn = nil
 
+		case "FEAT", "EPSV", "LPSV", "EPRT", "LPRT":
+
+			if err = cc.writeResponseCode(StatusCommandNotImplemented502); err != nil {
+				log.Printf("%v", err)
+			}
 		default:
 			fmt.Printf("%v: Not Implemented Yet (%s)\n", cmds, line)
 			err = cc.writeResponseCode(StatusCommandNotImplemented)
