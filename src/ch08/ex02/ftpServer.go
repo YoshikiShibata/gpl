@@ -133,12 +133,18 @@ func handleConnection(conn net.Conn) {
 			}
 		case "PWD":
 			log.Printf("pwd = %s", pwd)
-			err = cc.writeResponse(StatusPathCreated, pwd)
+			err = cc.writeResponse(StatusPathCreated,
+				fmt.Sprintf(`"%s" is the current directory`, pwd))
 			if err != nil {
 				log.Printf("%v", err)
 			}
 		case "PORT":
 			if dataConn, err = cmdPort(cmds, cc); err != nil {
+				log.Printf("%v", err)
+			}
+
+		case "EPRT":
+			if dataConn, err = cmdEprt(cmds, cc); err != nil {
 				log.Printf("%v", err)
 			}
 
@@ -165,7 +171,7 @@ func handleConnection(conn net.Conn) {
 			dataConn.Close()
 			dataConn = nil
 
-		case "FEAT", "EPSV", "LPSV", "EPRT", "LPRT":
+		case "FEAT", "EPSV", "LPSV", "LPRT":
 
 			if err = cc.writeResponseCode(StatusCommandNotImplemented502); err != nil {
 				log.Printf("%v", err)
@@ -195,6 +201,9 @@ func execls(params []string, conn net.Conn) {
 		return
 	}
 
+	if conn == nil {
+		panic("Data connection has not been established")
+	}
 	go io.Copy(conn, stdout)
 	go io.Copy(conn, stderr)
 
