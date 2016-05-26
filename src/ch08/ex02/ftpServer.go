@@ -23,10 +23,17 @@ const (
 	statusLoggedOut             = 221
 	statusClosingDataConnection = 226
 	statusLoggedIn              = 230
+	statusFileActionCompleted   = 250
 	statusPathCreated           = 257
 
 	statusUserOK                   = 331
 	statusCommandNotImplemented502 = 502
+	statusActionNotTaken           = 550
+)
+
+const (
+	type_ASCII = "A"
+	type_IMAGE = "I"
 )
 
 const (
@@ -95,13 +102,8 @@ func handleConnection(conn net.Conn) {
 		return
 	}
 
-	pwd, err := os.Getwd()
-	if err != nil {
-		log.Printf("%v", err)
-		pwd = "/"
-	}
-
 	var dataConn net.Conn
+	var transferType string
 
 	for {
 		var line string
@@ -116,6 +118,33 @@ func handleConnection(conn net.Conn) {
 		fmt.Printf("%s\n", line)
 		cmds := strings.Split(line, " ")
 		switch cmds[0] {
+		case "RETR":
+			if err = cmdRetr(cmds, cc, dataConn, transferType); err != nil {
+				log.Printf("%v", err)
+			}
+		case "TYPE":
+			switch cmds[1] {
+			case "I":
+				transferType = type_IMAGE
+				err = cc.writeResponseCode(statusCommandOk)
+			case "A":
+				transferType = type_ASCII
+				err = cc.writeResponseCode(statusCommandOk)
+			default:
+				fmt.Printf("Unspported Type(%s)\n", cmds[1])
+				err = cc.writeResponseCode(statusCommandNotImplemented)
+			}
+			fmt.Printf("Current Type = %s\n", transferType)
+		case "CWD":
+			if err = os.Chdir(cmds[1]); err != nil {
+				err = cc.writeResponse(statusActionNotTaken, err.Error())
+			} else {
+				err = cc.writeResponseCode(statusFileActionCompleted)
+			}
+			if err != nil {
+				log.Printf("%v", err)
+			}
+
 		case "USER":
 			err = cc.writeResponseCode(statusUserOK)
 			if err != nil {
@@ -132,6 +161,11 @@ func handleConnection(conn net.Conn) {
 				log.Printf("%v", err)
 			}
 		case "PWD":
+			pwd, err := os.Getwd()
+			if err != nil {
+				log.Print("%v", err)
+				pwd = "/"
+			}
 			log.Printf("pwd = %s", pwd)
 			err = cc.writeResponse(statusPathCreated,
 				fmt.Sprintf(`"%s" is the current directory`, pwd))
