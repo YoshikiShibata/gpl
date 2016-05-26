@@ -31,7 +31,7 @@ func cmdEprt(cmds []string, cc *clientConn) (dataConn net.Conn, err error) {
 		return nil, err
 	}
 	log.Printf("Data Connect established\n")
-	if err = cc.writeResponseCode(StatusCommandOk); err != nil {
+	if err = cc.writeResponseCode(statusCommandOk); err != nil {
 		dataConn.Close()
 		return nil, err
 	}

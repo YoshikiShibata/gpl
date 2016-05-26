@@ -2,34 +2,26 @@ package main
 
 import "io"
 
+// asciiText implements io.Writer and insert necessary a CR character
 type asciiText struct {
 	w io.Writer
 }
 
 func (a *asciiText) Write(p []byte) (int, error) {
-	cr := []byte{'\r'}
-	start := 0
-	total := 0
-	for i, b := range p {
-		if b == '\n' {
-			if start < i {
-				n, err := a.w.Write(p[start:i])
-				if err != nil {
-					return total, err
-				}
-				total += n
-				start = i
-			}
-			_, err := a.w.Write(cr)
-			if err != nil {
-				return total, err
-			}
+	buf := make([]byte, 0, len(p))
+	var lastB byte
+
+	for _, b := range p {
+		if b == '\n' && lastB != '\r' {
+			buf = append(buf, '\r')
 		}
+		buf = append(buf, b)
+		lastB = b
 	}
-	n, err := a.w.Write(p[start:len(p)])
-	if err != nil {
-		return total, err
+
+	n, err := a.w.Write(buf)
+	if n > len(p) {
+		return len(p), err
 	}
-	total += n
-	return total, nil
+	return n, err
 }

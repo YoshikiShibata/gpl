@@ -15,18 +15,18 @@ import (
 )
 
 const (
-	StatusTransferStarting      = 125
-	StatusCommandOk             = 200
-	StatusCommandNotImplemented = 202
-	StatusName                  = 215
-	StatusReady                 = 220
-	StatusLoggedOut             = 221
-	StatusClosingDataConnection = 226
-	StatusLoggedIn              = 230
-	StatusPathCreated           = 257
+	statusTransferStarting      = 125
+	statusCommandOk             = 200
+	statusCommandNotImplemented = 202
+	statusName                  = 215
+	statusReady                 = 220
+	statusLoggedOut             = 221
+	statusClosingDataConnection = 226
+	statusLoggedIn              = 230
+	statusPathCreated           = 257
 
-	StatusUserOK                   = 331
-	StatusCommandNotImplemented502 = 502
+	statusUserOK                   = 331
+	statusCommandNotImplemented502 = 502
 )
 
 const (
@@ -88,7 +88,7 @@ func (cc *clientConn) readLine() (string, error) {
 func handleConnection(conn net.Conn) {
 	fmt.Printf("Connected\n")
 	cc := newClientConn(conn)
-	err := cc.writeResponseCode(StatusReady)
+	err := cc.writeResponseCode(statusReady)
 	if err != nil {
 		log.Printf("%v", err)
 		conn.Close()
@@ -117,23 +117,23 @@ func handleConnection(conn net.Conn) {
 		cmds := strings.Split(line, " ")
 		switch cmds[0] {
 		case "USER":
-			err = cc.writeResponseCode(StatusUserOK)
+			err = cc.writeResponseCode(statusUserOK)
 			if err != nil {
 				log.Printf("%v", err)
 			}
 		case "PASS":
-			err = cc.writeResponse(StatusLoggedIn, welcomeMessage)
+			err = cc.writeResponse(statusLoggedIn, welcomeMessage)
 			if err != nil {
 				log.Printf("%v", err)
 			}
 		case "SYST":
-			err = cc.writeResponse(StatusName, "UNIX")
+			err = cc.writeResponse(statusName, "UNIX")
 			if err != nil {
 				log.Printf("%v", err)
 			}
 		case "PWD":
 			log.Printf("pwd = %s", pwd)
-			err = cc.writeResponse(StatusPathCreated,
+			err = cc.writeResponse(statusPathCreated,
 				fmt.Sprintf(`"%s" is the current directory`, pwd))
 			if err != nil {
 				log.Printf("%v", err)
@@ -149,13 +149,13 @@ func handleConnection(conn net.Conn) {
 			}
 
 		case "QUIT":
-			err = cc.writeResponse(StatusLoggedOut, "bye")
+			err = cc.writeResponse(statusLoggedOut, "bye")
 			if err != nil {
 				log.Printf("%v", err)
 			}
 
 		case "LIST":
-			if err := cc.writeResponseCode(StatusTransferStarting); err != nil {
+			if err := cc.writeResponseCode(statusTransferStarting); err != nil {
 				log.Printf("%v", err)
 			}
 
@@ -165,7 +165,7 @@ func handleConnection(conn net.Conn) {
 				execls(cmds[1:], dataConn)
 			}
 
-			if err := cc.writeResponseCode(StatusClosingDataConnection); err != nil {
+			if err := cc.writeResponseCode(statusClosingDataConnection); err != nil {
 				log.Printf("%v", err)
 			}
 			dataConn.Close()
@@ -173,12 +173,12 @@ func handleConnection(conn net.Conn) {
 
 		case "FEAT", "EPSV", "LPSV", "LPRT":
 
-			if err = cc.writeResponseCode(StatusCommandNotImplemented502); err != nil {
+			if err = cc.writeResponseCode(statusCommandNotImplemented502); err != nil {
 				log.Printf("%v", err)
 			}
 		default:
 			fmt.Printf("%v: Not Implemented Yet (%s)\n", cmds, line)
-			err = cc.writeResponseCode(StatusCommandNotImplemented)
+			err = cc.writeResponseCode(statusCommandNotImplemented)
 			if err != nil {
 				log.Printf("%v", err)
 			}
@@ -204,8 +204,10 @@ func execls(params []string, conn net.Conn) {
 	if conn == nil {
 		panic("Data connection has not been established")
 	}
-	go io.Copy(conn, stdout)
-	go io.Copy(conn, stderr)
+
+	ascii := asciiText{conn}
+	go io.Copy(&ascii, stdout)
+	go io.Copy(&ascii, stderr)
 
 	if err := cmd.Start(); err != nil {
 		conn.Write([]byte(err.Error()))
