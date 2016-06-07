@@ -10,7 +10,6 @@ import (
 	"net"
 	"net/textproto"
 	"os"
-	"os/exec"
 	"strings"
 )
 
@@ -193,21 +192,9 @@ func handleConnection(conn net.Conn) {
 			}
 
 		case "LIST":
-			if err := cc.writeResponseCode(statusTransferStarting); err != nil {
+			if err := cmdList(cmds, cc, dataConn); err != nil {
 				log.Printf("%v", err)
 			}
-
-			if len(cmds) == 1 {
-				execls(nil, dataConn)
-			} else {
-				execls(cmds[1:], dataConn)
-			}
-
-			if err := cc.writeResponseCode(statusClosingDataConnection); err != nil {
-				log.Printf("%v", err)
-			}
-			dataConn.Close()
-			dataConn = nil
 
 		case "FEAT", "EPSV", "LPSV", "LPRT":
 
@@ -222,36 +209,4 @@ func handleConnection(conn net.Conn) {
 			}
 		}
 	}
-}
-
-func execls(params []string, conn net.Conn) {
-	cmd := exec.Command("/bin/ls", params...)
-
-	stdout, err := cmd.StdoutPipe()
-	if err != nil {
-		conn.Write([]byte(err.Error()))
-		return
-	}
-
-	stderr, err := cmd.StderrPipe()
-	if err != nil {
-		conn.Write([]byte(err.Error()))
-		return
-	}
-
-	if conn == nil {
-		panic("Data connection has not been established")
-	}
-
-	ascii := asciiText{conn, nil}
-	go io.Copy(&ascii, stdout)
-	go io.Copy(&ascii, stderr)
-
-	if err := cmd.Start(); err != nil {
-		conn.Write([]byte(err.Error()))
-		return
-	}
-
-	cmd.Wait()
-	log.Printf("execls done\n")
 }
