@@ -122,6 +122,10 @@ func handleConnection(conn net.Conn) {
 			if err = cmdRetr(cmds, cc, dataConn, transferType); err != nil {
 				log.Printf("%v", err)
 			}
+		case "STOR":
+			if err = cmdStor(cmds, cc, dataConn, transferType); err != nil {
+				log.Printf("%v", err)
+			}
 		case "TYPE":
 			switch cmds[1] {
 			case "I":
@@ -239,7 +243,7 @@ func execls(params []string, conn net.Conn) {
 		panic("Data connection has not been established")
 	}
 
-	ascii := asciiText{conn}
+	ascii := asciiText{conn, nil}
 	go io.Copy(&ascii, stdout)
 	go io.Copy(&ascii, stderr)
 

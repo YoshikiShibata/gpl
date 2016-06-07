@@ -10,28 +10,29 @@ import (
 	"os"
 )
 
-func cmdRetr(cmds []string, cc *clientConn, dataConn net.Conn, transferType string) error {
+func cmdStor(cmds []string, cc *clientConn, dataConn net.Conn, transferType string) error {
 	defer dataConn.Close()
 
 	if err := cc.writeResponseCode(statusTransferStarting); err != nil {
 		return err
 	}
 
-	f, err := os.Open(cmds[1])
+	f, err := os.Create(cmds[1])
 	if err != nil {
 		cc.writeResponse(statusActionNotTaken, err.Error())
 		return err
 	}
 
 	defer f.Close()
-	log.Printf("cmdRetr: start transfer")
+
+	log.Printf("cmdStor: start transfer")
 
 	switch transferType {
 	case type_ASCII:
-		ascii := asciiText{dataConn, nil}
-		io.Copy(&ascii, f)
+		ascii := asciiText{nil, dataConn}
+		io.Copy(f, &ascii)
 	case type_IMAGE:
-		io.Copy(dataConn, f)
+		io.Copy(f, dataConn)
 	default:
 		return fmt.Errorf("Unknown transfer type : %s", transferType)
 	}
@@ -39,6 +40,6 @@ func cmdRetr(cmds []string, cc *clientConn, dataConn net.Conn, transferType stri
 	if err := cc.writeResponseCode(statusClosingDataConnection); err != nil {
 		return err
 	}
-	log.Printf("cmdRetr: completed")
+	log.Printf("cmdStor: completed")
 	return nil
 }
