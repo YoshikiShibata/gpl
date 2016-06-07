@@ -103,6 +103,7 @@ func handleConnection(conn net.Conn) {
 
 	var dataConn net.Conn
 	var transferType string
+	cwd := newCwd()
 
 	for {
 		var line string
@@ -118,11 +119,18 @@ func handleConnection(conn net.Conn) {
 		cmds := strings.Split(line, " ")
 		switch cmds[0] {
 		case "RETR":
-			if err = cmdRetr(cmds, cc, dataConn, transferType); err != nil {
+			err = cwd.execute(func() error {
+				return cmdRetr(cmds, cc, dataConn, transferType)
+			})
+
+			if err != nil {
 				log.Printf("%v", err)
 			}
 		case "STOR":
-			if err = cmdStor(cmds, cc, dataConn, transferType); err != nil {
+			err = cwd.execute(func() error {
+				return cmdStor(cmds, cc, dataConn, transferType)
+			})
+			if err != nil {
 				log.Printf("%v", err)
 			}
 		case "TYPE":
@@ -139,7 +147,7 @@ func handleConnection(conn net.Conn) {
 			}
 			fmt.Printf("Current Type = %s\n", transferType)
 		case "CWD":
-			if err = os.Chdir(cmds[1]); err != nil {
+			if err = cwd.changeCWD(cmds[1]); err != nil {
 				err = cc.writeResponse(statusActionNotTaken, err.Error())
 			} else {
 				err = cc.writeResponseCode(statusFileActionCompleted)
@@ -164,11 +172,7 @@ func handleConnection(conn net.Conn) {
 				log.Printf("%v", err)
 			}
 		case "PWD":
-			pwd, err := os.Getwd()
-			if err != nil {
-				log.Print("%v", err)
-				pwd = "/"
-			}
+			pwd := cwd.pwd()
 			log.Printf("pwd = %s", pwd)
 			err = cc.writeResponse(statusPathCreated,
 				fmt.Sprintf(`"%s" is the current directory`, pwd))
@@ -192,7 +196,10 @@ func handleConnection(conn net.Conn) {
 			}
 
 		case "LIST":
-			if err := cmdList(cmds, cc, dataConn); err != nil {
+			err = cwd.execute(func() error {
+				return cmdList(cmds, cc, dataConn)
+			})
+			if err != nil {
 				log.Printf("%v", err)
 			}
 

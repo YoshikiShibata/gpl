@@ -1,3 +1,5 @@
+// Copyright © 2016 Yoshiki Shibata. All rights reserved.
+
 package main
 
 import "net"
