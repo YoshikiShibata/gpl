@@ -4,12 +4,13 @@ package main
 
 import "io"
 
-// asciiText implements io.Writer and insert necessary a CR character
+// asciiText implements io.Writer and io.Reader to handle CR characters
 type asciiText struct {
 	w io.Writer
 	r io.Reader
 }
 
+// Write insert necessary CR characters
 func (a *asciiText) Write(p []byte) (int, error) {
 	buf := make([]byte, 0, len(p))
 	var lastB byte
@@ -29,6 +30,7 @@ func (a *asciiText) Write(p []byte) (int, error) {
 	return n, err
 }
 
+// Read remove all CR charactgers
 func (a *asciiText) Read(p []byte) (int, error) {
 	buf := make([]byte, len(p))
 

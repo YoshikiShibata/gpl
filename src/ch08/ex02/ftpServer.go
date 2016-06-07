@@ -1,5 +1,7 @@
 // Copyright © 2016 Yoshiki Shibata. All rights reserved.
 
+// A Simple FTP server. This server supports only the following FTP client commands:
+// ls, pwd, cd, put, get, bin, ascii
 package main
 
 import (
@@ -117,6 +119,7 @@ func handleConnection(conn net.Conn) {
 		}
 		fmt.Printf("%s\n", line)
 		cmds := strings.Split(line, " ")
+
 		switch cmds[0] {
 		case "RETR":
 			err = cwd.execute(func() error {
@@ -126,13 +129,16 @@ func handleConnection(conn net.Conn) {
 			if err != nil {
 				log.Printf("%v", err)
 			}
+
 		case "STOR":
 			err = cwd.execute(func() error {
 				return cmdStor(cmds, cc, dataConn, transferType)
 			})
+
 			if err != nil {
 				log.Printf("%v", err)
 			}
+
 		case "TYPE":
 			switch cmds[1] {
 			case "I":
@@ -146,6 +152,7 @@ func handleConnection(conn net.Conn) {
 				err = cc.writeResponseCode(statusCommandNotImplemented)
 			}
 			fmt.Printf("Current Type = %s\n", transferType)
+
 		case "CWD":
 			if err = cwd.changeCWD(cmds[1]); err != nil {
 				err = cc.writeResponse(statusActionNotTaken, err.Error())
@@ -156,21 +163,24 @@ func handleConnection(conn net.Conn) {
 				log.Printf("%v", err)
 			}
 
-		case "USER":
+		case "USER": // ignore user
 			err = cc.writeResponseCode(statusUserOK)
 			if err != nil {
 				log.Printf("%v", err)
 			}
-		case "PASS":
+
+		case "PASS": // ignore password
 			err = cc.writeResponse(statusLoggedIn, welcomeMessage)
 			if err != nil {
 				log.Printf("%v", err)
 			}
+
 		case "SYST":
 			err = cc.writeResponse(statusName, "UNIX")
 			if err != nil {
 				log.Printf("%v", err)
 			}
+
 		case "PWD":
 			pwd := cwd.pwd()
 			log.Printf("pwd = %s", pwd)
@@ -179,12 +189,13 @@ func handleConnection(conn net.Conn) {
 			if err != nil {
 				log.Printf("%v", err)
 			}
-		case "PORT":
+
+		case "PORT": // For ubuntu
 			if dataConn, err = cmdPort(cmds, cc); err != nil {
 				log.Printf("%v", err)
 			}
 
-		case "EPRT":
+		case "EPRT": // Foc Mac OS X
 			if dataConn, err = cmdEprt(cmds, cc); err != nil {
 				log.Printf("%v", err)
 			}
@@ -199,15 +210,16 @@ func handleConnection(conn net.Conn) {
 			err = cwd.execute(func() error {
 				return cmdList(cmds, cc, dataConn)
 			})
+
 			if err != nil {
 				log.Printf("%v", err)
 			}
 
 		case "FEAT", "EPSV", "LPSV", "LPRT":
-
 			if err = cc.writeResponseCode(statusCommandNotImplemented502); err != nil {
 				log.Printf("%v", err)
 			}
+
 		default:
 			fmt.Printf("%v: Not Implemented Yet (%s)\n", cmds, line)
 			err = cc.writeResponseCode(statusCommandNotImplemented)
