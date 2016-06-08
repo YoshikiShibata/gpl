@@ -23,7 +23,7 @@ func cmdNlst(cmds []string, cc *clientConn, dataConn net.Conn, cwd string) error
 	}
 
 	if err := listFiles(directory, dataConn); err != nil {
-		err2 := cc.writeResponseCode(statusRequestedFileActionNotTaken)
+		err2 := cc.writeResponse(statusRequestedFileActionNotTaken, err.Error())
 		if err2 != nil {
 			return err2
 		}
