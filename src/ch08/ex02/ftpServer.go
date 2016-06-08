@@ -27,9 +27,10 @@ const (
 	statusFileActionCompleted   = 250
 	statusPathCreated           = 257
 
-	statusUserOK                   = 331
-	statusCommandNotImplemented502 = 502
-	statusActionNotTaken           = 550
+	statusUserOK                      = 331
+	statusRequestedFileActionNotTaken = 450
+	statusCommandNotImplemented502    = 502
+	statusActionNotTaken              = 550
 )
 
 const (
@@ -181,7 +182,7 @@ func handleConnection(conn net.Conn) {
 				log.Printf("%v", err)
 			}
 
-		case "PWD":
+		case "PWD", "XPWD":
 			pwd := cwd.pwd()
 			log.Printf("pwd = %s", pwd)
 			err = cc.writeResponse(statusPathCreated,
@@ -209,6 +210,15 @@ func handleConnection(conn net.Conn) {
 		case "LIST":
 			err = cwd.execute(func() error {
 				return cmdList(cmds, cc, dataConn)
+			})
+
+			if err != nil {
+				log.Printf("%v", err)
+			}
+
+		case "NLST":
+			err = cwd.execute(func() error {
+				return cmdNlst(cmds, cc, dataConn, cwd.pwd())
 			})
 
 			if err != nil {
