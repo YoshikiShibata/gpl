@@ -1,0 +1,27 @@
+=== Intel(R) Core(TM) i7-3770 CPU @ 3.40GHz ===
+
+Mandelbrot with one goroutine
+
+real    0m6.068s
+user    0m6.060s
+sys 0m0.016s
+
+Madelbrot with multiple goroutines
+
+real    0m2.039s
+user    0m10.100s
+sys 0m0.036s
+
+Surface with one goroutine
+
+real    0m0.376s
+user    0m0.280s
+sys 0m0.092s
+
+Surface with multiple goroutines
+
+real    0m0.212s
+user    0m0.468s
+sys 0m0.108s
+
+
