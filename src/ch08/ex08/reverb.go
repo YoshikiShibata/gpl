@@ -1,7 +1,6 @@
 // Copyright © 2016 Alan A. A. Donovan & Brian W. Kernighan.
+// Copyright © 2016 Yoshiki Shibata. All rights reserved.
 // License: https://creativecommons.org/licenses/by-nc-sa/4.0/
-
-// See page 224.
 
 // Reverb2 is a TCP server that simulates an echo.
 package main
@@ -23,17 +22,30 @@ func echo(c net.Conn, shout string, delay time.Duration) {
 	fmt.Fprintln(c, "\t", strings.ToLower(shout))
 }
 
-//!+
 func handleConn(c net.Conn) {
 	input := bufio.NewScanner(c)
+	alive := make(chan string)
+	go watchDog(c, alive)
+
 	for input.Scan() {
-		go echo(c, input.Text(), 1*time.Second)
+		text := input.Text()
+		alive <- text
+		go echo(c, text, 1*time.Second)
 	}
 	// NOTE: ignoring potential errors from input.Err()
 	c.Close()
 }
 
-//!-
+func watchDog(c net.Conn, alive chan string) {
+	for {
+		select {
+		case <-time.After(10 * time.Second):
+			c.Close()
+			return
+		case <-alive:
+		}
+	}
+}
 
 func main() {
 	l, err := net.Listen("tcp", "localhost:8000")
