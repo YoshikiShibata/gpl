@@ -58,7 +58,9 @@ func (memo *Memo) Get(key string, done <-chan struct{}) (interface{}, error) {
 			// client cancelled
 			return res.value, res.err
 		default:
-			// client did not cancelled. Retry again.
+			// this client did not cancel and wait for the result
+			// of the reuqest issued by another client. But the request
+			// was canceled. So try again.
 			return memo.Get(key, done)
 		}
 	}
