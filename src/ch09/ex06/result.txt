@@ -1,0 +1,36 @@
+2016.6.28 Tip version of Go
+Intel(R) Core(TM) i7-3770 CPU @ 3.40GHz
+
+-----------------------------------
+Madelbrot with multiple goroutines
+
+GOMAXPROCS=1
+
+real    0m6.022s
+user    0m5.992s
+sys 0m0.032s
+
+GOMAXPROCS=2
+
+real    0m3.400s
+user    0m5.956s
+sys 0m0.012s
+
+GOMAXPROCS=4
+
+real    0m2.187s
+user    0m6.240s
+sys 0m0.008s
+
+GOMAXPROCS=8
+
+real    0m2.006s
+user    0m10.088s
+sys 0m0.048s
+
+GOMAXPROCS=16
+
+real    0m2.018s
+user    0m10.148s
+sys 0m0.044s
+
