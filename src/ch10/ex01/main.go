@@ -12,17 +12,41 @@ package main
 import (
 	"fmt"
 	"image"
+	"image/gif"
 	"image/jpeg"
-	_ "image/png" // register PNG decoder
+	"image/png"
 	"io"
 	"os"
 )
 
 func main() {
-	if err := toJPEG(os.Stdin, os.Stdout); err != nil {
-		fmt.Fprintf(os.Stderr, "jpeg: %v\n", err)
-		os.Exit(1)
+	if len(os.Args) != 2 {
+		showUsageAndExit()
 	}
+	switch os.Args[1] {
+	case "-jpg":
+		if err := toJPEG(os.Stdin, os.Stdout); err != nil {
+			fmt.Fprintf(os.Stderr, "jpeg: %v\n", err)
+			os.Exit(1)
+		}
+	case "-gif":
+		if err := toGif(os.Stdin, os.Stdout); err != nil {
+			fmt.Fprintf(os.Stderr, "gif: %v\n", err)
+			os.Exit(1)
+		}
+	case "-png":
+		if err := toPNG(os.Stdin, os.Stdout); err != nil {
+			fmt.Fprintf(os.Stderr, "png: %v\n", err)
+			os.Exit(1)
+		}
+	default:
+		showUsageAndExit()
+	}
+}
+
+func showUsageAndExit() {
+	fmt.Fprintf(os.Stderr, "imageConvert [-gif | -png | -jpg]\n")
+	os.Exit(1)
 }
 
 func toJPEG(in io.Reader, out io.Writer) error {
@@ -34,19 +58,20 @@ func toJPEG(in io.Reader, out io.Writer) error {
 	return jpeg.Encode(out, img, &jpeg.Options{Quality: 95})
 }
 
-//!-main
+func toGif(in io.Reader, out io.Writer) error {
+	img, kind, err := image.Decode(in)
+	if err != nil {
+		return err
+	}
+	fmt.Fprintln(os.Stderr, "Input format =", kind)
+	return gif.Encode(out, img, &gif.Options{256, nil, nil})
+}
 
-/*
-//!+with
-$ go build gopl.io/ch3/mandelbrot
-$ go build gopl.io/ch10/jpeg
-$ ./mandelbrot | ./jpeg >mandelbrot.jpg
-Input format = png
-//!-with
-
-//!+without
-$ go build gopl.io/ch10/jpeg
-$ ./mandelbrot | ./jpeg >mandelbrot.jpg
-jpeg: image: unknown format
-//!-without
-*/
+func toPNG(in io.Reader, out io.Writer) error {
+	img, kind, err := image.Decode(in)
+	if err != nil {
+		return err
+	}
+	fmt.Fprintln(os.Stderr, "Input format =", kind)
+	return png.Encode(out, img)
+}
