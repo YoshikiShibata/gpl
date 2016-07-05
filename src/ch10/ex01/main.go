@@ -1,9 +1,6 @@
 // Copyright © 2016 Alan A. A. Donovan & Brian W. Kernighan.
+// Copyright © 2016 Yoshiki Shibata. All rights reserved.
 // License: https://creativecommons.org/licenses/by-nc-sa/4.0/
-
-// See page 287.
-
-//!+main
 
 // The jpeg command reads a PNG image from the standard input
 // and writes it as a JPEG image to the standard output.
