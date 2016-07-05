@@ -32,7 +32,7 @@ then
 	echo "imageConverter -png failed"
 	exit 1
 fi
-./imageConverter -png < mandelbrot.jpg > mandelbrot3.png
+./imageConverter -gif < mandelbrot.jpg > mandelbrot2.gif
 if [ $? != 0 ]
 then
 	echo "imageConverter -png failed"
@@ -46,9 +46,11 @@ then
 	echo "imageConverter -jpg failed"
 	exit 1
 fi
-./imageConverter -jpg < mandelbrot.gif > mandelbrot3.jpg
+./imageConverter -png < mandelbrot.gif > mandelbrot3.png
 if [ $? != 0 ]
 then
 	echo "imageConverter -jpg failed"
 	exit 1
 fi
+
+file mandelbrot*.*

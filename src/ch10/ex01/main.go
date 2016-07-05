@@ -23,24 +23,24 @@ func main() {
 	if len(os.Args) != 2 {
 		showUsageAndExit()
 	}
+	img, err := readImage(os.Stdin)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "cannot read an image: %v\n", err)
+		os.Exit(1)
+	}
 	switch os.Args[1] {
 	case "-jpg":
-		if err := toJPEG(os.Stdin, os.Stdout); err != nil {
-			fmt.Fprintf(os.Stderr, "jpeg: %v\n", err)
-			os.Exit(1)
-		}
+		err = toJPEG(img, os.Stdout)
 	case "-gif":
-		if err := toGif(os.Stdin, os.Stdout); err != nil {
-			fmt.Fprintf(os.Stderr, "gif: %v\n", err)
-			os.Exit(1)
-		}
+		err = toGIF(img, os.Stdout)
 	case "-png":
-		if err := toPNG(os.Stdin, os.Stdout); err != nil {
-			fmt.Fprintf(os.Stderr, "png: %v\n", err)
-			os.Exit(1)
-		}
+		err = toPNG(img, os.Stdout)
 	default:
 		showUsageAndExit()
+	}
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "conversion error: %v\n", err)
+		os.Exit(1)
 	}
 }
 
@@ -49,29 +49,23 @@ func showUsageAndExit() {
 	os.Exit(1)
 }
 
-func toJPEG(in io.Reader, out io.Writer) error {
+func readImage(in io.Reader) (image.Image, error) {
 	img, kind, err := image.Decode(in)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	fmt.Fprintln(os.Stderr, "Input format =", kind)
+	return img, nil
+}
+
+func toJPEG(img image.Image, out io.Writer) error {
 	return jpeg.Encode(out, img, &jpeg.Options{Quality: 95})
 }
 
-func toGif(in io.Reader, out io.Writer) error {
-	img, kind, err := image.Decode(in)
-	if err != nil {
-		return err
-	}
-	fmt.Fprintln(os.Stderr, "Input format =", kind)
+func toGIF(img image.Image, out io.Writer) error {
 	return gif.Encode(out, img, &gif.Options{256, nil, nil})
 }
 
-func toPNG(in io.Reader, out io.Writer) error {
-	img, kind, err := image.Decode(in)
-	if err != nil {
-		return err
-	}
-	fmt.Fprintln(os.Stderr, "Input format =", kind)
+func toPNG(img image.Image, out io.Writer) error {
 	return png.Encode(out, img)
 }
