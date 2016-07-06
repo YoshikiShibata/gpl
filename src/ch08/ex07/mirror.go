@@ -1,14 +1,10 @@
-// License: https://creativecommons.org/licenses/by-nc-sa/4.0/
+// Copyright © 2015 Yoshiki Shibata. All rights reserved
 
-// See page 138.
-//!+Extract
-
-// Package links provides a link-extraction function.
-// package links
 package main
 
 import (
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 	"strings"
@@ -41,7 +37,6 @@ func Extract(url string) error {
 	hostURL := scheme + "://" + host
 	fmt.Printf("scheme = %s, host = %s, path = %s\n", scheme, host, path)
 	fmt.Printf("hostURL = %s\n", hostURL)
-	fmt.Printf("%#v\n", resp.Header)
 
 	if err := os.Mkdir(host, os.ModePerm); err != nil {
 		if os.IsExist(err) {
@@ -58,7 +53,38 @@ func Extract(url string) error {
 		return fmt.Errorf("getting %s: %s", url, resp.Status)
 	}
 
+	return extractByType(resp, url, host+"/root.html", host, hostURL)
+}
+
+func extractAsFile(url, path, host, hostURL string) error {
+	fmt.Printf("Contents of %s should be stored as %s\n", url, path)
+
+	resp, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		resp.Body.Close()
+		return fmt.Errorf("getting %s: %s", url, resp.Status)
+	}
+
+	return extractByType(resp, url, path, host, hostURL)
+}
+
+func extractByType(resp *http.Response, url, path, host, hostURL string) error {
 	contentType := extractContentType(resp.Header)
+	if contentType[0] != TextHTML {
+		f, err := os.Create(path)
+		if err != nil {
+			return nil
+		}
+		defer f.Close()
+		io.Copy(f, resp.Body)
+		resp.Body.Close()
+		f.Close()
+		return nil
+	}
 
 	doc, err := html.Parse(resp.Body)
 	resp.Body.Close()
@@ -79,31 +105,38 @@ func Extract(url string) error {
 				if strings.HasPrefix(link.String(), hostURL) {
 					// replace href because this is the same host
 					n.Attr[i].Val = "file:" + a.Val
-					if a.Val != "/" && link.String() != hostURL {
-						extractAsFile(link.String(), host+"/"+a.Val)
+					if a.Val != "/" && a.Val != "#" && link.String() != hostURL {
+						if a.Val[0] == '/' {
+							extractAsFile(link.String(), host+a.Val, host, hostURL)
+						} else {
+							extractAsFile(link.String(), host+"/"+a.Val, host, hostURL)
+						}
 					}
 				}
+			}
+		} else if n.Type == html.ElementNode && n.Data == "img" {
+			for _, a := range n.Attr {
+				if a.Key != "src" {
+					continue
+				}
+				link, err := resp.Request.URL.Parse(a.Val)
+				if err != nil {
+					continue // ignore bad URLs
+				}
+				extractAsFile(link.String(), host+"/"+a.Val, host, hostURL)
 			}
 		}
 	}
 	forEachNode(doc, visitNode, nil)
 
-	if path == "/" && contentType[0] == TextHTML {
-		f, err := os.Create(host + "/root.html")
-		if err != nil {
-			fmt.Printf("%v\n", err)
-			return err
-		}
-		defer f.Close()
-		html.Render(f, doc)
+	f, err := os.Create(path)
+	if err != nil {
+		fmt.Printf("%v\n", err)
+		return err
 	}
-
-	fmt.Printf("path = %s, contentType[0] = %s\n", path, contentType[0])
+	defer f.Close()
+	html.Render(f, doc)
 	return nil
-}
-
-func extractAsFile(url, path string) {
-	fmt.Printf("Contents of %s should be stored as %s\n", url, path)
 }
 
 // Copied from gopl.io/ch5/outline2.
