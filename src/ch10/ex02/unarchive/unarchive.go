@@ -95,6 +95,8 @@ func OpenReader(name string) (Reader, error) {
 // RegisterFormat registers an archive format for use by Decode.
 // Name is the name of the format like "zip" or "tar".
 // Magic is the magic prefix that identifies the archive format.
+// PeekSize is the number of bytes to be peeked.
+// offset is the offset from where Magic is checked
 func RegisterFormat(name, magic string, peekSize, offset int, decode func(string) (Reader, error)) {
 	formats = append(formats, format{name, magic, peekSize, offset, decode})
 }
