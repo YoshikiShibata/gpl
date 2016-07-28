@@ -18,8 +18,7 @@ var ErrFormat = errors.New("unarchive: unknown format")
 type File interface {
 	Name() string // the name of the file
 	FileInfo() os.FileInfo
-	Open() (io.Reader, error)
-	Close()
+	Open() (io.ReadCloser, error)
 }
 
 // Reader returns a next File. If there is no next File, os.EOF will be
@@ -31,7 +30,7 @@ type Reader interface {
 // A format haolds an archive format's name, magice header and how to unarchive it.
 type format struct {
 	name, magic string
-	decode      func(io.Reader) (Reader, error)
+	decode      func(string) (Reader, error)
 }
 
 // Formats is the list of registered formats
@@ -82,6 +81,7 @@ func OpenReader(name string) (Reader, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer file.Close()
 
 	r := asReader(file)
 	f := sniff(r)
@@ -89,12 +89,12 @@ func OpenReader(name string) (Reader, error) {
 		return nil, ErrFormat
 	}
 
-	panic("Not Implemented Yet")
+	return f.decode(name)
 }
 
 // RegisterFormat registers an archive format for use by Decode.
 // Name is the name of the format like "zip" or "tar".
 // Magic is the magic prefix that identifies the archive format.
-func RegisterFormat(name, magic string, decode func(io.Reader) (Reader, error)) {
-	panic("Not Implemented Yet")
+func RegisterFormat(name, magic string, decode func(string) (Reader, error)) {
+	formats = append(formats, format{name, magic, decode})
 }

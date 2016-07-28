@@ -1,13 +1,16 @@
 // Copyright © 2016 Yoshiki Shibata. All rights reserved.
 
-package unarchive
+package unarchive_test
 
-import "testing"
+import (
+	"ch10/ex02/unarchive"
+	"testing"
+)
 
 func TestNoRegistered(t *testing.T) {
-	_, err := OpenReader("top.zip")
+	_, err := unarchive.OpenReader("top.zip")
 
-	if err != ErrFormat {
+	if err != unarchive.ErrFormat {
 		t.Logf("%v\n", err)
 		t.Fail()
 	}
