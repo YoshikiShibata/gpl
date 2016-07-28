@@ -5,9 +5,14 @@
 package unarchive
 
 import (
+	"bufio"
+	"errors"
 	"io"
 	"os"
 )
+
+// ErrFormat indicates that decoding encountered an unknown format
+var ErrFormat = errors.New("unarchive: unknown format")
 
 // File represent a file or directory. Only a file can be opened.
 type File interface {
@@ -20,12 +25,70 @@ type File interface {
 // Reader returns a next File. If there is no next File, os.EOF will be
 // returned as an error
 type Reader interface {
-	Next() (*File, error)
+	Next() (File, error)
+}
+
+// A format haolds an archive format's name, magice header and how to unarchive it.
+type format struct {
+	name, magic string
+	decode      func(io.Reader) (Reader, error)
+}
+
+// Formats is the list of registered formats
+var formats []format
+
+// A reader is an io.Reader that can also peek ahead
+type reader interface {
+	io.Reader
+	Peek(int) ([]byte, error)
+}
+
+// as Reader converts an io.Reader to a reader
+func asReader(r io.Reader) reader {
+	if rr, ok := r.(reader); ok {
+		return rr
+	}
+	return bufio.NewReader(r)
+}
+
+// match reports whether magic matches b.
+func match(magic string, b []byte) bool {
+	if len(magic) != len(b) {
+		return false
+	}
+	for i, c := range b {
+		if magic[i] != c {
+			return false
+		}
+	}
+	return true
+}
+
+// sniff determines the format of r's data.
+func sniff(r reader) format {
+	for _, f := range formats {
+		b, err := r.Peek(len(f.magic))
+		if err == nil && match(f.magic, b) {
+			return f
+		}
+	}
+	return format{}
 }
 
 // OpenReader read the specified file and returns a Reader to access the
 // contents of the archive file.
 func OpenReader(name string) (Reader, error) {
+	file, err := os.Open(name)
+	if err != nil {
+		return nil, err
+	}
+
+	r := asReader(file)
+	f := sniff(r)
+	if f.decode == nil {
+		return nil, ErrFormat
+	}
+
 	panic("Not Implemented Yet")
 }
 
