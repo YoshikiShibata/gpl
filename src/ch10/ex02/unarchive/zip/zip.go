@@ -1,3 +1,5 @@
+// Copyright © 2016 Yoshiki Shibata. All rights reserved.
+
 package zip
 
 import (
@@ -7,8 +9,10 @@ import (
 	"os"
 )
 
+const magicNumber = "PK\003\004"
+
 func init() {
-	unarchive.RegisterFormat("zip", "PK\003\004", decode)
+	unarchive.RegisterFormat("zip", magicNumber, len(magicNumber), 0, decode)
 }
 
 type zipReader struct {

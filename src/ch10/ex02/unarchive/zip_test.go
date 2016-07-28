@@ -4,6 +4,7 @@ package unarchive_test
 
 import (
 	"ch10/ex02/unarchive"
+	_ "ch10/ex02/unarchive/tar"
 	_ "ch10/ex02/unarchive/zip"
 	"io"
 	"os"
@@ -11,7 +12,15 @@ import (
 )
 
 func TestZip(t *testing.T) {
-	r, err := unarchive.OpenReader("top.zip")
+	readArchive(t, "top.zip")
+}
+
+func TestTar(t *testing.T) {
+	readArchive(t, "top.tar")
+}
+
+func readArchive(t *testing.T, name string) {
+	r, err := unarchive.OpenReader(name)
 
 	if err != nil {
 		t.Logf("%v\n", err)

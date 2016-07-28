@@ -1,7 +1,6 @@
 // Copyright © 2016 Yoshiki Shibata. All rights reserved.
 
 // Package unarchive supports unarchiving a zip file or a tar file.
-
 package unarchive
 
 import (
@@ -29,8 +28,9 @@ type Reader interface {
 
 // A format haolds an archive format's name, magice header and how to unarchive it.
 type format struct {
-	name, magic string
-	decode      func(string) (Reader, error)
+	name, magic      string
+	peekSize, offset int
+	decode           func(string) (Reader, error)
 }
 
 // Formats is the list of registered formats
@@ -66,8 +66,8 @@ func match(magic string, b []byte) bool {
 // sniff determines the format of r's data.
 func sniff(r reader) format {
 	for _, f := range formats {
-		b, err := r.Peek(len(f.magic))
-		if err == nil && match(f.magic, b) {
+		b, err := r.Peek(f.peekSize)
+		if err == nil && match(f.magic, b[f.offset:]) {
 			return f
 		}
 	}
@@ -95,6 +95,6 @@ func OpenReader(name string) (Reader, error) {
 // RegisterFormat registers an archive format for use by Decode.
 // Name is the name of the format like "zip" or "tar".
 // Magic is the magic prefix that identifies the archive format.
-func RegisterFormat(name, magic string, decode func(string) (Reader, error)) {
-	formats = append(formats, format{name, magic, decode})
+func RegisterFormat(name, magic string, peekSize, offset int, decode func(string) (Reader, error)) {
+	formats = append(formats, format{name, magic, peekSize, offset, decode})
 }
