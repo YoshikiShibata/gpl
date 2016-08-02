@@ -42,7 +42,7 @@ func charcount(r io.Reader) (map[rune]int, []int, int, error) {
 	var utflen [utf8.UTFMax + 1]int // count of lengths of UTF-8 encodings
 	invalid := 0                    // count of invalid UTF-8 characters
 
-	in := bufio.NewReader(os.Stdin)
+	in := bufio.NewReader(r)
 	for {
 		r, n, err := in.ReadRune() // returns rune, nbytes, error
 		if err == io.EOF {
