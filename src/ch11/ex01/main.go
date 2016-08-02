@@ -3,6 +3,7 @@
 // Copyright © 2016 Yoshiki Shibata. All rights reserved
 
 // Charcount computes counts of Unicode characters.
+
 package main
 
 import (
@@ -15,7 +16,12 @@ import (
 )
 
 func main() {
-	counts, utflen, invalid := charcount(os.Stdin)
+	counts, utflen, invalid, err := charcount(os.Stdin)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "charcount: %v\n", err)
+		os.Exit(1)
+	}
+
 	fmt.Printf("rune\tcount\n")
 	for c, n := range counts {
 		fmt.Printf("%q\t%d\n", c, n)
@@ -31,7 +37,7 @@ func main() {
 	}
 }
 
-func charcount(r io.Reader) (map[rune]int, [utf8.UTFMax + 1]int, int) {
+func charcount(r io.Reader) (map[rune]int, []int, int, error) {
 	counts := make(map[rune]int)    // counts of Unicode characters
 	var utflen [utf8.UTFMax + 1]int // count of lengths of UTF-8 encodings
 	invalid := 0                    // count of invalid UTF-8 characters
@@ -40,12 +46,12 @@ func charcount(r io.Reader) (map[rune]int, [utf8.UTFMax + 1]int, int) {
 	for {
 		r, n, err := in.ReadRune() // returns rune, nbytes, error
 		if err == io.EOF {
-			return counts, utflen, invalid
+			return counts, utflen[:], invalid, nil
 		}
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "charcount: %v\n", err)
-			os.Exit(1)
+			return nil, nil, 0, err
 		}
+
 		if r == unicode.ReplacementChar && n == 1 {
 			invalid++
 			continue
