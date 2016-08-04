@@ -34,8 +34,8 @@ const (
 )
 
 const (
-	type_ASCII = "A"
-	type_IMAGE = "I"
+	typeASCII = "A"
+	typeIMAGE = "I"
 )
 
 const (
@@ -143,10 +143,10 @@ func handleConnection(conn net.Conn) {
 		case "TYPE":
 			switch cmds[1] {
 			case "I":
-				transferType = type_IMAGE
+				transferType = typeIMAGE
 				err = cc.writeResponseCode(statusCommandOk)
 			case "A":
-				transferType = type_ASCII
+				transferType = typeASCII
 				err = cc.writeResponseCode(statusCommandOk)
 			default:
 				fmt.Printf("Unspported Type(%s)\n", cmds[1])

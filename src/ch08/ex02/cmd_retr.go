@@ -27,10 +27,10 @@ func cmdRetr(cmds []string, cc *clientConn, dataConn net.Conn, transferType stri
 	log.Printf("cmdRetr: start transfer")
 
 	switch transferType {
-	case type_ASCII:
+	case typeASCII:
 		ascii := asciiText{dataConn, nil}
 		io.Copy(&ascii, f)
-	case type_IMAGE:
+	case typeIMAGE:
 		io.Copy(dataConn, f)
 	default:
 		return fmt.Errorf("Unknown transfer type : %s", transferType)

@@ -28,10 +28,10 @@ func cmdStor(cmds []string, cc *clientConn, dataConn net.Conn, transferType stri
 	log.Printf("cmdStor: start transfer")
 
 	switch transferType {
-	case type_ASCII:
+	case typeASCII:
 		ascii := asciiText{nil, dataConn}
 		io.Copy(f, &ascii)
-	case type_IMAGE:
+	case typeIMAGE:
 		io.Copy(f, dataConn)
 	default:
 		return fmt.Errorf("Unknown transfer type : %s", transferType)
