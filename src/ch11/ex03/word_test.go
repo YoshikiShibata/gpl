@@ -1,5 +1,7 @@
 // Copyright © 2016 Alan A. A. Donovan & Brian W. Kernighan.
 // License: https://creativecommons.org/licenses/by-nc-sa/4.0/
+//
+// Copyright © 2016 Yoshiki Shibata. All rights reserved.
 
 package word
 
@@ -8,6 +10,7 @@ import (
 	"math/rand"
 	"testing"
 	"time"
+	"unicode"
 )
 
 //!+bench
@@ -102,15 +105,21 @@ func TestRandomPalindromes(t *testing.T) {
 //!-random
 
 func randomNonPalindrome(rng *rand.Rand) string {
-	n := rng.Intn(25) + 3 // random length 3 upto 27
-	const upTo = 0x1000
+	n := rng.Intn(25) + 2 // random length up to 26 from 2
 	runes := make([]rune, n)
-	r := rune(rng.Intn(upTo) - n)
-	for i := 0; i < n; i++ {
-		runes[i] = r
-		r++
+	for i := 0; i < n; {
+		r := rune(rng.Intn(0x1000)) // random rune up to '\u0999'
+		if unicode.IsLetter(r) {
+			runes[i] = r
+			i++
+		}
 	}
-	return string(runes)
+	for i := 0; i < (n+1)/2; i++ {
+		if runes[i] != runes[n-1-i] {
+			return string(runes)
+		}
+	}
+	return randomNonPalindrome(rng)
 }
 
 func TestRandomNonPalindromes(t *testing.T) {
