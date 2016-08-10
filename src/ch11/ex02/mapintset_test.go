@@ -7,7 +7,7 @@ import "fmt"
 
 func Example_one2() {
 	//!+main
-	var x, y IntSet2
+	var x, y MapIntSet
 	x.Add(1)
 	x.Add(144)
 	x.Add(9)
@@ -31,7 +31,7 @@ func Example_one2() {
 }
 
 func Example_two2() {
-	var x IntSet2
+	var x MapIntSet
 	x.Add(1)
 	x.Add(144)
 	x.Add(9)

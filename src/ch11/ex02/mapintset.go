@@ -6,14 +6,14 @@ import (
 	"sort"
 )
 
-// An IntSet2 is a set of small non-negative integers.
+// An MapIntSet is a set of small non-negative integers.
 // Its zero value represents the empty set.
-type IntSet2 struct {
+type MapIntSet struct {
 	set map[int]bool
 }
 
 // Has reports whether the set contains the non-negaive value x.
-func (s *IntSet2) Has(x int) bool {
+func (s *MapIntSet) Has(x int) bool {
 	if s.set == nil {
 		return false
 	}
@@ -21,7 +21,7 @@ func (s *IntSet2) Has(x int) bool {
 }
 
 // Add adds the non-negative value x to the set.
-func (s *IntSet2) Add(x int) {
+func (s *MapIntSet) Add(x int) {
 	if s.set == nil {
 		s.set = make(map[int]bool)
 	}
@@ -29,7 +29,7 @@ func (s *IntSet2) Add(x int) {
 }
 
 // UnionWith sets s to the union of s and t
-func (s *IntSet2) UnionWith(t *IntSet2) {
+func (s *MapIntSet) UnionWith(t *MapIntSet) {
 	if t.set == nil {
 		return
 	}
@@ -45,12 +45,12 @@ func (s *IntSet2) UnionWith(t *IntSet2) {
 }
 
 // String returns the set as a string of the form "{1 2 3}".
-func (s *IntSet2) String() string {
+func (s *MapIntSet) String() string {
 	if s.set == nil {
 		return "{ }"
 	}
 
-	var ints []int = make([]int, 0, len(s.set))
+	ints := make([]int, 0, len(s.set))
 	for x, v := range s.set {
 		if v {
 			ints = append(ints, x)
