@@ -1,4 +1,4 @@
-// Copyright © 2015 Alan A. A. Donovan & Brian W. Kernighan.
+// Copyright © 2016 Yoshiki Shibata. All rights reserved.
 
 // Netcat is a read-only TCP client.
 package main
@@ -18,6 +18,11 @@ type worldClock struct {
 	url      string
 }
 
+type time struct {
+	index int
+	time  string
+}
+
 func mustCopy(dst io.Writer, src io.Reader) {
 	if _, err := io.Copy(dst, src); err != nil {
 		log.Fatal(err)
@@ -25,15 +30,30 @@ func mustCopy(dst io.Writer, src io.Reader) {
 }
 
 func main() {
+	out := make(chan time, 3)
 	wclocks := parseArgs()
 	if len(wclocks) == 0 {
 		return
 	}
-	showWorldClock(wclocks[0])
+	for i, wc := range wclocks {
+		go showWorldClock(wc, out, i)
+	}
+
+	for {
+		showWorldTimes(out, len(wclocks))
+	}
 }
 
-func showWorldClock(wc *worldClock) {
-	fmt.Println(wc.location)
+func showWorldTimes(out <-chan time, noOfClocks int) {
+	times := make([]string, noOfClocks)
+	for i := 0; i < noOfClocks; i++ {
+		t := <-out
+		times[t.index] = t.time
+	}
+	fmt.Println(strings.Join(times, " "))
+}
+
+func showWorldClock(wc *worldClock, out chan<- time, index int) {
 
 	conn, err := net.Dial("tcp", wc.url)
 	if err != nil {
@@ -46,10 +66,8 @@ func showWorldClock(wc *worldClock) {
 		if err != nil {
 			return
 		}
-		fmt.Println(string(bytes))
+		out <- time{index, fmt.Sprintf("%s: %s ", wc.location, string(bytes))}
 	}
-
-	// mustCopy(os.Stdout, conn)
 }
 
 func parseArgs() []*worldClock {
@@ -77,14 +95,3 @@ func parseClockSpec(spec string) (*worldClock, error) {
 	}
 	return &worldClock{components[0], components[1]}, nil
 }
-
-/*
-func main() {
-	conn, err := net.Dial("tcp", "localhost:8000")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer conn.Close()
-	mustCopy(os.Stdout, conn)
-}
-*/
