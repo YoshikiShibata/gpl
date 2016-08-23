@@ -2,26 +2,26 @@
 
 Mandelbrot with one goroutine
 
-real    0m6.068s
-user    0m6.060s
-sys 0m0.016s
+real    0m6.143s
+user    0m6.144s
+sys 0m0.008s
 
 Madelbrot with multiple goroutines
 
-real    0m2.039s
-user    0m10.100s
-sys 0m0.036s
+real    0m2.040s
+user    0m10.284s
+sys 0m0.072s
 
 Surface with one goroutine
 
-real    0m0.376s
-user    0m0.280s
-sys 0m0.092s
+real    0m0.346s
+user    0m0.264s
+sys 0m0.076s
 
 Surface with multiple goroutines
 
-real    0m0.212s
-user    0m0.468s
-sys 0m0.108s
+real    0m0.189s
+user    0m0.516s
+sys 0m0.072s
 
 

@@ -11,8 +11,6 @@ import (
 	"image/png"
 	"math/cmplx"
 	"os"
-	"runtime"
-	"sync"
 )
 
 type result struct {
@@ -26,25 +24,24 @@ func main() {
 		width, height          = 4096, 4096
 	)
 
-	tokens := make(chan struct{}, runtime.NumCPU())
+	done := make(chan struct{})
 
-	var wg sync.WaitGroup
 	img := image.NewRGBA(image.Rect(0, 0, width, height))
 	for py := 0; py < height; py++ {
-		wg.Add(1)
 		go func(py int) {
-			tokens <- struct{}{}
 			y := float64(py)/height*(ymax-ymin) + ymin
 			for px := 0; px < width; px++ {
 				x := float64(px)/width*(xmax-xmin) + xmin
 				z := complex(x, y)
 				img.Set(px, py, mandelbrot(z))
 			}
-			wg.Done()
-			<-tokens
+			done <- struct{}{}
 		}(py)
 	}
-	wg.Wait()
+
+	for py := 0; py < height; py++ {
+		<-done
+	}
 
 	png.Encode(os.Stdout, img) // NOTE: ignoring errors
 }

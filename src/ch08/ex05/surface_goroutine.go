@@ -8,8 +8,6 @@ package main
 import (
 	"fmt"
 	"math"
-	"runtime"
-	"sync"
 )
 
 const (
@@ -28,14 +26,11 @@ func main() {
 		"style='stroke: grey; fill: white; stroke-width: 0.7' "+
 		"width='%d' height='%d'>", width, height)
 
-	var wg sync.WaitGroup
-	tokens := make(chan struct{}, runtime.NumCPU())
 	var results [cells * cells]string
+	done := make(chan struct{})
 
 	for i := 0; i < cells; i++ {
-		wg.Add(1)
 		go func(i int) {
-			tokens <- struct{}{}
 			for j := 0; j < cells; j++ {
 				ax, ay := corner(i+1, j)
 				bx, by := corner(i, j)
@@ -44,11 +39,14 @@ func main() {
 				results[i*cells+j] = fmt.Sprintf("<polygon points='%g,%g %g,%g %g,%g %g,%g'/>\n",
 					ax, ay, bx, by, cx, cy, dx, dy)
 			}
-			wg.Done()
-			<-tokens
+			done <- struct{}{}
 		}(i)
 	}
-	wg.Wait()
+
+	for i := 0; i < cells; i++ {
+		<-done
+	}
+
 	for _, r := range results {
 		fmt.Print(r)
 	}
