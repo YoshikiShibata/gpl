@@ -37,7 +37,13 @@ func handleConn(c net.Conn) {
 	wg.Wait()
 
 	// NOTE: ignoring potential errors from input.Err()
-	c.Close()
+	tcpConn, ok := c.(*net.TCPConn)
+	if !ok {
+		c.Close()
+	} else {
+		log.Println("CloseWrite()")
+		tcpConn.CloseWrite()
+	}
 }
 
 func main() {
