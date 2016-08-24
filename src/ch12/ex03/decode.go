@@ -84,10 +84,12 @@ func read(lex *lexer, v reflect.Value) {
 			v.Set(reflect.Zero(v.Type()))
 			lex.next()
 			return
-		case "t": // exercise 12.3
+		//+ Exercise 12.3
+		case "t":
 			v.SetBool(true)
 			lex.next()
 			return
+			//- Exercise 12.3
 		}
 
 	case scanner.String:
@@ -102,7 +104,8 @@ func read(lex *lexer, v reflect.Value) {
 		lex.next()
 		return
 
-	case scanner.Float: // exercise 12.3
+	//+ Exercise 12.3
+	case scanner.Float:
 		switch v.Kind() {
 		case reflect.Float32:
 			f, _ := strconv.ParseFloat(lex.text(), 32) // NOTE: ignoring erros
@@ -115,6 +118,7 @@ func read(lex *lexer, v reflect.Value) {
 		}
 		lex.next()
 		return
+	//- Exercise 12.3
 
 	case '(':
 		lex.next()

@@ -176,7 +176,8 @@ func pretty(p *printer, v reflect.Value) error {
 	case reflect.Ptr:
 		return pretty(p, v.Elem())
 
-	case reflect.Bool: // exercise 12.3
+	//+ Exercise 12.3
+	case reflect.Bool:
 		if v.Bool() {
 			p.string("true")
 		} else {
@@ -185,6 +186,7 @@ func pretty(p *printer, v reflect.Value) error {
 
 	case reflect.Float32, reflect.Float64: // exercise 12.3
 		p.stringf("%f", v.Float())
+	//- Exercise 12.3
 
 	default: // float, complex, bool, chan, func, interface
 		return fmt.Errorf("unsupported type: %s", v.Type())

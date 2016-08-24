@@ -38,9 +38,6 @@ func encode(buf *bytes.Buffer, v reflect.Value) error {
 		reflect.Uint32, reflect.Uint64, reflect.Uintptr:
 		fmt.Fprintf(buf, "%d", v.Uint())
 
-	case reflect.Float32, reflect.Float64:
-		fmt.Fprintf(buf, "%f", v.Float())
-
 	case reflect.String:
 		fmt.Fprintf(buf, "%q", v.String())
 
@@ -91,13 +88,17 @@ func encode(buf *bytes.Buffer, v reflect.Value) error {
 		}
 		buf.WriteByte(')')
 
-	// exercise 12.3
+	//+ Exercise 12.3
 	case reflect.Bool: // t or nil
 		if v.Bool() {
 			fmt.Fprintf(buf, "t")
 		} else {
 			fmt.Fprintf(buf, "nil")
 		}
+
+	case reflect.Float32, reflect.Float64:
+		fmt.Fprintf(buf, "%f", v.Float())
+	//- Exercise 12.3
 
 	default: // float, complex, bool, chan, func, interface
 		return fmt.Errorf("unsupported type: %s", v.Type())
