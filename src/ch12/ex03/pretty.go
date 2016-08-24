@@ -1,5 +1,6 @@
 // Copyright © 2016 Alan A. A. Donovan & Brian W. Kernighan.
 // License: https://creativecommons.org/licenses/by-nc-sa/4.0/
+// Copyright © 2016 Yoshiki Shibata. All rights reserved.
 
 package sexpr
 
@@ -184,8 +185,12 @@ func pretty(p *printer, v reflect.Value) error {
 			p.string("false")
 		}
 
-	case reflect.Float32, reflect.Float64: // exercise 12.3
+	case reflect.Float32, reflect.Float64:
 		p.stringf("%f", v.Float())
+
+	case reflect.Complex64, reflect.Complex128:
+		c := v.Complex()
+		p.stringf("#C(%f %f)", real(c), imag(c))
 	//- Exercise 12.3
 
 	default: // float, complex, bool, chan, func, interface

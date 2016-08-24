@@ -1,5 +1,6 @@
 // Copyright © 2016 Alan A. A. Donovan & Brian W. Kernighan.
 // License: https://creativecommons.org/licenses/by-nc-sa/4.0/
+// Copyright © 2016 Yoshiki Shibata. All rights reserved.
 
 // See page 344.
 
@@ -118,15 +119,16 @@ func read(lex *lexer, v reflect.Value) {
 		}
 		lex.next()
 		return
+
 	case '#':
-		lex.next() // consume '#'
-		lex.next() // consume 'C'
-		lex.next() // consume '('
+		lex.next() // Ident
+		lex.next() // '('
+		lex.next() // Float
 		r := lex.text()
-		lex.next() // next
+		lex.next() // Float
 		i := lex.text()
-		lex.next()
-		lex.next() // consume ')'
+		lex.next() // ')'
+		lex.consume(')')
 
 		var bitSize int
 		switch v.Kind() {
@@ -140,8 +142,7 @@ func read(lex *lexer, v reflect.Value) {
 		fr, _ := strconv.ParseFloat(r, bitSize)
 		fi, _ := strconv.ParseFloat(i, bitSize)
 		v.SetComplex(complex(fr, fi))
-		// panic(fmt.Sprintf("%s %s", r, i))
-
+		return
 	//- Exercise 12.3
 
 	case '(':
