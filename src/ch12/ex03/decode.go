@@ -118,6 +118,30 @@ func read(lex *lexer, v reflect.Value) {
 		}
 		lex.next()
 		return
+	case '#':
+		lex.next() // consume '#'
+		lex.next() // consume 'C'
+		lex.next() // consume '('
+		r := lex.text()
+		lex.next() // next
+		i := lex.text()
+		lex.next()
+		lex.next() // consume ')'
+
+		var bitSize int
+		switch v.Kind() {
+		case reflect.Complex64:
+			bitSize = 32
+		case reflect.Complex128:
+			bitSize = 64
+		default:
+			panic(fmt.Sprintf("unexpected type: %d", v.Kind()))
+		}
+		fr, _ := strconv.ParseFloat(r, bitSize)
+		fi, _ := strconv.ParseFloat(i, bitSize)
+		v.SetComplex(complex(fr, fi))
+		// panic(fmt.Sprintf("%s %s", r, i))
+
 	//- Exercise 12.3
 
 	case '(':

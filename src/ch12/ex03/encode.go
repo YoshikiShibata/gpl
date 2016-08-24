@@ -98,6 +98,10 @@ func encode(buf *bytes.Buffer, v reflect.Value) error {
 
 	case reflect.Float32, reflect.Float64:
 		fmt.Fprintf(buf, "%f", v.Float())
+
+	case reflect.Complex64, reflect.Complex128:
+		v := v.Complex()
+		fmt.Fprintf(buf, "#C(%f %f)", real(v), imag(v))
 	//- Exercise 12.3
 
 	default: // float, complex, bool, chan, func, interface

@@ -23,8 +23,11 @@ func Test(t *testing.T) {
 		Title, Subtitle string
 		Year            int
 		//+ Exercise 12.3
-		Color    bool
-		Duration float32 // in minutes
+		Color      bool
+		Duration32 float32   // in minutes
+		Duration64 float64   // in minutes
+		Complex64  complex64 // just for testing.
+		Complex128 complex128
 		//- Exercise 12.3
 		Actor  map[string]string
 		Oscars []string
@@ -36,8 +39,11 @@ func Test(t *testing.T) {
 		Year:     1964,
 
 		//+ Exercise 12.3: This movie was not color, but for testing.
-		Color:    true,
-		Duration: 93.0,
+		Color:      true,
+		Duration32: 93.0,
+		Duration64: 120.5,
+		Complex64:  1.5 + 2.5i,
+		Complex128: 2.5 + 3.5i,
 		//- Exercise 12.3
 
 		Actor: map[string]string{
