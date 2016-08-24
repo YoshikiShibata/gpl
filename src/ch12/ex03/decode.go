@@ -78,29 +78,52 @@ func read(lex *lexer, v reflect.Value) {
 	switch lex.token {
 	case scanner.Ident:
 		// The only valid identifiers are
-		// "nil" and struct field names.
-		if lex.text() == "nil" {
+		// "t", "nil", and struct field names.
+		switch lex.text() {
+		case "nil":
 			v.Set(reflect.Zero(v.Type()))
 			lex.next()
 			return
+		case "t": // exercise 12.3
+			v.SetBool(true)
+			lex.next()
+			return
 		}
+
 	case scanner.String:
 		s, _ := strconv.Unquote(lex.text()) // NOTE: ignoring errors
 		v.SetString(s)
 		lex.next()
 		return
+
 	case scanner.Int:
 		i, _ := strconv.Atoi(lex.text()) // NOTE: ignoring errors
 		v.SetInt(int64(i))
 		lex.next()
 		return
+
+	case scanner.Float: // exercise 12.3
+		switch v.Kind() {
+		case reflect.Float32:
+			f, _ := strconv.ParseFloat(lex.text(), 32) // NOTE: ignoring erros
+			v.SetFloat(f)
+		case reflect.Float64:
+			f, _ := strconv.ParseFloat(lex.text(), 64) // NOTE: ignoring erros
+			v.SetFloat(f)
+		default:
+			panic(fmt.Sprintf("unexpected type: %d", v.Kind()))
+		}
+		lex.next()
+		return
+
 	case '(':
 		lex.next()
 		readList(lex, v)
 		lex.next() // consume ')'
 		return
+
 	}
-	panic(fmt.Sprintf("unexpected token %q", lex.text()))
+	panic(fmt.Sprintf("unexpected token %d %q", lex.token, lex.text()))
 }
 
 //!-read

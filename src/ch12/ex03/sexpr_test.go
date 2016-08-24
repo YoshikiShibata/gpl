@@ -22,6 +22,8 @@ func Test(t *testing.T) {
 	type Movie struct {
 		Title, Subtitle string
 		Year            int
+		Color           bool    // exercise 12.3
+		Duration        float32 // exercise 12.3 in minutes
 		Actor           map[string]string
 		Oscars          []string
 		Sequel          *string
@@ -30,6 +32,11 @@ func Test(t *testing.T) {
 		Title:    "Dr. Strangelove",
 		Subtitle: "How I Learned to Stop Worrying and Love the Bomb",
 		Year:     1964,
+
+		// exercise 12.3: This movie was not color, but for testing.
+		Color:    true,
+		Duration: 93.0,
+
 		Actor: map[string]string{
 			"Dr. Strangelove":            "Peter Sellers",
 			"Grp. Capt. Lionel Mandrake": "Peter Sellers",
