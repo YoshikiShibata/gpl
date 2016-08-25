@@ -100,7 +100,6 @@ func (p *printer) newline() {
 	t := &token{kind: '\n', size: -p.rtotal}
 	p.tokens = append(p.tokens, t)
 	p.rtotal++ // ??? Not sure how rtotal is used
-	fmt.Printf("** rtotal = %d\n", p.rtotal)
 }
 
 //- Exercise 12.4

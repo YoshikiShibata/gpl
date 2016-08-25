@@ -5,12 +5,61 @@
 package sexpr
 
 import (
-	"fmt"
 	"reflect"
 	"testing"
 )
 
-// Test verifies that encoding and decoding a complex data value
+type Movie struct {
+	Title, Subtitle string
+	Year            int
+	//+ Exercise 12.3
+	Color         bool
+	BlackAndWhite bool
+	Duration32    float32 // in minutes
+	Duration64    float64 // in minutes
+	/* Not supported by JSON
+	Complex64     complex64 // just for testing.
+	Complex128    complex128
+	*/
+	//- Exercise 12.3
+	Actor  map[string]string
+	Oscars []string
+	Sequel *string
+}
+
+var strangelove = Movie{
+	Title:    "Dr. Strangelove",
+	Subtitle: "How I Learned to Stop Worrying and Love the Bomb",
+	Year:     1964,
+
+	//+ Exercise 12.3: This movie was not color, but for testing.
+	Color:         false,
+	BlackAndWhite: true,
+	Duration32:    93.0,
+	Duration64:    120.5,
+	/*
+		Complex64:     1.5 + 2.5i,
+		Complex128:    2.5 + 3.5i,
+	*/
+	//- Exercise 12.3
+
+	Actor: map[string]string{
+		"Dr. Strangelove":            "Peter Sellers",
+		"Grp. Capt. Lionel Mandrake": "Peter Sellers",
+		"Pres. Merkin Muffley":       "Peter Sellers",
+		"Gen. Buck Turgidson":        "George C. Scott",
+		"Brig. Gen. Jack D. Ripper":  "Sterling Hayden",
+		`Maj. T.J. "King" Kong`:      "Slim Pickens",
+	},
+	Oscars: []string{
+		"Best Actor (Nomin.)",
+		"Best Adapted Screenplay (Nomin.)",
+		"Best Director (Nomin.)",
+		"Best Picture (Nomin.)",
+	},
+}
+
+// TestSExpression verifies that encoding and decoding a complex data value
 // produces an equal result.
 //
 // The test does not make direct assertions about the encoded output
@@ -20,52 +69,7 @@ import (
 //
 // 	$ go test -v gopl.io/ch12/sexpr
 //
-func Test(t *testing.T) {
-	type Movie struct {
-		Title, Subtitle string
-		Year            int
-		//+ Exercise 12.3
-		Color         bool
-		BlackAndWhite bool
-		Duration32    float32   // in minutes
-		Duration64    float64   // in minutes
-		Complex64     complex64 // just for testing.
-		Complex128    complex128
-		//- Exercise 12.3
-		Actor  map[string]string
-		Oscars []string
-		Sequel *string
-	}
-	strangelove := Movie{
-		Title:    "Dr. Strangelove",
-		Subtitle: "How I Learned to Stop Worrying and Love the Bomb",
-		Year:     1964,
-
-		//+ Exercise 12.3: This movie was not color, but for testing.
-		Color:         false,
-		BlackAndWhite: true,
-		Duration32:    93.0,
-		Duration64:    120.5,
-		Complex64:     1.5 + 2.5i,
-		Complex128:    2.5 + 3.5i,
-		//- Exercise 12.3
-
-		Actor: map[string]string{
-			"Dr. Strangelove":            "Peter Sellers",
-			"Grp. Capt. Lionel Mandrake": "Peter Sellers",
-			"Pres. Merkin Muffley":       "Peter Sellers",
-			"Gen. Buck Turgidson":        "George C. Scott",
-			"Brig. Gen. Jack D. Ripper":  "Sterling Hayden",
-			`Maj. T.J. "King" Kong`:      "Slim Pickens",
-		},
-		Oscars: []string{
-			"Best Actor (Nomin.)",
-			"Best Adapted Screenplay (Nomin.)",
-			"Best Director (Nomin.)",
-			"Best Picture (Nomin.)",
-		},
-	}
-
+func TestSExpression(t *testing.T) {
 	// Encode it
 	data, err := Marshal(strangelove)
 	if err != nil {
@@ -90,6 +94,5 @@ func Test(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Logf("MarshalIdent() = %s\n", data)
-	fmt.Printf("%s\n", data)
+	t.Logf("MarshalIdent() = \n%s\n", data)
 }

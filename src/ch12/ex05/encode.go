@@ -105,7 +105,7 @@ func encode(buf *bytes.Buffer, v reflect.Value) error {
 		fmt.Fprintf(buf, "#C(%f %f)", real(v), imag(v))
 	//- Exercise 12.3
 
-	default: // float, complex, bool, chan, func, interface
+	default: // chan, func, interface
 		return fmt.Errorf("unsupported type: %s", v.Type())
 	}
 	return nil
