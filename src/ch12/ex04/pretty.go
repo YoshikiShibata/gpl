@@ -53,13 +53,16 @@ func (p *printer) pop() (top *token) {
 	top, p.stack = p.stack[last], p.stack[:last]
 	return
 }
+func (p *printer) push(tok *token) {
+	p.stack = append(p.stack, tok)
+}
 func (p *printer) begin() {
 	if len(p.stack) == 0 {
 		p.rtotal = 1
 	}
 	t := &token{kind: '(', size: -p.rtotal}
 	p.tokens = append(p.tokens, t)
-	p.stack = append(p.stack, t) // push
+	p.push(t)
 	p.string("(")
 }
 func (p *printer) end() {
@@ -67,10 +70,12 @@ func (p *printer) end() {
 	p.tokens = append(p.tokens, &token{kind: ')'})
 	x := p.pop()
 	x.size += p.rtotal
+	// If x.kind is ' ', then it must be a space between end() and begin().
+	// Otherwised, it must be the corresponding "begin"
 	if x.kind == ' ' {
-		p.pop().size += p.rtotal
+		p.pop().size += p.rtotal // corresponding "begin"
 	}
-	if len(p.stack) == 0 {
+	if len(p.stack) == 0 { // this must be the final end()
 		for _, tok := range p.tokens {
 			p.print(tok)
 		}
@@ -80,15 +85,26 @@ func (p *printer) end() {
 func (p *printer) space() {
 	last := len(p.stack) - 1
 	x := p.stack[last]
-	if x.kind == ' ' {
+	if x.kind == ' ' { // remove the previous space
 		x.size += p.rtotal
-		p.stack = p.stack[:last] // pop
+		p.pop()
 	}
 	t := &token{kind: ' ', size: -p.rtotal}
 	p.tokens = append(p.tokens, t)
-	p.stack = append(p.stack, t)
+	p.push(t)
 	p.rtotal++
 }
+
+//+ Exercise 12.4
+func (p *printer) newline() {
+	t := &token{kind: '\n', size: -p.rtotal}
+	p.tokens = append(p.tokens, t)
+	p.rtotal++ // ??? Not sure how rtotal is used
+	fmt.Printf("** rtotal = %d\n", p.rtotal)
+}
+
+//- Exercise 12.4
+
 func (p *printer) print(t *token) {
 	switch t.kind {
 	case 's':
@@ -106,6 +122,11 @@ func (p *printer) print(t *token) {
 			p.WriteByte(' ')
 			p.width--
 		}
+	//+ Exericse 12.4
+	case '\n':
+		p.width = p.indents[len(p.indents)-1] - 1
+		fmt.Fprintf(&p.Buffer, "\n%*s", margin-p.width, "")
+		//- Exercise 12.4
 	}
 }
 func (p *printer) stringf(format string, args ...interface{}) {
@@ -144,7 +165,7 @@ func pretty(p *printer, v reflect.Value) error {
 		p.begin()
 		for i := 0; i < v.NumField(); i++ {
 			if i > 0 {
-				p.space()
+				p.newline() // Exercise 12.4
 			}
 			p.begin()
 			p.string(v.Type().Field(i).Name)
@@ -193,7 +214,7 @@ func pretty(p *printer, v reflect.Value) error {
 		p.stringf("#C(%f %f)", real(c), imag(c))
 	//- Exercise 12.3
 
-	default: // float, complex, bool, chan, func, interface
+	default: // chan, func, interface
 		return fmt.Errorf("unsupported type: %s", v.Type())
 	}
 	return nil

@@ -5,6 +5,7 @@
 package sexpr
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 )
@@ -90,4 +91,5 @@ func Test(t *testing.T) {
 		t.Fatal(err)
 	}
 	t.Logf("MarshalIdent() = %s\n", data)
+	fmt.Printf("%s\n", data)
 }
