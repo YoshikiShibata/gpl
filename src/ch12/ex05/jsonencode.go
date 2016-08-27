@@ -6,16 +6,20 @@ import (
 	"bytes"
 	"fmt"
 	"reflect"
+	"strconv"
 )
 
 // JsonMarshal encodes a Go value in JSON form.
 func JsonMarshal(v interface{}) ([]byte, error) {
 	var buf bytes.Buffer
+	buf.Grow(2 * 1024)
 	if err := jsonEncode(&buf, reflect.ValueOf(v)); err != nil {
 		return nil, err
 	}
 	return buf.Bytes(), nil
 }
+
+var scratch [64]byte
 
 // jsonEncode writes to buf a JSON representation of v.
 func jsonEncode(buf *bytes.Buffer, v reflect.Value) error {
@@ -25,11 +29,15 @@ func jsonEncode(buf *bytes.Buffer, v reflect.Value) error {
 
 	case reflect.Int, reflect.Int8, reflect.Int16,
 		reflect.Int32, reflect.Int64:
-		fmt.Fprintf(buf, "%d", v.Int())
+		b := strconv.AppendInt(scratch[:0], v.Int(), 10)
+		buf.Write(b)
+		// fmt.Fprintf(buf, "%d", v.Int())
 
 	case reflect.Uint, reflect.Uint8, reflect.Uint16,
 		reflect.Uint32, reflect.Uint64, reflect.Uintptr:
-		fmt.Fprintf(buf, "%d", v.Uint())
+		b := strconv.AppendUint(scratch[:0], v.Uint(), 10)
+		buf.Write(b)
+		// fmt.Fprintf(buf, "%d", v.Uint())
 
 	case reflect.String:
 		fmt.Fprintf(buf, "%q", v.String())
@@ -80,9 +88,9 @@ func jsonEncode(buf *bytes.Buffer, v reflect.Value) error {
 
 	case reflect.Bool: // true or false
 		if v.Bool() {
-			fmt.Fprintf(buf, "true")
+			buf.WriteString("true")
 		} else {
-			fmt.Fprintf(buf, "false")
+			buf.WriteString("false")
 		}
 
 	case reflect.Float32, reflect.Float64:

@@ -34,3 +34,15 @@ func TestJSON(t *testing.T) {
 		t.Fatal("not equal")
 	}
 }
+
+func Benchmark_json_Marshal(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		json.Marshal(strangelove)
+	}
+}
+
+func Benchmark_JsonMarshal(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		JsonMarshal(strangelove)
+	}
+}
