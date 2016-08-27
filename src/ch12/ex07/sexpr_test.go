@@ -99,12 +99,16 @@ func TestSExpression(t *testing.T) {
 }
 
 //+ Exercise 12.7
-func TestStreamDecoder(t *testing.T) {
+func TestStreamEncoderDecoder(t *testing.T) {
 	// Encode it
-	data, err := Marshal(strangelove)
+	var buf bytes.Buffer
+
+	encoder := NewEncoder(&buf)
+	err := encoder.Encode(strangelove)
 	if err != nil {
 		t.Fatalf("Marshal failed: %v", err)
 	}
+	data := buf.Bytes()
 	t.Logf("Marshal() = %s\n", data)
 
 	// Decode it
