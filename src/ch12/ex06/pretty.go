@@ -211,9 +211,24 @@ func pretty(p *printer, v reflect.Value) error {
 	case reflect.Complex64, reflect.Complex128:
 		c := v.Complex()
 		p.stringf("#C(%f %f)", real(c), imag(c))
+
+	case reflect.Interface:
+		p.begin()
+		t := v.Type()
+		if t.Name() == "" { // empty interface
+			p.stringf("%q ", v.Elem().Type().String())
+		} else {
+			p.stringf(`"%s.%s" `, t.PkgPath(), t.Name())
+		}
+
+		if err := pretty(p, v.Elem()); err != nil {
+			return err
+		}
+		p.end()
+
 	//- Exercise 12.3
 
-	default: // chan, func, interface
+	default: // chan, func
 		return fmt.Errorf("unsupported type: %s", v.Type())
 	}
 	return nil

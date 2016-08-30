@@ -54,8 +54,8 @@ func Test(t *testing.T) {
 		Duration64:    120.5,
 		Complex64:     1.5 + 2.5i,
 		Complex128:    2.5 + 3.5i,
-		// Interface:     []int{1, 2, 3},
-		Interface: 10,
+		Interface:     []int{1, 2, 3},
+		// Interface: 10,
 		// Interface: X{10},
 		//- Exercise 12.3
 

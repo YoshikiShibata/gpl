@@ -196,6 +196,15 @@ func readList(lex *lexer, v reflect.Value) {
 			lex.consume(')')
 		}
 
+		//+ Exercise 12.3
+	case reflect.Interface: //
+		t, _ := strconv.Unquote(lex.text())
+		value := reflect.New(typeOf(t)).Elem()
+		lex.next()
+		read(lex, value)
+		v.Set(value)
+		//- Exercise 12.3
+
 	default:
 		panic(fmt.Sprintf("cannot decode list into %v", v.Type()))
 	}
@@ -212,3 +221,17 @@ func endList(lex *lexer) bool {
 }
 
 //!-readlist
+// typeOf returns reflect.Type, but does not support all primitive types yet
+// and cannot support all possible types.
+func typeOf(tName string) reflect.Type {
+	switch tName {
+	case "int":
+		var x int
+		return reflect.TypeOf(x)
+	case "[]int":
+		var x []int
+		return reflect.TypeOf(x)
+	default:
+		panic(fmt.Sprintf("%s not supported yet\n", tName))
+	}
+}
