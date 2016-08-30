@@ -30,11 +30,18 @@ func Test(t *testing.T) {
 		Duration64    float64   // in minutes
 		Complex64     complex64 // just for testing.
 		Complex128    complex128
+		Interface     interface{}
+		// Reader        io.Reader
 		//- Exercise 12.3
 		Actor  map[string]string
 		Oscars []string
 		Sequel *string
 	}
+
+	type X struct {
+		y int
+	}
+
 	strangelove := Movie{
 		Title:    "Dr. Strangelove",
 		Subtitle: "How I Learned to Stop Worrying and Love the Bomb",
@@ -47,6 +54,9 @@ func Test(t *testing.T) {
 		Duration64:    120.5,
 		Complex64:     1.5 + 2.5i,
 		Complex128:    2.5 + 3.5i,
+		// Interface:     []int{1, 2, 3},
+		Interface: 10,
+		// Interface: X{10},
 		//- Exercise 12.3
 
 		Actor: map[string]string{

@@ -196,6 +196,13 @@ func readList(lex *lexer, v reflect.Value) {
 			lex.consume(')')
 		}
 
+	case reflect.Interface: //
+		// NOT DEBUG YET
+		fmt.Printf("%s\n", lex.text()) // skip type
+		lex.next()
+		read(lex, v.Elem())
+		lex.next() //  consume ')'
+
 	default:
 		panic(fmt.Sprintf("cannot decode list into %v", v.Type()))
 	}

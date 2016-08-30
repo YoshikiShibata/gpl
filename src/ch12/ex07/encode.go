@@ -135,9 +135,23 @@ func encode(buf io.Writer, v reflect.Value) error {
 	case reflect.Complex64, reflect.Complex128:
 		v := v.Complex()
 		fmt.Fprintf(buf, "#C(%f %f)", real(v), imag(v))
+	case reflect.Interface:
+		writeByte(buf, '(')
+		t := v.Type()
+		if t.Name() == "" { // empty interface
+			fmt.Fprintf(buf, "%q ", v.Elem().Type().String())
+		} else {
+			fmt.Fprintf(buf, `"%s.%s" `, t.PkgPath(), t.Name())
+		}
+
+		if err := encode(buf, v.Elem()); err != nil {
+			return err
+		}
+		writeByte(buf, ')')
+
 	//- Exercise 12.3
 
-	default: // chan, func, interface
+	default: // chan, func
 		return fmt.Errorf("unsupported type: %s", v.Type())
 	}
 	return nil

@@ -27,6 +27,7 @@ func Marshal(v interface{}) ([]byte, error) {
 // encode writes to buf an S-expression representation of v.
 //!+encode
 func encode(buf *bytes.Buffer, v reflect.Value) error {
+	// fmt.Printf("v.Type().String() = %s\n", v.Type().String())
 	switch v.Kind() {
 	case reflect.Invalid:
 		buf.WriteString("nil")
@@ -103,9 +104,24 @@ func encode(buf *bytes.Buffer, v reflect.Value) error {
 	case reflect.Complex64, reflect.Complex128:
 		v := v.Complex()
 		fmt.Fprintf(buf, "#C(%f %f)", real(v), imag(v))
+
+	case reflect.Interface:
+		buf.WriteByte('(')
+		t := v.Type()
+		if t.Name() == "" { // empty interface
+			fmt.Fprintf(buf, "%q ", v.Elem().Type().String())
+		} else {
+			fmt.Fprintf(buf, `"%s.%s" `, t.PkgPath(), t.Name())
+		}
+
+		if err := encode(buf, v.Elem()); err != nil {
+			return err
+		}
+		buf.WriteByte(')')
+
 	//- Exercise 12.3
 
-	default: // float, complex, bool, chan, func, interface
+	default: // chan, func
 		return fmt.Errorf("unsupported type: %s", v.Type())
 	}
 	return nil
