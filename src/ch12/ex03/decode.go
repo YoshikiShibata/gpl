@@ -224,6 +224,7 @@ func endList(lex *lexer) bool {
 
 // typeOf returns reflect.Type, but does not support all primitive types yet
 // and cannot support all possible types.
+// NOTE: see the answer of Exercise 12.10 for full support implementation
 func typeOf(tName string) reflect.Type {
 	switch tName {
 	case "int":
