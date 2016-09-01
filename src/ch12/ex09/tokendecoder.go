@@ -4,11 +4,17 @@ package sexpr
 
 import (
 	"bytes"
+	"fmt"
+	"strconv"
 	"text/scanner"
 )
 
+//+ Exercise 12.9
+
 // A Token is an interface holding one of the token types:
 // Symbol, String, Int, StartList, EndList
+// It is not hard to support more types such as Bool, Float, Complex, Interface,
+// but they are not supported by this version
 type Token interface{}
 
 // A Symbol represents a symbol in S-expressions
@@ -47,15 +53,32 @@ func NewDecoder(data []byte) *Decoder {
 }
 
 func (d *Decoder) Token() Token {
-	switch lex.toekn {
+	switch d.lex.token {
 	case scanner.Ident:
+		name := d.lex.text()
+		d.lex.next()
+		return Symbol{name}
 
 	case scanner.String:
+		value, _ := strconv.Unquote(d.lex.text())
+		d.lex.next()
+		return String{value}
 
 	case scanner.Int:
+		i, _ := strconv.Atoi(d.lex.text()) // NOTE: ignoring errors
+		d.lex.next()
+		return Int{i}
 
 	case '(':
+		d.lex.next()
+		return StartList{}
 
 	case ')':
+		d.lex.next()
+		return EndList{}
+
 	}
+	panic(fmt.Sprintf("token = %d\n", d.lex.token))
 }
+
+//- Exercise 12.9
