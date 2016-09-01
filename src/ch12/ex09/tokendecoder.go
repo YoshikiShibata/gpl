@@ -2,6 +2,11 @@
 
 package sexpr
 
+import (
+	"bytes"
+	"text/scanner"
+)
+
 // A Token is an interface holding one of the token types:
 // Symbol, String, Int, StartList, EndList
 type Token interface{}
@@ -27,4 +32,30 @@ type StartList struct {
 
 // A EndList represetns the end of a list in S-expressions
 type EndList struct {
+}
+
+type Decoder struct {
+	lex *lexer
+}
+
+func NewDecoder(data []byte) *Decoder {
+	var decoder Decoder
+	decoder.lex = &lexer{scan: scanner.Scanner{Mode: scanner.GoTokens}}
+	decoder.lex.scan.Init(bytes.NewReader(data))
+	decoder.lex.next()
+	return &decoder
+}
+
+func (d *Decoder) Token() Token {
+	switch lex.toekn {
+	case scanner.Ident:
+
+	case scanner.String:
+
+	case scanner.Int:
+
+	case '(':
+
+	case ')':
+	}
 }
