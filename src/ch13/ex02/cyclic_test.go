@@ -2,6 +2,8 @@ package main
 
 import "testing"
 
+//+ Exercise 13.2
+
 func TestCyclicLinkList(t *testing.T) {
 	type link struct {
 		value string
@@ -105,3 +107,5 @@ func TestCyclicRecursiveSlice(t *testing.T) {
 		t.Errorf("IsCyclic(s) is true, but want false")
 	}
 }
+
+//- Exercise 13.2
