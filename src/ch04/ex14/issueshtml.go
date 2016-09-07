@@ -7,7 +7,7 @@ import (
 	"os"
 	"time"
 
-	"ch05/ex11/github"
+	"ch04/ex14/github"
 )
 
 var issueList = template.Must(template.New("issuelist").Parse(`

@@ -7,7 +7,7 @@ import (
 	"os"
 	"time"
 
-	"ch05/ex11/github"
+	"ch04/ex14/github"
 )
 
 func age(createdAt time.Time) string {

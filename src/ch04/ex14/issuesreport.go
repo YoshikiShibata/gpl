@@ -7,7 +7,7 @@ import (
 	"text/template"
 	"time"
 
-	"ch05/ex11/github"
+	"ch04/ex14/github"
 )
 
 const templ = `{{.TotalCount}} issues:
