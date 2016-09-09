@@ -10,12 +10,14 @@ func Example_structAsKey() {
 
 	salaries := map[Employee]int{
 		Employee{502131, "Yoshiki Shibata"}: 1701,
+		Employee{16690, "Yoshiki Shibata"}:  1701,
 	}
 
 	Display("salaries", salaries)
-	// Output:
+	// Unordered output:
 	// Display salaries (map[display.Employee]int):
 	// salaries[display.Employee{Id: 502131, Name: "Yoshiki Shibata"}] = 1701
+	// salaries[display.Employee{Id: 16690, Name: "Yoshiki Shibata"}] = 1701
 }
 
 func Example_arrayAsKey() {
