@@ -100,11 +100,11 @@ func TestCyclicMap(t *testing.T) {
 
 func TestCyclicRecursiveSlice(t *testing.T) {
 	type S []S
-	var s S
-	s = append(s, s)
+	var s = make(S, 1)
+	s[0] = s
 
-	if IsCyclic(s) {
-		t.Errorf("IsCyclic(s) is true, but want false")
+	if !IsCyclic(s) {
+		t.Errorf("IsCyclic(s) is false, but want true")
 	}
 }
 
