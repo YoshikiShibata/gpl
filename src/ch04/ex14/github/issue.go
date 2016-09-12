@@ -4,14 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strings"
 	"time"
 )
 
-const IssuesURL = "https://api.github.com/search/issues"
-
-// URL for listing issues for a repository.
-const ListIssuesURL = "https://api.github.com/repos/%s/%s/issues"
+const listIssuesURL = "https://api.github.com/repos/%s/%s/issues"
 
 type IssuesListResult struct {
 	Issues   []*Issue
@@ -29,13 +25,8 @@ type Issue struct {
 	Body      string    // (Markdown format)
 }
 
-type User struct {
-	Login   string
-	HTMLURL string `json:"html_url"`
-}
-
 func ListIssues(owner, repo string) (*IssuesListResult, error) {
-	listURL := fmt.Sprintf(ListIssuesURL, owner, repo)
+	listURL := fmt.Sprintf(listIssuesURL, owner, repo)
 	fmt.Printf("listURL = %s\n", listURL)
 	return listIssues(listURL)
 }
@@ -46,39 +37,25 @@ func listIssues(listURL string) (*IssuesListResult, error) {
 		return nil, err
 	}
 
-	result := parseLink(resp.Header.Get("Link"))
+	defer resp.Body.Close()
+
+	if resp.StatusCode == http.StatusBadRequest {
+		return nil, parseBadRequest(resp)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("Status Code is %d", resp.StatusCode)
+	}
+
+	var result IssuesListResult
+
+	result.nextLink, result.lastLink = parseLink(resp.Header.Get("Link"))
 
 	if err := json.NewDecoder(resp.Body).Decode(&(result.Issues)); err != nil {
-		resp.Body.Close()
 		fmt.Printf("listURL = %q\n", listURL)
 		return nil, err
 	}
-	resp.Body.Close()
-	return result, nil
-}
-
-func parseLink(link string) *IssuesListResult {
-	var result IssuesListResult
-
-	if link == "" {
-		return &result
-	}
-
-	links := strings.Split(link, ",")
-	for _, link := range links {
-		var p *string = nil
-		if strings.Contains(link, `rel="next"`) {
-			p = &(result.nextLink)
-		} else if strings.Contains(link, `rel="last"`) {
-			p = &(result.lastLink)
-		} else {
-			continue
-		}
-		sIndex := strings.Index(link, "<")
-		eIndex := strings.Index(link, ">")
-		*p = link[sIndex+1 : eIndex]
-	}
-	return &result
+	return &result, nil
 }
 
 func (il *IssuesListResult) HasNext() bool {
