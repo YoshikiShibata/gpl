@@ -47,6 +47,7 @@ func main() {
 
 	var user github.Credentials
 	user.Query()
+	fmt.Println()
 
 	switch true {
 	case *createFlag:
@@ -58,7 +59,8 @@ func main() {
 		if err != nil {
 			fmt.Printf("%v\n", err)
 		}
-		fmt.Printf("%v\n", issue)
+		fmt.Printf("%+v", issue)
+		saveIssueNo(issue.Number)
 	case *closeFlag:
 		if !isFlagSpecified("issue") {
 			fmt.Print("Please specify -issue <issueNo>")
@@ -68,7 +70,7 @@ func main() {
 		if err != nil {
 			fmt.Printf("%v\n", err)
 		}
-		fmt.Printf("%v\n", issue)
+		fmt.Printf("%+v\n", issue)
 	case *printFlag:
 		if !isFlagSpecified("issue") {
 			fmt.Print("Please specifiy -issue <issueNo>")
@@ -78,7 +80,7 @@ func main() {
 		if err != nil {
 			fmt.Printf("%v\n", err)
 		}
-		fmt.Printf("%v\n", issue)
+		fmt.Printf("%+v\n", issue)
 	case *editFlag:
 		if !isFlagSpecified("issue") {
 			fmt.Print("Please specifiy -issue <issueNo>")
@@ -91,9 +93,19 @@ func main() {
 		issue, err := github.Edit(repository, *title, b, *issueNo, &user)
 		if err != nil {
 			fmt.Printf("%v\n", err)
+			os.Exit(1)
 		}
-		fmt.Printf("%v\n", issue)
+		fmt.Printf("%+v\n", issue)
 	}
+}
+
+func saveIssueNo(issueNo int) {
+	f, err := os.Create("issue_no.txt")
+	if err != nil {
+		return
+	}
+	fmt.Fprintf(f, "%d", issueNo)
+	f.Close()
 }
 
 func invokeEditor() string {
@@ -141,11 +153,11 @@ func validateOperationFlags() {
 	}
 
 	if trueCount == 0 {
-		fmt.Println("Operation flag(-create, -delete, -edit, -print) is not specified")
+		fmt.Println("Operation flag(-create, -close, -edit, -print) is not specified")
 		os.Exit(1)
 	}
 	if trueCount >= 2 {
-		fmt.Println("Too many operation flags are specified")
+		fmt.Printf("Too many operation flags are specified: %#v\n", flags)
 	}
 }
 

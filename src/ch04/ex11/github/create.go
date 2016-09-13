@@ -18,7 +18,6 @@ func Create(repo, title, body string, user *Credentials) (*Issue, error) {
 	}
 
 	restAPIURL := issuesURL(repo)
-	fmt.Printf("Rest API URL = %s\n", restAPIURL)
 	req, err := newRequest("POST", restAPIURL, bytes.NewReader(b), user)
 	if err != nil {
 		return nil, fmt.Errorf("NewReuqest failed: %v", err)
