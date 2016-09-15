@@ -3,6 +3,8 @@ package github
 import (
 	"encoding/json"
 	"fmt"
+	"html/template"
+	"io"
 	"net/http"
 	"time"
 )
@@ -68,4 +70,47 @@ func (il *IssuesListResult) Next() (*IssuesListResult, error) {
 	}
 
 	return listIssues(il.nextLink)
+}
+
+func (il *IssuesListResult) PrintAsHTMLTable(w io.Writer) {
+	var issueList = template.Must(template.New("issuelist").Parse(`
+	<h1>issues</h1>
+	<table>
+	<tr style='text-align: left'>
+	<th>#</th>
+	<th>State</th>
+	<th>User</th>
+	<th>Title</th>
+	</tr>
+	{{range .Issues}}
+	<tr>
+	  <td><a href='issue/{{.Number}}'>{{.Number}}</a></td>
+	  <td>{{.State}}</td>
+	  <td>{{.User.Login}}</td>
+	  <td><a href='issue/{{.Number}}'>{{.Title}}</a></td>
+	</tr>
+	{{end}}
+	</table>
+	`))
+
+	if err := issueList.Execute(w, il); err != nil {
+		fmt.Fprintf(w, "%v\n", err)
+	}
+}
+
+func (il *IssuesListResult) PrintIssue(w io.Writer, issueNo int) {
+	for _, issue := range il.Issues {
+		if issue.Number == issueNo {
+			printIssue(w, issue)
+			return
+		}
+	}
+	fmt.Fprintf(w, "Issue %d Not Found\n", issueNo)
+}
+
+func printIssue(w io.Writer, issue *Issue) {
+	fmt.Fprintf(w, "#%d State: %s User: %s\n",
+		issue.Number, issue.State, issue.User.Login)
+	fmt.Fprintf(w, "Title: %s\n", issue.Title)
+	fmt.Fprintf(w, "Body: %s\n", issue.Body)
 }
