@@ -56,10 +56,6 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	owner := paths[0]
 	repo := paths[1]
 
-	for i, path := range splitPath(r.URL.Path) {
-		fmt.Printf("path[%d] = %q\n", i, path)
-	}
-
 	repoPath := RepoPath{owner, repo}
 
 	switch len(paths) {
@@ -119,6 +115,11 @@ func showTopLevelPage(w io.Writer, path RepoPath, caches map[RepoPath]RepoInfo) 
 
 	repoInfo.issues.PrintAsHTMLTable(w)
 	repoInfo.milestones.PrintAsHTMLTable(w)
+	users, err := github.ListUsers()
+	if err != nil {
+		fmt.Fprintf(w, "Users Could Not Be Obtained: %v\n", err)
+	}
+	users.PrintAsHTMLTable(w)
 }
 
 func cacheRepoInfo(path RepoPath, caches map[RepoPath]RepoInfo) (RepoInfo, error) {

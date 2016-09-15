@@ -5,6 +5,8 @@ package github
 import (
 	"encoding/json"
 	"fmt"
+	"html/template"
+	"io"
 	"net/http"
 )
 
@@ -55,10 +57,30 @@ func (ul *UsersListResult) HasNext() bool {
 	return ul.nextLink != ""
 }
 
-func (il *UsersListResult) Next() (*UsersListResult, error) {
-	if il.nextLink == "" {
+func (ul *UsersListResult) Next() (*UsersListResult, error) {
+	if ul.nextLink == "" {
 		panic("NextLink is not available")
 	}
 
-	return listUsers(il.nextLink)
+	return listUsers(ul.nextLink)
+}
+
+func (ul *UsersListResult) PrintAsHTMLTable(w io.Writer) {
+	var userList = template.Must(template.New("userList").Parse(`
+	<h1>user</h1>
+	<table>
+	<tr style='text-align: left'>
+	<th>Name</th>
+	</tr>
+	{{range .Users}}
+	<tr>
+	  <td>{{.Login}}</td>
+	</tr>
+	{{end}}
+	</table>
+	`))
+
+	if err := userList.Execute(w, ul); err != nil {
+		fmt.Fprintf(w, "%v\n", err)
+	}
 }
