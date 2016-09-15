@@ -3,6 +3,8 @@ package github
 import (
 	"encoding/json"
 	"fmt"
+	"html/template"
+	"io"
 	"net/http"
 )
 
@@ -64,4 +66,43 @@ func (ml *MilestonesListResult) Next() (*MilestonesListResult, error) {
 	}
 
 	return listMilestones(ml.nextLink)
+}
+
+func (ml *MilestonesListResult) PrintAsHTMLTable(w io.Writer) {
+	var milestoneList = template.Must(template.New("milestoneList").Parse(`
+	<h1>milestones</h1>
+	<table>
+	<tr style='text-align: left'>
+	<th>Title</th>
+	<th>State</th>
+	</tr>
+	{{range .Milestones}}
+	<tr>
+	  <td><a href='milestone/{{.Title}}'>{{.Title}}</a></td>
+	  <td>{{.State}}</td>
+	</tr>
+	{{end}}
+	</table>
+	`))
+
+	if err := milestoneList.Execute(w, ml); err != nil {
+		fmt.Fprintf(w, "%v\n", err)
+	}
+}
+
+func (ml *MilestonesListResult) PrintMilestone(w io.Writer, title string) {
+	for _, ms := range ml.Milestones {
+		if ms.Title == title {
+			printMilestone(w, ms)
+			return
+		}
+	}
+	fmt.Fprintf(w, "Milestone %s Not Found\n", title)
+}
+
+func printMilestone(w io.Writer, ms Milestone) {
+	fmt.Fprintf(w, "Title: %s State: %s\n", ms.Title, ms.State)
+	fmt.Fprintf(w, "Open Issues: %d Closed Issues: %d\n", ms.OpenIssues, ms.ClosedIssues)
+	fmt.Fprintf(w, "Description:\n%s\n", ms.Description)
+
 }

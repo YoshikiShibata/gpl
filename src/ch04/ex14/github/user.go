@@ -9,7 +9,8 @@ import (
 )
 
 type User struct {
-	Login string
+	Login   string
+	HTMLURL string
 }
 
 const listUsersURL = "https://api.github.com/users"
