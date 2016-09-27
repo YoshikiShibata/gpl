@@ -1,14 +1,14 @@
-package params
+// Copyright © 2016 Yoshiki Shibata. All rights reserved.
+
+package params_test
 
 import (
-	"ch12/ex11/params"
+	"ch12/ex12/params"
 	"net/http"
 	"net/url"
 	"reflect"
 	"testing"
 )
-
-// Copyright © 2016 Yoshiki Shibata. All rights reserved.
 
 //+ Exercise 12.12
 // Added test for verify the original Unpack function.
