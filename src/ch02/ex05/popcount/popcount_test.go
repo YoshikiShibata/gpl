@@ -13,6 +13,7 @@ func TestZero(t *testing.T) {
 	testZero(t, popcount.PopCountByShifting)
 	testZero(t, popcount.PopCountByClearingBit)
 	testZero(t, popcount.BitCount)
+	testZero(t, popcount.OnesCount)
 }
 
 func testZero(t *testing.T, popCount func(uint64) int) {
@@ -28,6 +29,7 @@ func TestAllBits(t *testing.T) {
 	testAllBits(t, popcount.PopCountByShifting)
 	testAllBits(t, popcount.PopCountByClearingBit)
 	testAllBits(t, popcount.BitCount)
+	testAllBits(t, popcount.OnesCount)
 }
 
 func testAllBits(t *testing.T, popCount func(uint64) int) {
@@ -43,6 +45,7 @@ func TestEachByte(t *testing.T) {
 	testEachByte(t, popcount.PopCountByShifting)
 	testEachByte(t, popcount.PopCountByClearingBit)
 	testEachByte(t, popcount.BitCount)
+	testEachByte(t, popcount.OnesCount)
 }
 
 func testEachByte(t *testing.T, popCount func(uint64) int) {
@@ -61,6 +64,7 @@ func Test0x5555(t *testing.T) {
 	test0x5555(t, popcount.PopCountByShifting)
 	test0x5555(t, popcount.PopCountByClearingBit)
 	test0x5555(t, popcount.BitCount)
+	test0x5555(t, popcount.OnesCount)
 }
 
 func test0x5555(t *testing.T, popCount func(uint64) int) {
@@ -79,6 +83,7 @@ func TestEachOneBit(t *testing.T) {
 	testEachOneBit(t, popcount.PopCountByShifting)
 	testEachOneBit(t, popcount.PopCountByClearingBit)
 	testEachOneBit(t, popcount.BitCount)
+	testEachOneBit(t, popcount.OnesCount)
 }
 
 func testEachOneBit(t *testing.T, popCount func(uint64) int) {
@@ -113,6 +118,12 @@ func BenchmarkPopByClearingBit(b *testing.B) {
 func BenchmarkBitCount(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		popcount.BitCount(0x1234567890ABCDEF)
+	}
+}
+
+func BenchmarkOnesCount(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		popcount.OnesCount(0x1234567890ABCDEF)
 	}
 }
 

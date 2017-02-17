@@ -2,6 +2,8 @@
 
 package popcount
 
+import "math/bits"
+
 // pc[i] is the population count of i.
 var pc [256]byte
 
@@ -54,4 +56,8 @@ func BitCount(i uint64) int {
 	i = i + (i >> 16)
 	i = i + (i >> 32)
 	return int(i & 0x7f)
+}
+
+func OnesCount(i uint64) int {
+	return int(bits.OnesCount(uint(i)))
 }
