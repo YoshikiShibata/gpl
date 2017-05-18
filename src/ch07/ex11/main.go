@@ -1,6 +1,6 @@
 // Copyright © 2016 Alan A. A. Donovan & Brian W. Kernighan.
 // License: https://creativecommons.org/licenses/by-nc-sa/4.0/
-// Copyright © 2016 Yoshiki Shibata. All rights reserved.
+// Copyright © 2016, 2017 Yoshiki Shibata. All rights reserved.
 
 package main
 
@@ -15,6 +15,7 @@ import (
 func main() {
 	db := database{products: map[string]dollars{"shoes": 50, "socks": 5}}
 	http.HandleFunc("/list", db.list)
+	http.HandleFunc("/list/", db.list)
 	http.HandleFunc("/price", db.price)
 	http.HandleFunc("/create", db.create)
 	http.HandleFunc("/read", db.read)
