@@ -1,4 +1,4 @@
-// Copyright © 2016 Yoshiki Shibata
+// Copyright © 2016, 2017 Yoshiki Shibata
 
 package main
 
@@ -12,21 +12,8 @@ func LessThanMonth(t, now time.Time) bool {
 		panic(fmt.Sprintf("Future is specified: %v", t))
 	}
 
-	nowYear, nowMonth, nowDay := now.Date()
-	year, month, day := t.Date()
-
-	nowMonths := nowYear*12 + int(nowMonth)
-	months := year*12 + int(month)
-
-	if months == nowMonths {
-		return true
-	}
-
-	if (nowMonths - months) >= 2 {
-		return false
-	}
-
-	return day > nowDay
+	oneMonth := now.AddDate(0, -1, 0)
+	return t.After(oneMonth)
 }
 
 func LessThanYear(t, now time.Time) bool {
@@ -34,19 +21,6 @@ func LessThanYear(t, now time.Time) bool {
 		panic(fmt.Sprintf("Future is specified: %v", t))
 	}
 
-	nowYear, nowMonth, nowDay := now.Date()
-	year, month, day := t.Date()
-
-	nowMonths := nowYear*12 + int(nowMonth)
-	months := year*12 + int(month)
-
-	if (nowMonths - months) >= 13 {
-		return false
-	}
-
-	if (nowMonths - months) <= 11 {
-		return true
-	}
-
-	return day > nowDay
+	oneYear := now.AddDate(-1, 0, 0)
+	return t.After(oneYear)
 }
