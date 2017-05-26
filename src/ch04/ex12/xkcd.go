@@ -1,4 +1,4 @@
-// Copyright © 2016 Yoshiki Shibata
+// Copyright © 2016, 2017 Yoshiki Shibata
 
 package main
 
@@ -42,7 +42,7 @@ type cacheResult struct {
 }
 
 const concurrencyLevel = 10 // Concurrency Level and Max Not Found
-const lastComicNumber = 1635
+var lastComicNumber int
 
 var vFlag = flag.Bool("v", false, "verbose message")
 
@@ -53,6 +53,16 @@ func main() {
 		fmt.Fprintf(os.Stderr, "No word specified\n")
 		os.Exit(1)
 	}
+
+	fmt.Printf("Fetching the number of comics ... ")
+	num, err := getNumberOfComics()
+	if err != nil {
+		fmt.Printf("Failed(%v)\n", err)
+		os.Exit(1)
+	}
+	lastComicNumber = num
+	fmt.Printf("%d\n", lastComicNumber)
+
 	fmt.Printf("Building indexes ... ")
 	comics := fetchAllComics()
 	fmt.Printf("Done\n")
@@ -151,6 +161,27 @@ func exists(filepath string) bool {
 		panic(fmt.Errorf("os.Stat: %v", err))
 	}
 	return true
+}
+
+func getNumberOfComics() (int, error) {
+	resp, err := http.Get(xkcdURL + infoJson)
+	if err != nil {
+		return -1, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return -1, fmt.Errorf("Get Failed: %s", resp.Status)
+	}
+
+	var comicInfo struct {
+		Num int
+	}
+	jsonDecoder := json.NewDecoder(resp.Body)
+	if err := jsonDecoder.Decode(&comicInfo); err != nil {
+		return -1, err
+	}
+	return comicInfo.Num, nil
 }
 
 func getComic(num int) (*Comic, error, bool) {
