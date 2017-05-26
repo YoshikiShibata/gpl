@@ -42,7 +42,7 @@ func mainComplex64(w io.Writer) {
 		y := float32(py)/float32(*height)*float32((ymax-ymin)) + float32(ymin)
 		for px := 0; px < *width; px++ {
 			x := float32(px)/float32(*width)*float32((xmax-xmin)) + float32(xmin)
-			z := complex64(x, y)
+			z := complex64(complex(x, y))
 			// Image point (px, py) represents complex value z.
 			img.Set(px, py, newton64(z))
 		}
