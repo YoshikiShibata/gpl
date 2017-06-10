@@ -1,4 +1,4 @@
-// Copyright © 2016 Yoshiki Shibata. All rights reserved.
+// Copyright © 2016, 2017 Yoshiki Shibata. All rights reserved.
 
 package main
 
@@ -20,7 +20,12 @@ import (
 //
 func main() {
 	http.HandleFunc("/", handler) // each request calls handler
+	http.HandleFunc("/favicon.ico", faviconHandler)
 	log.Fatal(http.ListenAndServe("localhost:8000", nil))
+}
+
+func faviconHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotFound)
 }
 
 type RepoPath struct {
