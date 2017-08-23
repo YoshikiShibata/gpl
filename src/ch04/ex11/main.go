@@ -73,7 +73,7 @@ func main() {
 		fmt.Printf("%+v\n", issue)
 	case *printFlag:
 		if !isFlagSpecified("issue") {
-			fmt.Print("Please specifiy -issue <issueNo>")
+			fmt.Print("Please specify -issue <issueNo>")
 			os.Exit(1)
 		}
 		issue, err := github.Get(repository, *issueNo, &user)
@@ -83,7 +83,7 @@ func main() {
 		fmt.Printf("%+v\n", issue)
 	case *editFlag:
 		if !isFlagSpecified("issue") {
-			fmt.Print("Please specifiy -issue <issueNo>")
+			fmt.Print("Please specify -issue <issueNo>")
 			os.Exit(1)
 		}
 		b := *body
