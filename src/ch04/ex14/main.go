@@ -70,12 +70,12 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		if paths[2] == "issue" {
 			repoInfo, ok := repoInfoCaches[repoPath]
 			if !ok {
-				fmt.Fprintln(w, "Not Cached\n")
+				fmt.Fprintln(w, "Not Cached")
 				return
 			}
 			issueNo, err := strconv.Atoi(paths[3])
 			if err != nil {
-				fmt.Fprintln(w, "%v\n", err)
+				fmt.Fprintf(w, "%v\n", err)
 				return
 			}
 			repoInfo.issues.PrintIssue(w, issueNo)
@@ -83,7 +83,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		} else if paths[2] == "milestone" {
 			repoInfo, ok := repoInfoCaches[repoPath]
 			if !ok {
-				fmt.Fprintln(w, "Not Cached\n")
+				fmt.Fprintln(w, "Not Cached")
 				return
 			}
 			repoInfo.milestones.PrintMilestone(w, paths[3])

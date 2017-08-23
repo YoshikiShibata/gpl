@@ -31,7 +31,7 @@ func TestPack(t *testing.T) {
 		params := Pack(&test.d)
 
 		if params != test.params {
-			t.Error("params = %q, but want %q\n", params, test.params)
+			t.Errorf("params = %q, but want %q\n", params, test.params)
 		}
 	}
 }
@@ -47,7 +47,7 @@ func TestPackNoTag(t *testing.T) {
 		params := Pack(&test.d)
 
 		if params != test.params {
-			t.Error("params = %q, but want %q\n", params, test.params)
+			t.Errorf("params = %q, but want %q\n", params, test.params)
 		}
 	}
 }

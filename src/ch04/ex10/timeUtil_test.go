@@ -29,7 +29,7 @@ func TestLessThanMonth(t *testing.T) {
 		tm := time.Date(d.year, d.month, d.day, 12, 0, 0, 0, time.UTC)
 		result := LessThanMonth(tm, now)
 		if result != d.expected {
-			t.Errorf("Result is %b, want %b: %v, %v",
+			t.Errorf("Result is %t, want %t: %v, %v",
 				result, d.expected, tm, now)
 		}
 	}
@@ -55,7 +55,7 @@ func TestLessThanYear(t *testing.T) {
 		tm := time.Date(d.year, d.month, d.day, 12, 0, 0, 0, time.UTC)
 		result := LessThanYear(tm, now)
 		if result != d.expected {
-			t.Errorf("Result is %b, want %b: %v, %v",
+			t.Errorf("Result is %t, want %t: %v, %v",
 				result, d.expected, tm, now)
 		}
 	}

@@ -27,7 +27,7 @@ func (c *Credentials) Query() {
 	fmt.Print(fmt.Sprintf("Password for 'https://%s@github.com': ", c.username))
 	bytePassword, err := terminal.ReadPassword(int(syscall.Stdin))
 	if err != nil {
-		fmt.Println("\nPassword Error: %v\n", err)
+		fmt.Printf("\nPassword Error: %v\n", err)
 	}
 	password := string(bytePassword)
 	c.password = strings.TrimSpace(password)

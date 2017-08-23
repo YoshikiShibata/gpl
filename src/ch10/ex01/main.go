@@ -60,7 +60,7 @@ func toJPEG(img image.Image, out io.Writer) error {
 }
 
 func toGIF(img image.Image, out io.Writer) error {
-	return gif.Encode(out, img, &gif.Options{256, nil, nil})
+	return gif.Encode(out, img, &gif.Options{NumColors: 256, Quantizer: nil, Drawer: nil})
 }
 
 func toPNG(img image.Image, out io.Writer) error {

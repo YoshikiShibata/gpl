@@ -25,7 +25,7 @@ func TestCountingWriter(t *testing.T) {
 		total += int64(len(bytes))
 
 		if *c != total {
-			t.Error("count is %d, want %d", *c, total)
+			t.Errorf("count is %d, want %d", *c, total)
 		}
 	}
 }
