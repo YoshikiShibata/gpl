@@ -1,4 +1,4 @@
-// Copyright © 2016 Yoshiki Shibata. All rights reserved.
+// Copyright © 2016, 2017 Yoshiki Shibata. All rights reserved.
 
 package main
 
@@ -11,11 +11,20 @@ import (
 
 // IsCyclic reports whether x is a cyclic structure.
 func IsCyclic(x interface{}) bool {
-	seen := make(map[unsafe.Pointer]bool)
+	seen := make([]unsafe.Pointer, 0)
 	return isCyclic(reflect.ValueOf(x), seen)
 }
 
-func isCyclic(x reflect.Value, seen map[unsafe.Pointer]bool) bool {
+func hasSeen(seen []unsafe.Pointer, xptr unsafe.Pointer) bool {
+	for _, ptr := range seen {
+		if xptr == ptr {
+			return true
+		}
+	}
+	return false
+}
+
+func isCyclic(x reflect.Value, seen []unsafe.Pointer) bool {
 	if !x.IsValid() {
 		return false
 	}
@@ -24,10 +33,12 @@ func isCyclic(x reflect.Value, seen map[unsafe.Pointer]bool) bool {
 		x.Kind() != reflect.Struct &&
 		x.Kind() != reflect.Array {
 		xptr := unsafe.Pointer(x.UnsafeAddr())
-		if seen[xptr] {
+
+		if hasSeen(seen, xptr) {
 			return true
 		}
-		seen[xptr] = true
+
+		seen = append(seen, xptr)
 	}
 
 	switch x.Kind() {

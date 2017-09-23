@@ -1,3 +1,5 @@
+// Copyright © 2016, 2017 Yoshiki Shibata. All rights reserved.
+
 package main
 
 import "testing"
@@ -8,6 +10,7 @@ func TestCyclicLinkList(t *testing.T) {
 	type link struct {
 		value string
 		tail  *link
+		prev  *link
 	}
 
 	a, b, c := &link{value: "a"}, &link{value: "b"}, &link{value: "c"}
@@ -15,7 +18,7 @@ func TestCyclicLinkList(t *testing.T) {
 	a.tail, b.tail = b, a // cyclic
 	c.tail = c            // self cyclic
 
-	d.tail, e.tail = e, nil // non-cyclic
+	d.tail, d.prev, e.tail = e, e, nil // non-cyclic
 
 	for _, test := range []struct {
 		l      *link
