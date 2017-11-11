@@ -3,9 +3,9 @@
 package popcount_test
 
 import (
-	"ch11/ex06/popcount"
-
 	"testing"
+
+	"github.com/YoshikiShibata/gpl/ch11/ex06/popcount"
 )
 
 func TestZero(t *testing.T) {
