@@ -3,3 +3,14 @@ PASS
 BenchmarkConcat-8    1000000          1478 ns/op
 BenchmarkJoin-8      5000000           358 ns/op
 ok      ch01/ex03/concat    3.661s
+
+
+// 2017.11.25 1.3 GHz Intel Core M
+$ go test -bench=.
+goos: darwin
+goarch: amd64
+pkg: github.com/YoshikiShibata/gpl/ch01/ex03/concat
+BenchmarkConcat-4   	 1000000	      1371 ns/op
+BenchmarkJoin-4     	 5000000	       426 ns/op
+PASS
+ok  	github.com/YoshikiShibata/gpl/ch01/ex03/concat	3.878s

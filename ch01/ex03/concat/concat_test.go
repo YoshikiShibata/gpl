@@ -3,9 +3,10 @@
 package concat_test
 
 import (
-	"ch01/ex03/concat"
 	"strings"
 	"testing"
+
+	"github.com/YoshikiShibata/gpl/ch01/ex03/concat"
 )
 
 func TestConcatWithOneElement(t *testing.T) {
