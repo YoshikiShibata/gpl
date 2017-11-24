@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"testing"
 
-	"ch02/ex01/tempconv"
+	"github.com/YoshikiShibata/gpl/ch02/ex01/tempconv"
 )
 
 func TestCToF(t *testing.T) {

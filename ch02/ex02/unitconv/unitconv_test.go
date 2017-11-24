@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"testing"
 
-	"ch02/ex02/unitconv"
+	"github.com/YoshikiShibata/gpl/ch02/ex02/unitconv"
 )
 
 func TestCToF(t *testing.T) {
