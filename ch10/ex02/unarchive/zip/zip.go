@@ -4,9 +4,10 @@ package zip
 
 import (
 	"archive/zip"
-	"ch10/ex02/unarchive"
 	"io"
 	"os"
+
+	"github.com/YoshikiShibata/gpl/ch10/ex02/unarchive"
 )
 
 const magicNumber = "PK\003\004"

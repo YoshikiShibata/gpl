@@ -3,12 +3,13 @@
 package unarchive_test
 
 import (
-	"ch10/ex02/unarchive"
-	_ "ch10/ex02/unarchive/tar"
-	_ "ch10/ex02/unarchive/zip"
 	"io"
 	"os"
 	"testing"
+
+	"github.com/YoshikiShibata/gpl/ch10/ex02/unarchive"
+	_ "github.com/YoshikiShibata/gpl/ch10/ex02/unarchive/tar"
+	_ "github.com/YoshikiShibata/gpl/ch10/ex02/unarchive/zip"
 )
 
 func TestZip(t *testing.T) {

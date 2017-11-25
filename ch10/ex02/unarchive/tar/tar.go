@@ -4,9 +4,10 @@ package tar
 
 import (
 	"archive/tar"
-	"ch10/ex02/unarchive"
 	"io"
 	"os"
+
+	"github.com/YoshikiShibata/gpl/ch10/ex02/unarchive"
 )
 
 const magicNumber = "ustar"
