@@ -7,8 +7,8 @@ package memo_test
 import (
 	"testing"
 
-	"ch09/ex03/memo"
-	"ch09/ex03/memotest"
+	"github.com/YoshikiShibata/gpl/ch09/ex03/memo"
+	"github.com/YoshikiShibata/gpl/ch09/ex03/memotest"
 )
 
 var httpGetBody = memotest.HTTPGetBody

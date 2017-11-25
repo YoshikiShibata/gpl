@@ -3,10 +3,11 @@
 package popcount_test
 
 import (
-	"ch02/ex03/popcount"
 	"fmt"
 	"sync"
 	"testing"
+
+	"github.com/YoshikiShibata/gpl/ch09/ex02/popcount"
 )
 
 func TestInitPCOnce(t *testing.T) {

@@ -3,9 +3,10 @@
 package bank_test
 
 import (
-	"ch09/ex01/bank"
 	"fmt"
 	"testing"
+
+	"github.com/YoshikiShibata/gpl/ch09/ex01/bank"
 )
 
 func TestWithdrawNormal(t *testing.T) {
