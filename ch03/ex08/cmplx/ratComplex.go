@@ -194,8 +194,12 @@ func (rc *RatComplex) Quo(o *RatComplex) *RatComplex {
 	}
 
 	if o.IsZero() {
-		inf := math.Inf(0)
-		return &RatComplex{NewRatFloat(inf), NewRatFloat(inf)}
+		if rc.real_.Float64() != 0.0 {
+			return &RatComplex{NewRatFloat(math.Inf(0)),
+				NewRatFloat(math.NaN())}
+		}
+		return &RatComplex{NewRatFloat(math.NaN()),
+			NewRatFloat(math.Inf(0))}
 	}
 
 	// (a + bi) / (c + di)

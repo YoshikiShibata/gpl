@@ -3,12 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
+	mc "github.com/YoshikiShibata/gpl/ch03/ex08/cmplx"
 	"io"
 	"os"
 	"runtime/pprof"
 	"time"
-
-	mc "ch03/ex08/cmplx"
 )
 
 var floatType = flag.String("type", "complex128",

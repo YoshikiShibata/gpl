@@ -14,7 +14,7 @@ import (
 	"runtime"
 	"sync"
 
-	mc "ch03/ex08/cmplx"
+	mc "github.com/YoshikiShibata/gpl/ch03/ex08/cmplx"
 )
 
 func main() {

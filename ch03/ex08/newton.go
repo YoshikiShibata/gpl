@@ -6,6 +6,7 @@ package main
 
 import (
 	"fmt"
+	mc "github.com/YoshikiShibata/gpl/ch03/ex08/cmplx"
 	"image"
 	"image/color"
 	"image/png"
@@ -15,8 +16,6 @@ import (
 	"runtime"
 	"sync"
 	"time"
-
-	mc "ch03/ex08/cmplx"
 )
 
 func main() {

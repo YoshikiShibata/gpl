@@ -1,4 +1,4 @@
-// Copyright © 2016 Yoshiki Shibata
+// Copyright © 2016, 2017 Yoshiki Shibata
 
 package cmplx
 
@@ -106,6 +106,12 @@ func (fc *FloatComplex) Quo(o *FloatComplex) *FloatComplex {
 	}
 
 	if o.IsZero() {
+		r, _ := fc.real_.Float64()
+		i, _ := fc.imag_.Float64()
+		if r == 0.0 || i == 0.0 {
+			panic("Cannot Handle This")
+		}
+
 		inf := math.Inf(0)
 		return &FloatComplex{big.NewFloat(inf), big.NewFloat(inf)}
 	}

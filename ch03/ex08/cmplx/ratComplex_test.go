@@ -59,6 +59,7 @@ func TestMulRat(t *testing.T) {
 		{128.0, 128.0, '-', 256.0, 256.0},
 		{128.0, 128.0, '/', 256.0, 256.0},
 		{1.0, 0.0, '/', 0.0, 0.0},
+		{0.0, 1.0, '/', 0.0, 0.0},
 	} {
 		var rc *RatComplex
 		var cplx complex128
@@ -85,21 +86,34 @@ func TestMulRat(t *testing.T) {
 			t.Fatalf("Undefined op = %v", test.op)
 		}
 
-		verifyRatComplex(t, rc, cplx)
+		if !verifyRatComplex(t, rc, cplx) {
+			t.Logf("%f %f %c %f %f", test.r1, test.i1, test.op,
+				test.r2, test.i2)
+		}
 	}
 }
 
-func verifyRatComplex(t *testing.T, rc *RatComplex, cplx complex128) {
+func verifyRatComplex(t *testing.T, rc *RatComplex, cplx complex128) (ok bool) {
 	rcReal := rc.real().Float64()
 	rcImag := rc.imag().Float64()
 
-	if rcReal != real(cplx) {
-		t.Errorf("real is %g, want %g", rcReal, real(cplx))
+	ok = true
+
+	if !(math.IsNaN(rcReal) && math.IsNaN(real(cplx))) {
+		if rcReal != real(cplx) {
+			t.Errorf("real is %g, want %g", rcReal, real(cplx))
+			ok = false
+		}
 	}
 
-	if rcImag != imag(cplx) {
-		t.Errorf("img is %g, want %g", rcImag, imag(cplx))
+	if !(math.IsNaN(rcImag) && math.IsNaN(imag(cplx))) {
+		if rcImag != imag(cplx) {
+			t.Errorf("img is %g, want %g", rcImag, imag(cplx))
+			ok = false
+		}
 	}
+
+	return
 }
 
 func TestMulRatM(t *testing.T) {
@@ -149,14 +163,18 @@ func verifyRatComplexM(t *testing.T, rc *RatComplexM, cplx complex128) bool {
 	rcReal, _ := rc.real_.Float64()
 	rcImag, _ := rc.imag_.Float64()
 
-	if rcReal != real(cplx) {
-		t.Errorf("real is %g, want %g", rcReal, real(cplx))
-		return false
+	if !(math.IsNaN(rcReal) && math.IsNaN(real(cplx))) {
+		if rcReal != real(cplx) {
+			t.Errorf("real is %g, want %g", rcReal, real(cplx))
+			return false
+		}
 	}
 
-	if rcImag != imag(cplx) {
-		t.Errorf("img is %g, want %g", rcImag, imag(cplx))
-		return false
+	if !(math.IsNaN(rcImag) && math.IsNaN(imag(cplx))) {
+		if rcImag != imag(cplx) {
+			t.Errorf("img is %g, want %g", rcImag, imag(cplx))
+			return false
+		}
 	}
 	return true
 }
