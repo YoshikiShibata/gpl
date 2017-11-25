@@ -1,4 +1,4 @@
-// Copyright © 2016 Yoshiki Shibata
+// Copyright © 2016, 2017 Yoshiki Shibata
 
 package main
 
@@ -9,7 +9,7 @@ import (
 	"os"
 	"os/exec"
 
-	"ch04/ex11/github"
+	"github.com/YoshikiShibata/gpl/ch04/ex11/github"
 )
 
 // You need to get terminal package by the following command:

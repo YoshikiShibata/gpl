@@ -3,13 +3,14 @@
 package main
 
 import (
-	"ch04/ex14/github"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
 	"strconv"
 	"strings"
+
+	"github.com/YoshikiShibata/gpl/ch04/ex14/github"
 )
 
 // This web server caches following information for a specific repository:

@@ -1,10 +1,11 @@
-// Copyright © 2015, 2016 Yoshiki Shibata.
+// Copyright © 2015, 2016, 2017 Yoshiki Shibata.
 
 package comma_test
 
 import (
-	"ch03/ex10/comma"
 	"testing"
+
+	"github.com/YoshikiShibata/gpl/ch03/ex10/comma"
 )
 
 var data = []struct {
