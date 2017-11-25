@@ -1,13 +1,14 @@
-// Copyright © 2016 Yoshiki Shibata. All rights reserved.
+// Copyright © 2016, 2017 Yoshiki Shibata. All rights reserved.
 
 package params_test
 
 import (
-	"ch12/ex12/params"
 	"net/http"
 	"net/url"
 	"reflect"
 	"testing"
+
+	"github.com/YoshikiShibata/gpl/ch12/ex12/params"
 )
 
 //+ Exercise 12.12
@@ -24,7 +25,7 @@ func TestUnpack(t *testing.T) {
 		data Data
 	}{
 		{`http://localhost:12345/search`, Data{nil, 10, false}},
-		{`'http://localhost:12345/search?l=golang&l=programming`,
+		{`http://localhost:12345/search?l=golang&l=programming`,
 			Data{[]string{"golang", "programming"}, 10, false}},
 		{`http://localhost:12345/search?l=golang&l=programming&max=100`,
 			Data{[]string{"golang", "programming"}, 100, false}},
@@ -71,21 +72,21 @@ func TestUnpackExtension(t *testing.T) {
 		data Data
 	}{
 		{`http://localhost:12345/search`, false, Data{"", "", ""}},
-		{`'http://localhost:12345/search?m=yoshiki.shibata@gmail.com`, false,
+		{`http://localhost:12345/search?m=yoshiki.shibata@gmail.com`, false,
 			Data{Mail: "yoshiki.shibata@gmail.com"}},
-		{`'http://localhost:12345/search?m=@`, true, Data{}},
-		{`'http://localhost:12345/search?m=yoshiki.shibata@`, true, Data{}},
-		{`'http://localhost:12345/search?m=@gmail.com`, true, Data{}},
-		{`'http://localhost:12345/search?c=1234567890`, false,
+		{`http://localhost:12345/search?m=@`, true, Data{}},
+		{`http://localhost:12345/search?m=yoshiki.shibata@`, true, Data{}},
+		{`http://localhost:12345/search?m=@gmail.com`, true, Data{}},
+		{`http://localhost:12345/search?c=1234567890`, false,
 			Data{CreditNumber: "1234567890"}},
-		{`'http://localhost:12345/search?c=1`, true, Data{}},
-		{`'http://localhost:12345/search?c=12345678901`, true, Data{}},
-		{`'http://localhost:12345/search?c=xyz`, true, Data{}},
-		{`'http://localhost:12345/search?z=2270038`, false,
+		{`http://localhost:12345/search?c=1`, true, Data{}},
+		{`http://localhost:12345/search?c=12345678901`, true, Data{}},
+		{`http://localhost:12345/search?c=xyz`, true, Data{}},
+		{`http://localhost:12345/search?z=2270038`, false,
 			Data{ZipCode: "2270038"}},
-		{`'http://localhost:12345/search?z=2`, true, Data{}},
-		{`'http://localhost:12345/search?z=22700380`, true, Data{}},
-		{`'http://localhost:12345/search?z=xyz`, true, Data{}},
+		{`http://localhost:12345/search?z=2`, true, Data{}},
+		{`http://localhost:12345/search?z=22700380`, true, Data{}},
+		{`http://localhost:12345/search?z=xyz`, true, Data{}},
 	} {
 		var data Data
 
