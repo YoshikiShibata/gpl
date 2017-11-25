@@ -10,7 +10,7 @@ import (
 	"sync"
 	"testing"
 
-	"ch13/ex03/bzip" // writer
+	"github.com/YoshikiShibata/gpl/ch13/ex03/bzip" // writer
 )
 
 func TestBzip2(t *testing.T) {
