@@ -5,12 +5,12 @@ import (
 	"log"
 	"net/http"
 
-	"./eval"
+	"github.com/YoshikiShibata/gpl/ch07/ex16/eval"
 )
 
 func main() {
-	fmt.Println("For + sign, use '%2b'")
-	fmt.Println(`ex) http://localhost:8000/calc?expr=(1.1 * 2 %2b 3)*3&expr=355/113`)
+	fmt.Printf("For + sign, use '%%2b'\n")
+	fmt.Printf("ex) http://localhost:8000/calc?expr=(1.1 * 2 %%2b 3)*3&expr=355/113")
 	http.HandleFunc("/calc", calc)
 	log.Fatal(http.ListenAndServe("localhost:8000", nil))
 }

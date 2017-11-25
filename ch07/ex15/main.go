@@ -8,7 +8,7 @@ import (
 	"io"
 	"os"
 
-	"./eval"
+	"github.com/YoshikiShibata/gpl/ch07/ex15/eval"
 )
 
 func main() {

@@ -4,10 +4,11 @@
 package treesort_test
 
 import (
-	"ch07/ex03"
 	"math/rand"
 	"sort"
 	"testing"
+
+	"github.com/YoshikiShibata/gpl/ch07/ex03"
 )
 
 func TestSort(t *testing.T) {
@@ -17,6 +18,6 @@ func TestSort(t *testing.T) {
 	}
 	treesort.Sort(data)
 	if !sort.IntsAreSorted(data) {
-		t.Errorf("not sorted: %s", data)
+		t.Errorf("not sorted: %v", data)
 	}
 }
