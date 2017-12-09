@@ -1,4 +1,4 @@
-// Copyright © 2015 Yoshiki Shibata
+// Copyright © 2015, 2017 Yoshiki Shibata
 
 package popcount_test
 
@@ -92,28 +92,38 @@ func testEachOneBit(t *testing.T, popCount func(uint64) int) {
 	}
 }
 
+var result int
+
 func benchmarkPopCount(b *testing.B, v uint64) {
+	var tmp int
 	for i := 0; i < b.N; i++ {
-		popcount.PopCount(v)
+		tmp = popcount.PopCount(v)
 	}
+	result = tmp
 }
 
 func benchmarkPopCountByShifting(b *testing.B, v uint64) {
+	var tmp int
 	for i := 0; i < b.N; i++ {
-		popcount.PopCountByShifting(v)
+		tmp = popcount.PopCountByShifting(v)
 	}
+	result = tmp
 }
 
 func benchmarkPopCountByClearingBit(b *testing.B, v uint64) {
+	var tmp int
 	for i := 0; i < b.N; i++ {
-		popcount.PopCountByClearingBit(v)
+		tmp = popcount.PopCountByClearingBit(v)
 	}
+	result = tmp
 }
 
 func benchmarkBitCount(b *testing.B, v uint64) {
+	var tmp int
 	for i := 0; i < b.N; i++ {
-		popcount.BitCount(v)
+		tmp = popcount.BitCount(v)
 	}
+	result = tmp
 }
 
 func BenchmarkPopCount_0(b *testing.B)              { benchmarkPopCount(b, 0x0) }
@@ -145,4 +155,26 @@ BenchmarkPopCount-8          	200000000	        5.66 ns/op
 BenchmarkPopCountByShifting-8	20000000	        67.6 ns/op
 BenchmarkPopByClearingBit-8  	50000000	        28.2 ns/op
 BenchmarkBitCount-8          	1000000000	        2.29 ns/op
+*/
+
+/* Go1.10 beta 2017-12-9
+goos: darwin
+goarch: amd64
+pkg: github.com/YoshikiShibata/gpl/ch11/ex06/popcount
+BenchmarkPopCount_0-4                       	300000000	         4.52 ns/op
+BenchmarkPopCountbyShifting_0-4             	20000000	        86.0 ns/op
+BenchmarkPopCountByClearingBit_0-4          	1000000000	         2.48 ns/op
+BenchmarkBitCount_0-4                       	500000000	         3.45 ns/op
+BenchmarkPopCount_FFFF-4                    	300000000	         4.67 ns/op
+BenchmarkPopCountbyShifting_FFFF-4          	20000000	        84.1 ns/op
+BenchmarkPopCountByClearingBit_FFFF-4       	100000000	        12.1 ns/op
+BenchmarkBitCount_FFFF-4                    	500000000	         3.31 ns/op
+BenchmarkPopCount_FFFFFFFF-4                	300000000	         4.57 ns/op
+BenchmarkPopCountbyShifting_FFFFFFFF-4      	20000000	        85.4 ns/op
+BenchmarkPopCountByClearingBit_FFFFFFFF-4   	100000000	        24.0 ns/op
+BenchmarkBitCount_FFFFFFFF-4                	500000000	         3.29 ns/op
+BenchmarkPopCount_AllOnes-4                 	300000000	         4.41 ns/op
+BenchmarkPopCountbyShifting_AllOnes-4       	20000000	        82.8 ns/op
+BenchmarkPopCountByClearingBit_AllOnes-4    	30000000	        53.6 ns/op
+BenchmarkBitCount_AllOnes-4                 	500000000	         3.21 ns/op
 */
