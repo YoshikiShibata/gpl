@@ -97,34 +97,47 @@ func testEachOneBit(t *testing.T, popCount func(uint64) int) {
 	}
 }
 
+var value uint64 = 0x1234567890ABCDEF
+var result int
+
 func BenchmarkPopCount(b *testing.B) {
+	var tmp int
 	for i := 0; i < b.N; i++ {
-		popcount.PopCount(0x1234567890ABCDEF)
+		tmp = popcount.PopCount(value)
 	}
+	result = tmp
 }
 
 func BenchmarkPopCountByShifting(b *testing.B) {
+	var tmp int
 	for i := 0; i < b.N; i++ {
-		popcount.PopCountByShifting(0x1234567890ABCDEF)
+		tmp = popcount.PopCountByShifting(value)
 	}
+	result = tmp
 }
 
 func BenchmarkPopByClearingBit(b *testing.B) {
+	var tmp int
 	for i := 0; i < b.N; i++ {
-		popcount.PopCountByClearingBit(0x1234567890ABCDEF)
+		tmp = popcount.PopCountByClearingBit(value)
 	}
+	result = tmp
 }
 
 func BenchmarkBitCount(b *testing.B) {
+	var tmp int
 	for i := 0; i < b.N; i++ {
-		popcount.BitCount(0x1234567890ABCDEF)
+		tmp = popcount.BitCount(value)
 	}
+	result = tmp
 }
 
 func BenchmarkOnesCount(b *testing.B) {
+	var tmp int
 	for i := 0; i < b.N; i++ {
-		popcount.OnesCount(0x1234567890ABCDEF)
+		tmp = popcount.OnesCount(value)
 	}
+	result = tmp
 }
 
 /*
@@ -132,4 +145,12 @@ BenchmarkPopCount-8          	200000000	        5.66 ns/op
 BenchmarkPopCountByShifting-8	20000000	        67.6 ns/op
 BenchmarkPopByClearingBit-8  	50000000	        28.2 ns/op
 BenchmarkBitCount-8          	1000000000	        2.29 ns/op
+*/
+
+/* Go1.10 beta 2017-12-9
+BenchmarkPopCount-4             	300000000	         4.50 ns/op
+BenchmarkPopCountByShifting-4   	10000000	       100 ns/op
+BenchmarkPopByClearingBit-4     	50000000	        39.6 ns/op
+BenchmarkBitCount-4             	500000000	         3.13 ns/op
+BenchmarkOnesCount-4            	2000000000	         0.94 ns/op
 */
