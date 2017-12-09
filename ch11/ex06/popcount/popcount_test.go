@@ -92,38 +92,41 @@ func testEachOneBit(t *testing.T, popCount func(uint64) int) {
 	}
 }
 
-var result int
+// Exported (global) variable to store function outputs
+// during benchmarking to ensure side-effect free calls
+// are not optimized away.
+var output int
 
 func benchmarkPopCount(b *testing.B, v uint64) {
-	var tmp int
+	var s int
 	for i := 0; i < b.N; i++ {
-		tmp = popcount.PopCount(v)
+		s += popcount.PopCount(v)
 	}
-	result = tmp
+	output = s
 }
 
 func benchmarkPopCountByShifting(b *testing.B, v uint64) {
-	var tmp int
+	var s int
 	for i := 0; i < b.N; i++ {
-		tmp = popcount.PopCountByShifting(v)
+		s += popcount.PopCountByShifting(v)
 	}
-	result = tmp
+	output = s
 }
 
 func benchmarkPopCountByClearingBit(b *testing.B, v uint64) {
-	var tmp int
+	var s int
 	for i := 0; i < b.N; i++ {
-		tmp = popcount.PopCountByClearingBit(v)
+		s += popcount.PopCountByClearingBit(v)
 	}
-	result = tmp
+	output = s
 }
 
 func benchmarkBitCount(b *testing.B, v uint64) {
-	var tmp int
+	var s int
 	for i := 0; i < b.N; i++ {
-		tmp = popcount.BitCount(v)
+		s += popcount.BitCount(v)
 	}
-	result = tmp
+	output = s
 }
 
 func BenchmarkPopCount_0(b *testing.B)              { benchmarkPopCount(b, 0x0) }

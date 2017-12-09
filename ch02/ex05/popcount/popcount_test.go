@@ -1,4 +1,4 @@
-// Copyright © 2015 Yoshiki Shibata
+// Copyright © 2015, 2017 Yoshiki Shibata
 
 package popcount_test
 
@@ -17,10 +17,10 @@ func TestZero(t *testing.T) {
 }
 
 func testZero(t *testing.T, popCount func(uint64) int) {
-	result := popCount(0)
+	output := popCount(0)
 
-	if result != 0 {
-		t.Errorf("PopCount is %d, want 0", result)
+	if output != 0 {
+		t.Errorf("PopCount is %d, want 0", output)
 	}
 }
 
@@ -33,10 +33,10 @@ func TestAllBits(t *testing.T) {
 }
 
 func testAllBits(t *testing.T, popCount func(uint64) int) {
-	result := popCount(0xffffffffffffffff)
+	output := popCount(0xffffffffffffffff)
 
-	if result != 64 {
-		t.Errorf("PopCount is %d, want 64", result)
+	if output != 64 {
+		t.Errorf("PopCount is %d, want 64", output)
 	}
 }
 
@@ -51,10 +51,10 @@ func TestEachByte(t *testing.T) {
 func testEachByte(t *testing.T, popCount func(uint64) int) {
 	for i := 0; i < 8; i++ {
 		var value uint64 = 0xff << (uint(i) * 8)
-		result := popCount(value)
+		output := popCount(value)
 
-		if result != 8 {
-			t.Errorf("PopCount(%x) is %d, want 8", value, result)
+		if output != 8 {
+			t.Errorf("PopCount(%x) is %d, want 8", value, output)
 		}
 	}
 }
@@ -70,10 +70,10 @@ func Test0x5555(t *testing.T) {
 func test0x5555(t *testing.T, popCount func(uint64) int) {
 	for i := 0; i < 4; i++ {
 		var value uint64 = 0x5555 << (uint(i) * 8)
-		result := popCount(value)
+		output := popCount(value)
 
-		if result != 8 {
-			t.Errorf("PopCount(%x) is %d, want 8", value, result)
+		if output != 8 {
+			t.Errorf("PopCount(%x) is %d, want 8", value, output)
 		}
 	}
 }
@@ -89,55 +89,62 @@ func TestEachOneBit(t *testing.T) {
 func testEachOneBit(t *testing.T, popCount func(uint64) int) {
 	for i := 0; i < 64; i++ {
 		var value uint64 = 1 << uint(i)
-		result := popCount(value)
+		output := popCount(value)
 
-		if result != 1 {
-			t.Errorf("PopCount(%x) is %d, want 1", value, result)
+		if output != 1 {
+			t.Errorf("PopCount(%x) is %d, want 1", value, output)
 		}
 	}
 }
 
-var value uint64 = 0x1234567890ABCDEF
-var result int
+// Exported (global) variable serving as input for some
+// of the benchmarks to ensure side-effect free calls
+// are not optimized away.
+var input uint64 = 0x1234567890ABCDEF
+
+// Exported (global) variable to store function outputs
+// during benchmarking to ensure side-effect free calls
+// are not optimized away.
+var output int
 
 func BenchmarkPopCount(b *testing.B) {
-	var tmp int
+	var s int
 	for i := 0; i < b.N; i++ {
-		tmp = popcount.PopCount(value)
+		s += popcount.PopCount(input)
 	}
-	result = tmp
+	output = s
 }
 
 func BenchmarkPopCountByShifting(b *testing.B) {
-	var tmp int
+	var s int
 	for i := 0; i < b.N; i++ {
-		tmp = popcount.PopCountByShifting(value)
+		s += popcount.PopCountByShifting(input)
 	}
-	result = tmp
+	output = s
 }
 
 func BenchmarkPopByClearingBit(b *testing.B) {
-	var tmp int
+	var s int
 	for i := 0; i < b.N; i++ {
-		tmp = popcount.PopCountByClearingBit(value)
+		s += popcount.PopCountByClearingBit(input)
 	}
-	result = tmp
+	output = s
 }
 
 func BenchmarkBitCount(b *testing.B) {
-	var tmp int
+	var s int
 	for i := 0; i < b.N; i++ {
-		tmp = popcount.BitCount(value)
+		s += popcount.BitCount(input)
 	}
-	result = tmp
+	output = s
 }
 
 func BenchmarkOnesCount(b *testing.B) {
-	var tmp int
+	var s int
 	for i := 0; i < b.N; i++ {
-		tmp = popcount.OnesCount(value)
+		s += popcount.OnesCount(input)
 	}
-	result = tmp
+	output = s
 }
 
 /*
