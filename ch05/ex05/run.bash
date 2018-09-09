@@ -1,7 +1,14 @@
-#!/bin/bash 
+#!/bin/bash -x
 
-# Copyright (C) 2016 Yoshiki Shibata. All rights reserved.
+# Copyright (C) 2016, 2018 Yoshiki Shibata. All rights reserved.
 
 go build -o wai
 
-./wai https://golang.org https://www.ricoh.co.jp http://yshibata.blog.so-net.ne.jp
+./wai https://golang.org \
+		https://www.ricoh.co.jp \
+		https://yshibata.blog.so-net.ne.jp\
+		https://jp.merpay.com
+
+# clean
+
+rm wai
