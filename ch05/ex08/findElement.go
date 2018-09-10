@@ -1,4 +1,4 @@
-// Copyright © 2016 Yoshiki Shibata. All rights reserved.
+// Copyright © 2016, 2018 Yoshiki Shibata. All rights reserved.
 
 // Outline prints the outline of an HTML document tree.
 // findElement prints the first HTML element with the specified id attribute
@@ -18,21 +18,21 @@ func main() {
 		os.Exit(1)
 	}
 
-	findElement(os.Args[1], os.Args[2])
+	if err := findElement(os.Args[1], os.Args[2]); err != nil {
+		fmt.Printf("findElement failed: %v\n", err)
+	}
 }
 
-func findElement(url, id string) {
+func findElement(url, id string) error {
 	resp, err := http.Get(url)
 	if err != nil {
-		fmt.Printf("%v\n", err)
-		os.Exit(1)
+		return err
 	}
 	defer resp.Body.Close()
 
 	doc, err := html.Parse(resp.Body)
 	if err != nil {
-		fmt.Printf("%v\n", err)
-		os.Exit(1)
+		return err
 	}
 
 	node := ElementByID(doc, id)
@@ -41,6 +41,7 @@ func findElement(url, id string) {
 	} else {
 		printNode(node)
 	}
+	return nil
 }
 
 func printNode(n *html.Node) {

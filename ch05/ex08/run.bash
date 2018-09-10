@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash +x
 
 # Copyright (C) 2016 Yoshiki Shibata. All rights reserved.
 
@@ -8,3 +8,6 @@ if [ $? != 0 ]; then
 fi 
 ./findElement http://www.gopl.io/ name
 ./findElement http://www.gopl.io/ system
+
+# clean
+rm findElement
