@@ -9,6 +9,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strings"
 
 	"golang.org/x/net/html"
 )
@@ -77,16 +78,25 @@ func startElement(w io.Writer, n *html.Node) {
 		return
 	case html.CommentNode:
 	case html.DoctypeNode:
+		startDocktypeNode(w, n)
+	}
+}
+
+func endElement(w io.Writer, n *html.Node) {
+	switch n.Type {
+	case html.ErrorNode:
+	case html.TextNode:
+		return // don't pop
+	case html.DocumentNode:
+	case html.ElementNode:
+		endElementNode(w, n)
+		return
+	case html.CommentNode:
+	case html.DoctypeNode:
 	}
 }
 
 func startTextNode(w io.Writer, n *html.Node) {
-	/*
-		text := strings.TrimSpace(n.Data)
-		if text != "" {
-			fmt.Fprintf("%s", text)
-		}
-	*/
 	fmt.Fprintf(w, "%s", n.Data)
 }
 
@@ -128,62 +138,51 @@ func endElementNode(w io.Writer, n *html.Node) {
 	depth--
 }
 
-func endElement(w io.Writer, n *html.Node) {
-	switch n.Type {
-	case html.ErrorNode:
-	case html.TextNode:
-		return // don't pop
-	case html.DocumentNode:
-	case html.ElementNode:
-		endElementNode(w, n)
-		return
-	case html.CommentNode:
-	case html.DoctypeNode:
-	}
-}
-
 func attributes(attr []html.Attribute) string {
-	var buf bytes.Buffer
+	var builder strings.Builder
 
 	for i, a := range attr {
 		if i != 0 {
-			buf.WriteString(" ")
+			builder.WriteString(" ")
+
 		}
 		if a.Namespace == "" {
-			buf.WriteString(a.Key)
-			buf.WriteString(`="`)
-			buf.WriteString(a.Val)
-			buf.WriteString(`"`)
+			builder.WriteString(a.Key)
+			builder.WriteString(`="`)
+			builder.WriteString(a.Val)
+			builder.WriteString(`"`)
 		} else {
-			buf.WriteString(a.Namespace)
-			buf.WriteString(":")
-			buf.WriteString(a.Key)
-			buf.WriteString(`="`)
-			buf.WriteString(a.Val)
-			buf.WriteString(`"`)
+			builder.WriteString(a.Namespace)
+			builder.WriteString(":")
+			builder.WriteString(a.Key)
+			builder.WriteString(`="`)
+			builder.WriteString(a.Val)
+			builder.WriteString(`"`)
 		}
 	}
-	return buf.String()
+	return builder.String()
 }
 
-func printDoctype(n *html.Node) {
+func startDocktypeNode(w io.Writer, n *html.Node) {
 	if n.Type != html.DoctypeNode {
 		panic("Illegal Argument")
 	}
 
-	var buf bytes.Buffer
+	var builder strings.Builder
 
-	buf.WriteString("<!DOCTYPE ")
-	buf.WriteString(n.Namespace)
+	builder.WriteString("<!DOCTYPE ")
+	builder.WriteString(n.Namespace)
 
 	for i, a := range n.Attr {
 		if i != 0 {
-			buf.WriteString(" ")
+			builder.WriteString(" ")
 		}
 
 		if a.Key == "public" {
-			buf.WriteString("PUBLIC ")
-			buf.WriteString(`"`)
+			builder.WriteString("PUBLIC ")
+			builder.WriteString(`"`)
 		}
 	}
+
+	io.WriteString(w, builder.String())
 }
