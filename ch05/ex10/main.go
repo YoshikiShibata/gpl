@@ -1,5 +1,5 @@
 // Copyright © 2016 Alan A. A. Donovan & Brian W. Kernighan.
-// Copyright © 2016 Yoshiki Shibata. All rights reserved.
+// Copyright © 2016, 2018 Yoshiki Shibata. All rights reserved.
 // License: https://creativecommons.org/licenses/by-nc-sa/4.0/
 
 // The toposort program prints the nodes of a DAG in topological order.
@@ -7,30 +7,41 @@ package main
 
 import "fmt"
 
+type itemSet map[string]bool
+
+func (is itemSet) add(items ...string) {
+	for _, item := range items {
+		is[item] = true
+	}
+}
+
+func newItemSet(items ...string) itemSet {
+	is := make(itemSet)
+	is.add(items...)
+	return is
+}
+
 // prereqs maps computer science courses to their prerequisites.
-var prereqs = map[string]map[string]bool{
-	"algorithms": {"data structures": true},
-	"calculus":   {"linear algebra": true},
+var prereqs = map[string]itemSet{
+	"algorithms": newItemSet("data structures"),
+	"calculus":   newItemSet("linear algebra"),
 
-	"compilers": {
-		"data structures":       true,
-		"formal languages":      true,
-		"computer organization": true,
-	},
+	"compilers": newItemSet(
+		"data structures",
+		"formal languages",
+		"computer organization"),
 
-	"data structures":  {"discrete math": true},
-	"databases":        {"data structures": true},
-	"discrete math":    {"intro to programming": true},
-	"formal languages": {"discrete math": true},
-	"networks":         {"operating systems": true},
-	"operating systems": {
-		"data structures":       true,
-		"computer organization": true,
-	},
-	"programming languages": {
-		"data structures":       true,
-		"computer organization": true,
-	},
+	"data structures":  newItemSet("discrete math"),
+	"databases":        newItemSet("data structures"),
+	"discrete math":    newItemSet("intro to programming"),
+	"formal languages": newItemSet("discrete math"),
+	"networks":         newItemSet("operating systems"),
+	"operating systems": newItemSet(
+		"data structures",
+		"computer organization"),
+	"programming languages": newItemSet(
+		"data structures",
+		"computer organization"),
 }
 
 func main() {
@@ -41,12 +52,12 @@ func main() {
 	fmt.Printf("Topological Orderings: %v\n", isTopologicalOrdered(ts))
 }
 
-func topoSort(m map[string]map[string]bool) []string {
+func topoSort(m map[string]itemSet) []string {
 	var order []string
 	seen := make(map[string]bool)
-	var visitAll func(items map[string]bool)
+	var visitAll func(items itemSet)
 
-	visitAll = func(items map[string]bool) {
+	visitAll = func(items itemSet) {
 		for item := range items {
 			if !seen[item] {
 				seen[item] = true
@@ -56,12 +67,12 @@ func topoSort(m map[string]map[string]bool) []string {
 		}
 	}
 
-	keys := make(map[string]bool)
-	for key := range m {
-		keys[key] = true
+	items := newItemSet()
+	for item := range m {
+		items.add(item)
 	}
 
-	visitAll(keys)
+	visitAll(items)
 	return order
 }
 
