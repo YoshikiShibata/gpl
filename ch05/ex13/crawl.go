@@ -1,4 +1,5 @@
 // Copyright © 2016 Alan A. A. Donovan & Brian W. Kernighan.
+// Copyright © 2016, 2018 Yoshiki Shibata. All rights reserved.
 // License: https://creativecommons.org/licenses/by-nc-sa/4.0/
 
 // Localcopies makes local copies of the pages, starting with the URLs on the command line.
