@@ -66,3 +66,8 @@ func BenchmarkStrings_Join(b *testing.B) {
 // BenchmarkJoin-8           	 1000000	      1331 ns/op
 // BenchmarkJoin2-8          	 3000000	       689 ns/op
 // BenchmarkStrings_Join-8   	 2000000	       669 ns/op
+
+// 2018.9.13 1.3GHz Intel Core M . 8GB 1600 MHz DDR3
+// BenchmarkJoin-4           	 2000000	       700 ns/op
+// BenchmarkJoin2-4          	 3000000	       446 ns/op
+// BenchmarkStrings_Join-4   	 5000000	       263 ns/op
