@@ -1,5 +1,5 @@
 // Copyright © 2016 Alan A. A. Donovan & Brian W. Kernighan.
-// License: https://creativecommons.org/licenses/by-nc-sa/4.0/
+// Copyright © 2016, 2018 Yoshiki Shibata. All rights reserved.
 
 // The toposort program prints the nodes of a DAG in topological order.
 package main
@@ -31,26 +31,44 @@ var prereqs = map[string][]string{
 }
 
 func main() {
-	ts := topoSort(prereqs)
+	ts, err := topoSort(prereqs)
+
 	for i, course := range ts {
 		fmt.Printf("%d:\t%s\n", i+1, course)
 	}
-	fmt.Printf("%v\n", isTopologicalOrdered(ts))
+
+	if err != nil {
+		fmt.Printf("%v\n", err)
+		return
+	}
 }
 
-func topoSort(m map[string][]string) []string {
+func topoSort(m map[string][]string) ([]string, error) {
 	var order []string
 	seen := make(map[string]bool)
-	var visitAll func(items []string)
+	var visitAll func(items []string) error
 
-	visitAll = func(items []string) {
+	visitAll = func(items []string) error {
 		for _, item := range items {
 			if !seen[item] {
 				seen[item] = true
-				visitAll(m[item])
+				if err := visitAll(m[item]); err != nil {
+					return err
+				}
+
+				for _, orderedItem := range order {
+					for _, prereq := range m[orderedItem] {
+						if prereq == item {
+							return fmt.Errorf("%q and %q are cycled",
+								orderedItem, item)
+						}
+					}
+				}
+
 				order = append(order, item)
 			}
 		}
+		return nil
 	}
 
 	var keys []string
@@ -59,23 +77,6 @@ func topoSort(m map[string][]string) []string {
 	}
 
 	sort.Strings(keys)
-	visitAll(keys)
-	return order
-}
-
-func isTopologicalOrdered(ts []string) error {
-	nodes := make(map[string]int)
-
-	for i, course := range ts {
-		nodes[course] = i
-	}
-
-	for course, i := range nodes {
-		for _, prereq := range prereqs[course] {
-			if i < nodes[prereq] {
-				return fmt.Errorf(`"%s" and "%s" are cycled`, course, prereq)
-			}
-		}
-	}
-	return nil
+	err := visitAll(keys)
+	return order, err
 }
