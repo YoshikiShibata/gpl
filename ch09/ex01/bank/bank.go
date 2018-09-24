@@ -1,4 +1,4 @@
-// Copyright © 2016 Yoshiki Shibata. All rights reserved.
+// Copyright © 2016, 2018 Yoshiki Shibata. All rights reserved.
 
 package bank
 
@@ -18,8 +18,7 @@ func Balance() int       { return <-balances }
 
 func Withdraw(amount int) bool {
 	resultc := make(chan bool)
-	var req = withdrawReq{amount, resultc}
-	withdraws <- &req
+	withdraws <- &withdrawReq{amount, resultc}
 	return <-resultc
 }
 
