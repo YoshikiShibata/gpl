@@ -1,5 +1,5 @@
 // Copyright © 2016 Alan A. A. Donovan & Brian W. Kernighan.
-// Copyright © 2016 Yoshiki Shibata. All rights reserved.
+// Copyright © 2016, 2018 Yoshiki Shibata. All rights reserved.
 // License: https://creativecommons.org/licenses/by-nc-sa/4.0/
 
 // Package memo provides a concurrency-safe non-blocking memoization
@@ -88,7 +88,8 @@ func (memo *Memo) server(f Func) {
 		}
 
 		if e == nil {
-			// This is the first request for this key.
+			// This is the first request for this key or the previous
+			// request might have been cancelled.
 			e = &entry{ready: make(chan struct{})}
 			cache[req.key] = e
 			go e.call(f, req.key, req.done) // call f(key)
