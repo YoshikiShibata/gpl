@@ -34,3 +34,37 @@ real    0m2.018s
 user    0m10.148s
 sys 0m0.044s
 
+---------------
+2018.09.28 1.3 GHz Intel Core M 8GB memory
+
+Madelbrot with multiple goroutines
+
+GOMAXPROCS=1
+
+real	0m7.328s
+user	0m7.159s
+sys	0m0.091s
+
+GOMAXPROCS=2
+
+real	0m4.354s
+user	0m7.461s
+sys	0m0.096s
+
+GOMAXPROCS=4
+
+real	0m4.227s
+user	0m12.991s
+sys	0m0.130s
+
+GOMAXPROCS=8
+
+real	0m4.387s
+user	0m13.275s
+sys	0m0.146s
+
+GOMAXPROCS=16
+
+real	0m4.377s
+user	0m13.482s
+sys	0m0.151
