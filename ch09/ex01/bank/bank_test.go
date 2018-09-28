@@ -4,6 +4,7 @@ package bank_test
 
 import (
 	"fmt"
+	"sync"
 	"testing"
 
 	"github.com/YoshikiShibata/gpl/ch09/ex01/bank"
@@ -53,5 +54,54 @@ func TestBank(t *testing.T) {
 
 	if got, want := bank.Balance(), 300; got != want {
 		t.Errorf("Balance = %d, want %d", got, want)
+	}
+}
+
+func TestConcurrentBankAccess(t *testing.T) {
+	for i := 0; i < 10000; i++ {
+		concurrentBankAccess(t)
+		if t.Failed() {
+			return
+		}
+	}
+}
+func concurrentBankAccess(t *testing.T) {
+	balance := bank.Balance()
+	if balance > 0 {
+		_ = bank.Withdraw(balance)
+	}
+	balance = bank.Balance()
+	if balance != 0 {
+		t.Errorf("bank.Balance is %d, but want 0", balance)
+		return
+	}
+
+	bank.Deposit(100)
+
+	readyGo := make(chan struct{})
+	result := make(chan bool)
+	var wg sync.WaitGroup
+	const numOfGoroutines = 10
+	wg.Add(numOfGoroutines)
+	for i := 0; i < numOfGoroutines; i++ {
+		go func() {
+			wg.Done()
+			<-readyGo
+			result <- bank.Withdraw(60)
+		}()
+	}
+	wg.Wait()
+	close(readyGo)
+
+	okCount := 0
+	for i := 0; i < numOfGoroutines; i++ {
+		if <-result {
+			okCount++
+		}
+	}
+	close(result)
+
+	if okCount != 1 {
+		t.Errorf("okCount is %d, but want 1", okCount)
 	}
 }
