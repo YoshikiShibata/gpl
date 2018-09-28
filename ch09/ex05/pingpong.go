@@ -70,3 +70,10 @@ func pingPong(in <-chan struct{}, out chan<- struct{},
 // Elapsed Time = 1m40.000101093s
 // 537087 per second
 // 537087 per second
+
+// 1.3GHz Intel Core M, MacOS X
+// 2018.9.28 Go1.12 tip version
+// $ GOMAXPROCS=1 go run pingpong.go
+// Elapsed Time = 1m40.056992551s
+// 1050995 per second
+// 1050995 per second
