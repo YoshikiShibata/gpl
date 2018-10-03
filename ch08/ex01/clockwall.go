@@ -1,4 +1,4 @@
-// Copyright © 2016 Yoshiki Shibata. All rights reserved.
+// Copyright © 2016, 2018 Yoshiki Shibata. All rights reserved.
 
 // Netcat is a read-only TCP client.
 package main
@@ -50,7 +50,7 @@ func showWorldTimes(out <-chan time, noOfClocks int) {
 		t := <-out
 		times[t.index] = t.time
 	}
-	fmt.Println(strings.Join(times, " "))
+	fmt.Printf("\r%s", strings.Join(times, " "))
 }
 
 func showWorldClock(wc *worldClock, out chan<- time, index int) {
