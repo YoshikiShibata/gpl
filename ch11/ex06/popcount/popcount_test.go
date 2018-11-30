@@ -129,29 +129,29 @@ func benchmarkBitCount(b *testing.B, v uint64) {
 	output = s
 }
 
-func BenchmarkPopCount_0(b *testing.B)              { benchmarkPopCount(b, 0x0) }
-func BenchmarkPopCountbyShifting_0(b *testing.B)    { benchmarkPopCountByShifting(b, 0x0) }
-func BenchmarkPopCountByClearingBit_0(b *testing.B) { benchmarkPopCountByClearingBit(b, 0x0) }
-func BenchmarkBitCount_0(b *testing.B)              { benchmarkBitCount(b, 0x0) }
+const allOnes = 0xFFFFFFFFFFFFFF
 
-func BenchmarkPopCount_FFFF(b *testing.B)              { benchmarkPopCount(b, 0xFFFF) }
-func BenchmarkPopCountbyShifting_FFFF(b *testing.B)    { benchmarkPopCountByShifting(b, 0xFFFF) }
-func BenchmarkPopCountByClearingBit_FFFF(b *testing.B) { benchmarkPopCountByClearingBit(b, 0xFFFF) }
-func BenchmarkBitCount_FFFF(b *testing.B)              { benchmarkBitCount(b, 0xFFFF) }
+func BenchmarkPopCount_0(b *testing.B)        { benchmarkPopCount(b, 0x0) }
+func BenchmarkPopCount_FFFF(b *testing.B)     { benchmarkPopCount(b, 0xFFFF) }
+func BenchmarkPopCount_FFFFFFFF(b *testing.B) { benchmarkPopCount(b, 0xFFFFFFFF) }
+func BenchmarkPopCount_AllOnes(b *testing.B)  { benchmarkPopCount(b, allOnes) }
 
-func BenchmarkPopCount_FFFFFFFF(b *testing.B)           { benchmarkPopCount(b, 0xFFFFFFFF) }
+func BenchmarkPopCountbyShifting_0(b *testing.B)        { benchmarkPopCountByShifting(b, 0x0) }
+func BenchmarkPopCountbyShifting_FFFF(b *testing.B)     { benchmarkPopCountByShifting(b, 0xFFFF) }
 func BenchmarkPopCountbyShifting_FFFFFFFF(b *testing.B) { benchmarkPopCountByShifting(b, 0xFFFFFFFF) }
+func BenchmarkPopCountbyShifting_AllOnes(b *testing.B)  { benchmarkPopCountByShifting(b, allOnes) }
+
+func BenchmarkPopCountByClearingBit_0(b *testing.B)    { benchmarkPopCountByClearingBit(b, 0x0) }
+func BenchmarkPopCountByClearingBit_FFFF(b *testing.B) { benchmarkPopCountByClearingBit(b, 0xFFFF) }
 func BenchmarkPopCountByClearingBit_FFFFFFFF(b *testing.B) {
 	benchmarkPopCountByClearingBit(b, 0xFFFFFFFF)
 }
-func BenchmarkBitCount_FFFFFFFF(b *testing.B) { benchmarkBitCount(b, 0xFFFFFFFF) }
-
-const allOnes = 0xFFFFFFFFFFFFFF
-
-func BenchmarkPopCount_AllOnes(b *testing.B)              { benchmarkPopCount(b, allOnes) }
-func BenchmarkPopCountbyShifting_AllOnes(b *testing.B)    { benchmarkPopCountByShifting(b, allOnes) }
 func BenchmarkPopCountByClearingBit_AllOnes(b *testing.B) { benchmarkPopCountByClearingBit(b, allOnes) }
-func BenchmarkBitCount_AllOnes(b *testing.B)              { benchmarkBitCount(b, allOnes) }
+
+func BenchmarkBitCount_0(b *testing.B)        { benchmarkBitCount(b, 0x0) }
+func BenchmarkBitCount_FFFF(b *testing.B)     { benchmarkBitCount(b, 0xFFFF) }
+func BenchmarkBitCount_FFFFFFFF(b *testing.B) { benchmarkBitCount(b, 0xFFFFFFFF) }
+func BenchmarkBitCount_AllOnes(b *testing.B)  { benchmarkBitCount(b, allOnes) }
 
 /*
 BenchmarkPopCount-8          	200000000	        5.66 ns/op
@@ -180,4 +180,31 @@ BenchmarkPopCount_AllOnes-4                 	300000000	         4.41 ns/op
 BenchmarkPopCountbyShifting_AllOnes-4       	20000000	        82.8 ns/op
 BenchmarkPopCountByClearingBit_AllOnes-4    	30000000	        53.6 ns/op
 BenchmarkBitCount_AllOnes-4                 	500000000	         3.21 ns/op
+*/
+
+/* Go1.12 tip 2018-12-30
+macOS Mojava version 10.14.1
+MacBook (Retina, 12-inch, Early 2015)
+1.3GHz Intel Core M
+8 GB 1600 MHz DDR3
+
+goos: darwin
+goarch: amd64
+pkg: github.com/YoshikiShibata/gpl/ch11/ex06/popcount
+BenchmarkPopCount_0-4                       	300000000	         4.75 ns/op
+BenchmarkPopCount_FFFF-4                    	300000000	         4.71 ns/op
+BenchmarkPopCount_FFFFFFFF-4                	300000000	         4.99 ns/op
+BenchmarkPopCount_AllOnes-4                 	300000000	         4.79 ns/op
+BenchmarkPopCountbyShifting_0-4             	20000000	        75.3 ns/op
+BenchmarkPopCountbyShifting_FFFF-4          	20000000	        75.6 ns/op
+BenchmarkPopCountbyShifting_FFFFFFFF-4      	20000000	        74.9 ns/op
+BenchmarkPopCountbyShifting_AllOnes-4       	20000000	        75.0 ns/op
+BenchmarkPopCountByClearingBit_0-4          	1000000000	         2.74 ns/op
+BenchmarkPopCountByClearingBit_FFFF-4       	100000000	        12.3 ns/op
+BenchmarkPopCountByClearingBit_FFFFFFFF-4   	50000000	        25.0 ns/op
+BenchmarkPopCountByClearingBit_AllOnes-4    	30000000	        50.0 ns/op
+BenchmarkBitCount_0-4                       	500000000	         3.40 ns/op
+BenchmarkBitCount_FFFF-4                    	500000000	         3.41 ns/op
+BenchmarkBitCount_FFFFFFFF-4                	500000000	         3.45 ns/op
+BenchmarkBitCount_AllOnes-4                 	500000000	         3.42 ns/op
 */
