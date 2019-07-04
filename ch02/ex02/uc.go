@@ -1,4 +1,4 @@
-// Copyright © 2015 Yoshiki Shibata. All rights reserved.
+// Copyright © 2015, 2019 Yoshiki Shibata. All rights reserved.
 
 // uc vonerts its numeric argument to various units
 package main
@@ -9,8 +9,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
-
-	"ch02/ex02/unitconv"
+	"z/unitconv"
 )
 
 func main() {

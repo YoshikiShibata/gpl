@@ -42,7 +42,6 @@ func TestBzip2(t *testing.T) {
 
 func TestBzip2InConcurrently(t *testing.T) {
 	var compressed, uncompressed bytes.Buffer
-	w := bzip.NewWriter(&compressed)
 
 	// Write a repetitive message in a million pieces,
 	// compressing one copy but not the other.
@@ -52,6 +51,7 @@ func TestBzip2InConcurrently(t *testing.T) {
 	}
 
 	//+ Exercise 13.3
+	w := bzip.NewWriter(&compressed)
 	tee = io.MultiWriter(w)
 	var wg sync.WaitGroup
 	for i := 0; i < 1000000; i++ {
