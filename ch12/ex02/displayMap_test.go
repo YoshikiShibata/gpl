@@ -9,7 +9,7 @@ func Example_structAsKey() {
 	}
 
 	salaries := map[Employee]int{
-		Employee{502131, "Yoshiki Shibata"}: 1701,
+		{502131, "Yoshiki Shibata"}: 1701,
 	}
 
 	Display("salaries", salaries)

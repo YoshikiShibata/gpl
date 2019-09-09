@@ -42,9 +42,9 @@ func TestEqual(t *testing.T) {
 		{mystring("foo"), "foo", false}, // different types
 
 		//+ Exercise 13.1
-		{float64(1.0 + 1.0E-10), float64(1.0), true},
-		{float64(1.0), float64(1.0 - 1.0E-10), true},
-		{complex128((1.0 + 1.0E-10) + 1i), complex128(1.0 + 1i), true},
+		{float64(1.0 + 1.0e-10), float64(1.0), true},
+		{float64(1.0), float64(1.0 - 1.0e-10), true},
+		{complex128((1.0 + 1.0e-10) + 1i), complex128(1.0 + 1i), true},
 		//- Exercise 13.1
 
 		// slices

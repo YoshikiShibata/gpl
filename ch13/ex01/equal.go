@@ -128,7 +128,7 @@ type comparison struct {
 //!-comparison
 
 //+ Exercise 13.1
-const FloatDiff = 1.0E-10
+const FloatDiff = 1.0e-10
 
 func equalFloats(x, y float64) bool {
 	lowX := x - FloatDiff
