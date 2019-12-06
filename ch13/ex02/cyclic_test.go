@@ -111,4 +111,19 @@ func TestCyclicRecursiveSlice(t *testing.T) {
 	}
 }
 
+func TestTree(t *testing.T) {
+	type Node struct {
+		value interface{}
+		left  *Node
+		right *Node
+	}
+	x := Node{"X", nil, nil}
+	c := Node{"c", &x, nil}
+	b := Node{"b", nil, &x}
+	root := Node{"root", &b, &c}
+	if IsCyclic(root) {
+		t.Errorf("IsCyclic(true) is true, but want false")
+	}
+}
+
 //- Exercise 13.2
