@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright (C) 2017, 2020 Yoshiki Shibata
+# Copyright (C) 2017, 2020 Yoshiki Shibata. All rights reserved.
 
 go vet
 if [ $? != 0 ]
