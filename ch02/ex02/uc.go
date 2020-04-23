@@ -9,7 +9,8 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"z/unitconv"
+
+	"github.com/YoshikiShibata/gpl/ch02/ex02/unitconv"
 )
 
 func main() {
