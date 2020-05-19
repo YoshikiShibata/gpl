@@ -30,7 +30,8 @@ func main() {
 
 func fetch(url string, ch chan<- string, ofile string) {
 	start := time.Now()
-	if !strings.HasPrefix(url, "http://") {
+	if !strings.HasPrefix(url, "http://") &&
+		!strings.HasPrefix(url, "https://") {
 		url = "http://" + url
 	}
 	resp, err := http.Get(url)
