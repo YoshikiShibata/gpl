@@ -1,10 +1,10 @@
-// Copyright © 2016 Yoshiki Shibata.
+// Copyright © 2016, 2020 Yoshiki Shibata.
 
 package main
 
 import "testing"
 
-var data = []struct {
+var data = [...]struct {
 	input    string
 	expected string
 }{
