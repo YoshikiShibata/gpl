@@ -1,4 +1,4 @@
-// Copyright © 2015, 2016, 2017 Yoshiki Shibata.
+// Copyright © 2015, 2016, 2017, 2020 Yoshiki Shibata.
 
 package comma_test
 
@@ -8,7 +8,7 @@ import (
 	"github.com/YoshikiShibata/gpl/ch03/ex10/comma"
 )
 
-var data = []struct {
+var data = [...]struct {
 	input    string
 	expected string
 }{
