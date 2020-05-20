@@ -1,5 +1,5 @@
 // Copyright © 2016 Alan A. A. Donovan & Brian W. Kernighan.
-// Copyright © 2015 Yoshiki Shibata
+// Copyright © 2015, 2020 Yoshiki Shibata
 // License: https://creativecommons.org/licenses/by-nc-sa/4.0/
 
 package main
@@ -74,10 +74,7 @@ func main() {
 			bx, by, h2 := corner(i, j)
 			cx, cy, h3 := corner(i, j+1)
 			dx, dy, h4 := corner(i+1, j+2)
-			if isFinite(ax) && isFinite(ay) &&
-				isFinite(bx) && isFinite(by) &&
-				isFinite(cx) && isFinite(cy) &&
-				isFinite(dx) && isFinite(dy) {
+			if areAllFinite(ax, ay, bx, by, cx, cy, dx, dy) {
 				fmt.Printf("<polygon points='%g,%g %g,%g %g,%g %g,%g' fill='#%s' />\n",
 					ax, ay, bx, by, cx, cy, dx, dy, color(h1, h2, h3, h4))
 			}
@@ -86,6 +83,15 @@ func main() {
 	fmt.Println("</svg>")
 }
 
-func isFinite(f float64) bool {
-	return !math.IsInf(f, 0)
+func areAllFinite(values ...float64) bool {
+	isFinite := func(f float64) bool {
+		return !math.IsInf(f, 0) && !math.IsNaN(f)
+	}
+
+	for _, v := range values {
+		if !isFinite(v) {
+			return false
+		}
+	}
+	return true
 }
