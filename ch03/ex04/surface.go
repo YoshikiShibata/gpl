@@ -1,11 +1,10 @@
 // Copyright © 2016 Alan A. A. Donovan & Brian W. Kernighan.
-// Copyright © 2015 Yoshiki Shibata
+// Copyright © 2015, 2020 Yoshiki Shibata
 // License: https://creativecommons.org/licenses/by-nc-sa/4.0/
 
 package main
 
 import (
-	"errors"
 	"fmt"
 	"io"
 	"math"
@@ -146,7 +145,7 @@ func toColorShift(color string) (uint, error) {
 	case "blue", "BLUE":
 		return blueShift, nil
 	}
-	return 0, errors.New(fmt.Sprintf("unknown color: %s", color))
+	return 0, fmt.Errorf("unknown color: %s", color)
 }
 
 func containsKey(values url.Values, key string) bool {
@@ -162,7 +161,7 @@ func (c *constants) extractPositiveIntValue(values url.Values, key string) (int,
 	}
 
 	if value <= 0 {
-		err := errors.New(fmt.Sprintf("invalid %s: %d", key, value))
+		err := fmt.Errorf("invalid %s: %d", key, value)
 		fmt.Fprintf(c.w, "%v", err)
 		return -1, err
 	}
@@ -217,11 +216,26 @@ func surface(out io.Writer, c *constants) {
 			bx, by, h2 := c.corner(i, j)
 			cx, cy, h3 := c.corner(i, j+1)
 			dx, dy, h4 := c.corner(i+1, j+2)
-			fmt.Fprintf(out, "<polygon points='%g,%g %g,%g %g,%g %g,%g' fill='#%s' />\n",
-				ax, ay, bx, by, cx, cy, dx, dy, c.color(h1, h2, h3, h4))
+			if areAllFinite(ax, ay, h1, bx, by, h2, cx, cy, h3, dx, dy, h4) {
+				fmt.Fprintf(out, "<polygon points='%g,%g %g,%g %g,%g %g,%g' fill='#%s' />\n",
+					ax, ay, bx, by, cx, cy, dx, dy, c.color(h1, h2, h3, h4))
+			}
 		}
 	}
 	fmt.Fprintln(out, "</svg>")
+}
+
+func areAllFinite(values ...float64) bool {
+	isFinite := func(f float64) bool {
+		return !math.IsInf(f, 0) && !math.IsNaN(f)
+	}
+
+	for _, v := range values {
+		if !isFinite(v) {
+			return false
+		}
+	}
+	return true
 }
 
 func (c *constants) setOptions(values url.Values) error {
