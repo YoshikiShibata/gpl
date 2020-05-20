@@ -1,4 +1,4 @@
-// Copyright © 2015, 2016 Yoshiki Shibata.
+// Copyright © 2015, 2016, 2020 Yoshiki Shibata.
 
 package comma
 
@@ -6,7 +6,7 @@ import (
 	"bytes"
 )
 
-// comma inserts commas in a non-negative decimal integer string
+// Comma inserts commas in a non-negative decimal integer string
 func Comma(s string) string {
 	n := len(s)
 	if n <= 3 {
@@ -15,28 +15,8 @@ func Comma(s string) string {
 	return Comma(s[:n-3]) + "," + s[n-3:]
 }
 
-func CommaWithBuffer0(s string) string {
-	var buf bytes.Buffer
-	runes := []byte(s)
-
-	// when rc (rune counter) is zero, then insert a comma
-	rc := len(runes) % 3
-	if rc == 0 {
-		rc = 3
-	}
-
-	for _, r := range runes {
-		if rc == 0 {
-			buf.WriteByte(',')
-			rc = 3
-		}
-		buf.WriteByte(r)
-		rc--
-	}
-	return buf.String()
-}
-
-func CommaWithoutBuffer(s string) string {
+// WithoutBuffer doesn't use bytes.Buffer
+func WithoutBuffer(s string) string {
 	// Optimization for short string (less than 4 digits)
 	n := len(s)
 	if n <= 3 {
@@ -56,7 +36,30 @@ func CommaWithoutBuffer(s string) string {
 
 }
 
-func CommaWithBuffer1(s string) string {
+// WithDefaultBuffer uses a default Buffer.
+func WithDefaultBuffer(s string) string {
+	var buf bytes.Buffer // default Buffer
+	utf8bytes := []byte(s)
+
+	// when bc (byte counter) is zero, then insert a comma
+	bc := len(utf8bytes) % 3
+	if bc == 0 {
+		bc = 3
+	}
+
+	for _, r := range utf8bytes {
+		if bc == 0 {
+			buf.WriteByte(',')
+			bc = 3
+		}
+		buf.WriteByte(r)
+		bc--
+	}
+	return buf.String()
+}
+
+// WithOptimalBufferUsingWriteString uses a optimal size of bytes.Buffer
+func WithOptimalBufferUsingWriteString(s string) string {
 	n := len(s)
 	start, end := 0, n%3
 	if end == 0 {
@@ -75,8 +78,9 @@ func CommaWithBuffer1(s string) string {
 	return buf.String()
 }
 
-func CommaWithBuffer2(s string) string {
-	b := ([]byte)(s)
+// WithOptimalBufferUsingWrite uses a optimal size of bytes.Buffer
+func WithOptimalBufferUsingWrite(s string) string {
+	b := []byte(s)
 	n := len(b)
 	start, end := 0, n%3
 	if end == 0 {

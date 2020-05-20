@@ -34,20 +34,20 @@ func TestComma(t *testing.T) {
 	execute(t, comma.Comma)
 }
 
-func TestCommaWithBuffer0(t *testing.T) {
-	execute(t, comma.CommaWithBuffer0)
+func TestCommaWithDefaultBuffer(t *testing.T) {
+	execute(t, comma.WithDefaultBuffer)
 }
 
-func TestCommaWithBuffer1(t *testing.T) {
-	execute(t, comma.CommaWithBuffer1)
+func TestCommaWithOptimalBuffer_UsingWriteString(t *testing.T) {
+	execute(t, comma.WithOptimalBufferUsingWriteString)
 }
 
-func TestCommaWithBuffer2(t *testing.T) {
-	execute(t, comma.CommaWithBuffer2)
+func TestCommaWithOptimalBuffer_UsingWrite(t *testing.T) {
+	execute(t, comma.WithOptimalBufferUsingWrite)
 }
 
 func TestCommaWithoutBuffer(t *testing.T) {
-	execute(t, comma.CommaWithoutBuffer)
+	execute(t, comma.WithoutBuffer)
 }
 
 func BenchmarkComma(b *testing.B) {
@@ -61,31 +61,31 @@ func BenchmarkComma(b *testing.B) {
 func BenchmarkCommaWithoutBuffer(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		for _, d := range data {
-			comma.CommaWithoutBuffer(d.input)
+			comma.WithoutBuffer(d.input)
 		}
 	}
 }
 
-func BenchmarkCommaWithBuffer0(b *testing.B) {
+func BenchmarkCommaWithDefaultBuffer(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		for _, d := range data {
-			comma.CommaWithBuffer0(d.input)
+			comma.WithDefaultBuffer(d.input)
 		}
 	}
 }
 
-func BenchmarkCommaWithBuffer1(b *testing.B) {
+func BenchmarkCommaWithOptimalBuffer_UsingWriteString(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		for _, d := range data {
-			comma.CommaWithBuffer1(d.input)
+			comma.WithOptimalBufferUsingWriteString(d.input)
 		}
 	}
 }
 
-func BenchmarkCommaWithBuffer2(b *testing.B) {
+func BenchmarkCommaWithOptimalBuffer_UsingWrite(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		for _, d := range data {
-			comma.CommaWithBuffer2(d.input)
+			comma.WithOptimalBufferUsingWrite(d.input)
 		}
 	}
 }
