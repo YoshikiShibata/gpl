@@ -74,7 +74,7 @@ func main() {
 			bx, by, h2 := corner(i, j)
 			cx, cy, h3 := corner(i, j+1)
 			dx, dy, h4 := corner(i+1, j+2)
-			if areAllFinite(ax, ay, bx, by, cx, cy, dx, dy) {
+			if areAllFinite(ax, ay, h1, bx, by, h2, cx, cy, h3, dx, dy, h4) {
 				fmt.Printf("<polygon points='%g,%g %g,%g %g,%g %g,%g' fill='#%s' />\n",
 					ax, ay, bx, by, cx, cy, dx, dy, color(h1, h2, h3, h4))
 			}
