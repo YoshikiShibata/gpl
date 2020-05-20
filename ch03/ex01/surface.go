@@ -1,5 +1,5 @@
 // Copyright © 2016 Alan A. A. Donovan & Brian W. Kernighan.
-// Copyright © 2015 Yoshiki Shibata
+// Copyright © 2015, 2020 Yoshiki Shibata
 // License: https://creativecommons.org/licenses/by-nc-sa/4.0/
 
 // Surface computes an SVG rendering of a 3-D surface function.
@@ -31,10 +31,7 @@ func main() {
 			bx, by := corner(i, j)
 			cx, cy := corner(i, j+1)
 			dx, dy := corner(i+1, j+1)
-			if isFinite(ax) && isFinite(ay) &&
-				isFinite(bx) && isFinite(by) &&
-				isFinite(cx) && isFinite(cy) &&
-				isFinite(dx) && isFinite(dy) {
+			if areAllFinite(ax, ay, bx, by, cx, cy, dx, dy) {
 				fmt.Printf("<polygon points='%g,%g %g,%g %g,%g %g,%g'/>\n",
 					ax, ay, bx, by, cx, cy, dx, dy)
 			}
@@ -43,8 +40,17 @@ func main() {
 	fmt.Println("</svg>")
 }
 
-func isFinite(f float64) bool {
-	return !math.IsInf(f, 0)
+func areAllFinite(values ...float64) bool {
+	isFinite := func(f float64) bool {
+		return !math.IsInf(f, 0) && !math.IsNaN(f)
+	}
+
+	for _, v := range values {
+		if !isFinite(v) {
+			return false
+		}
+	}
+	return true
 }
 
 func corner(i, j int) (float64, float64) {
