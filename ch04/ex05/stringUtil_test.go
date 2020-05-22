@@ -1,4 +1,4 @@
-// Copyright © 2016 Yoshiki Shibata
+// Copyright © 2016, 2020 Yoshiki Shibata
 
 package main
 
@@ -39,18 +39,43 @@ func TestEliminateAdjacentDuplicates(t *testing.T) {
 			[]string{"Hello", "World", "Hello", "World"}},
 	}
 
-	for _, d := range data {
-		result := eliminateAdjacentDuplicates(d.s)
-		if len(result) != len(d.expected) {
-			t.Errorf("Result length is %d, want %d",
-				len(result), len(d.expected))
-		}
-		for i := 0; i < len(d.expected); i++ {
-			if result[i] != d.expected[i] &&
-				d.s[i] != d.expected[i] { // in-place test
-				t.Errorf(`result[%d] is "%s", want "%s"`,
-					i, result[i], d.expected[i])
+	duplicateSlice := func(s []string) []string {
+		duplicated := make([]string, len(s))
+		copy(duplicated, s)
+		return duplicated
+	}
+
+	t.Run("1", func(t *testing.T) {
+		for _, d := range data {
+			result := eliminateAdjacentDuplicates(duplicateSlice(d.s))
+			if len(result) != len(d.expected) {
+				t.Errorf("Result length is %d, want %d",
+					len(result), len(d.expected))
+			}
+			for i := 0; i < len(d.expected); i++ {
+				if result[i] != d.expected[i] &&
+					d.s[i] != d.expected[i] { // in-place test
+					t.Errorf(`result[%d] is "%s", want "%s"`,
+						i, result[i], d.expected[i])
+				}
 			}
 		}
-	}
+	})
+
+	t.Run("2", func(t *testing.T) {
+		for _, d := range data {
+			result := eliminateAdjacentDuplicates2(duplicateSlice(d.s))
+			if len(result) != len(d.expected) {
+				t.Errorf("Result length is %d, want %d",
+					len(result), len(d.expected))
+			}
+			for i := 0; i < len(d.expected); i++ {
+				if result[i] != d.expected[i] &&
+					d.s[i] != d.expected[i] { // in-place test
+					t.Errorf(`result[%d] is "%s", want "%s"`,
+						i, result[i], d.expected[i])
+				}
+			}
+		}
+	})
 }

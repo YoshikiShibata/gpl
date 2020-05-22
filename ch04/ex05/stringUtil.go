@@ -1,4 +1,4 @@
-// Copyright © 2016 Yoshiki Shibata
+// Copyright © 2016, 2020 Yoshiki Shibata
 
 package main
 
@@ -17,4 +17,21 @@ func eliminateAdjacentDuplicates(s []string) []string {
 		}
 	}
 	return s[:current+1]
+}
+
+func eliminateAdjacentDuplicates2(s []string) []string {
+	if len(s) == 0 {
+		return s
+	}
+
+	current := s[0]
+	result := s[0:1]
+	for _, next := range s[1:] {
+		if current == next {
+			continue
+		}
+		result = append(result, next)
+		current = next
+	}
+	return result
 }
