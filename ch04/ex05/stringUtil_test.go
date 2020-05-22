@@ -39,22 +39,23 @@ func TestEliminateAdjacentDuplicates(t *testing.T) {
 			[]string{"Hello", "World", "Hello", "World"}},
 	}
 
-	duplicateSlice := func(s []string) []string {
-		duplicated := make([]string, len(s))
-		copy(duplicated, s)
-		return duplicated
+	copySlice := func(s []string) []string {
+		copied := make([]string, len(s))
+		copy(copied, s)
+		return copied
 	}
 
 	t.Run("1", func(t *testing.T) {
 		for _, d := range data {
-			result := eliminateAdjacentDuplicates(duplicateSlice(d.s))
+			copied := copySlice(d.s)
+			result := eliminateAdjacentDuplicates(copied)
 			if len(result) != len(d.expected) {
 				t.Errorf("Result length is %d, want %d",
 					len(result), len(d.expected))
 			}
 			for i := 0; i < len(d.expected); i++ {
 				if result[i] != d.expected[i] &&
-					d.s[i] != d.expected[i] { // in-place test
+					copied[i] != d.expected[i] { // in-place test
 					t.Errorf(`result[%d] is "%s", want "%s"`,
 						i, result[i], d.expected[i])
 				}
@@ -64,14 +65,15 @@ func TestEliminateAdjacentDuplicates(t *testing.T) {
 
 	t.Run("2", func(t *testing.T) {
 		for _, d := range data {
-			result := eliminateAdjacentDuplicates2(duplicateSlice(d.s))
+			copied := copySlice(d.s)
+			result := eliminateAdjacentDuplicates2(copied)
 			if len(result) != len(d.expected) {
 				t.Errorf("Result length is %d, want %d",
 					len(result), len(d.expected))
 			}
 			for i := 0; i < len(d.expected); i++ {
 				if result[i] != d.expected[i] &&
-					d.s[i] != d.expected[i] { // in-place test
+					copied[i] != d.expected[i] { // in-place test
 					t.Errorf(`result[%d] is "%s", want "%s"`,
 						i, result[i], d.expected[i])
 				}
