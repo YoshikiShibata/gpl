@@ -37,9 +37,12 @@ var bad_prereqs2 = map[string][]string{
 		"computer organization",
 	},
 
-	"data structures":       {"discrete math"},
-	"databases":             {"data structures"},
-	"discrete math":         {"intro to programming" /* bad */, "data structures"},
+	"data structures": {"discrete math"},
+	"databases":       {"data structures"},
+	"discrete math": {
+		"intro to programming",
+		"operating systems", /* bad */
+	},
 	"formal languages":      {"discrete math"},
 	"networks":              {"operating systems"},
 	"operating systems":     {"data structures", "computer organization"},
