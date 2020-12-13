@@ -71,3 +71,9 @@ func BenchmarkStrings_Join(b *testing.B) {
 // BenchmarkJoin-4           	 2000000	       700 ns/op
 // BenchmarkJoin2-4          	 3000000	       446 ns/op
 // BenchmarkStrings_Join-4   	 5000000	       263 ns/op
+
+/* Go 1.16 tip 2020/12/13: MacBook Pro (M1: Apple silicon)
+BenchmarkJoin-8                  6136240               194.9 ns/op
+BenchmarkJoin2-8                 7586907               159.0 ns/op
+BenchmarkStrings_Join-8          8227216               146.3 ns/op
+*/

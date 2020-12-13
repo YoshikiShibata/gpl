@@ -14,3 +14,13 @@ BenchmarkConcat-4   	 1000000	      1371 ns/op
 BenchmarkJoin-4     	 5000000	       426 ns/op
 PASS
 ok  	github.com/YoshikiShibata/gpl/ch01/ex03/concat	3.878s
+
+// 2020.12.13 Go 1.16 tip MacBook Pro (M1: Apple silicon)
+% go test -bench=. github.com/YoshikiShibata/gpl/ch01/ex03/concat
+goos: darwin
+goarch: arm64
+pkg: github.com/YoshikiShibata/gpl/ch01/ex03/concat
+BenchmarkConcat-8        1882746               633.6 ns/op
+BenchmarkJoin-8          7526023               159.4 ns/op
+PASS
+ok      github.com/YoshikiShibata/gpl/ch01/ex03/concat  3.374s

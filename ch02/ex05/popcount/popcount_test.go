@@ -161,3 +161,11 @@ BenchmarkPopByClearingBit-4     	50000000	        39.6 ns/op
 BenchmarkBitCount-4             	500000000	         3.13 ns/op
 BenchmarkOnesCount-4            	2000000000	         0.94 ns/op
 */
+
+/* Go 1.16 tip 2020-12-13: MacBook Pro (M1: Apple silicon)
+BenchmarkPopCount-8                     707768000                1.696 ns/op
+BenchmarkPopCountByShifting-8           33525171                35.82 ns/op
+BenchmarkPopByClearingBit-8             100000000               11.93 ns/op
+BenchmarkBitCount-8                     773205630                1.553 ns/op
+BenchmarkOnesCount-8                    1000000000               0.5530 ns/op
+*/

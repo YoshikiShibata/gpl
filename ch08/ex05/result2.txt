@@ -1,0 +1,26 @@
+// 2020/12/13 Go 1.16 Tip: MacBook Pro(M1: Apple silicon)
+
+Mandelbrot with one goroutine
+
+real	0m3.935s
+user	0m3.610s
+sys	0m0.053s
+
+Madelbrot with multiple goroutines
+
+real	0m1.412s
+user	0m4.307s
+sys	0m0.120s
+
+Surface with one goroutine
+
+real	0m0.522s
+user	0m0.127s
+sys	0m0.116s
+
+Surface with multiple goroutines
+
+real	0m0.453s
+user	0m0.190s
+sys	0m0.135s
+

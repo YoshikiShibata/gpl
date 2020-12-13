@@ -68,3 +68,37 @@ GOMAXPROCS=16
 real	0m4.377s
 user	0m13.482s
 sys	0m0.151
+
+---------------
+2020.12.13 Go 1.16 tip MacBook Pro(M1: Apple Silicon)
+Madelbrot with multiple goroutines
+
+GOMAXPROCS=1
+
+real	0m4.007s
+user	0m3.663s
+sys	0m0.062s
+
+GOMAXPROCS=2
+
+real	0m2.068s
+user	0m3.619s
+sys	0m0.039s
+
+GOMAXPROCS=4
+
+real	0m1.281s
+user	0m3.625s
+sys	0m0.033s
+
+GOMAXPROCS=8
+
+real	0m1.128s
+user	0m4.261s
+sys	0m0.122s
+
+GOMAXPROCS=16
+
+real	0m1.130s
+user	0m4.249s
+sys	0m0.112s

@@ -95,3 +95,11 @@ func BenchmarkCommaWithOptimalBuffer_UsingWrite(b *testing.B) {
 // BenchmarkCommaWithBuffer0-8  	 1000000	      2394 ns/op
 // BenchmarkCommaWithBuffer1-8  	 1000000	      2845 ns/op
 // BenchmarkCommaWithBuffer2-8  	  500000	      2966 ns/op
+
+/* Go 1.16 tip 2020/12/13 MacBook Pro (M1: Apple silicon)
+BenchmarkComma-8                                         4991583               240.1 ns/op
+BenchmarkCommaWithoutBuffer-8                            3555876               338.2 ns/op
+BenchmarkCommaWithDefaultBuffer-8                        3661735               327.4 ns/op
+BenchmarkCommaWithOptimalBuffer_UsingWriteString-8       4701040               255.1 ns/op
+BenchmarkCommaWithOptimalBuffer_UsingWrite-8             4663062               257.7 ns/op
+*/
