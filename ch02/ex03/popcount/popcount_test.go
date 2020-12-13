@@ -112,3 +112,8 @@ BenchmarkPopCountWithLoop-8	100000000	        11.4 ns/op
 BenchmarkPopCount-4           	1000000000	         2.24 ns/op
 BenchmarkPopCountWithLoop-4   	50000000	        25.4 ns/op
 */
+
+/* Go 1.16 tip 2020-12-13: MacBook Pro (M1: Apple silicon)
+BenchmarkPopCount               631673558                1.899 ns/op
+BenchmarkPopCountWithLoop       185293153                6.479 ns/op
+*/
