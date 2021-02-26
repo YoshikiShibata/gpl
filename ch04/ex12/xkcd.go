@@ -1,4 +1,4 @@
-// Copyright © 2016, 2017 Yoshiki Shibata
+// Copyright © 2016, 2017, 2021 Yoshiki Shibata. All rigts reserved.
 
 package main
 
@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
 	"strconv"
@@ -198,13 +198,13 @@ func getComic(num int) (*Comic, error, bool) {
 			resp.StatusCode == http.StatusNotFound
 	}
 
-	jsonBytes, err := ioutil.ReadAll(resp.Body)
+	jsonBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err, false
 	}
 
 	createDBDirectoryIfNecessary()
-	err = ioutil.WriteFile(comicFilePath(num), jsonBytes, 0666)
+	err = os.WriteFile(comicFilePath(num), jsonBytes, 0666)
 	if err != nil {
 		return nil, err, false
 	}
@@ -219,7 +219,7 @@ func getComic(num int) (*Comic, error, bool) {
 }
 
 func readComic(num int) *Comic {
-	bytes, err := ioutil.ReadFile(comicFilePath(num))
+	bytes, err := os.ReadFile(comicFilePath(num))
 	if err != nil {
 		panic(nil)
 	}

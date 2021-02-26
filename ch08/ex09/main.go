@@ -1,5 +1,5 @@
 // Copyright © 2016 Alan A. A. Donovan & Brian W. Kernighan.
-// Copyright © 2016 Yoshiki Shibata. All rights reserved.
+// Copyright © 2016, 2021 Yoshiki Shibata. All rights reserved.
 // License: https://creativecommons.org/licenses/by-nc-sa/4.0/
 
 // The du3 command computes the disk usage of the files in a directory.
@@ -12,7 +12,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"sync"
@@ -90,7 +90,12 @@ func walkDir(dir string, n *sync.WaitGroup, fileSizes chan<- int64) {
 			subdir := filepath.Join(dir, entry.Name())
 			go walkDir(subdir, n, fileSizes)
 		} else {
-			fileSizes <- entry.Size()
+			info, err := entry.Info()
+			if err != nil {
+				log.Printf("entry.Info failed: %v", err)
+			} else {
+				fileSizes <- info.Size()
+			}
 		}
 	}
 }
@@ -99,11 +104,11 @@ func walkDir(dir string, n *sync.WaitGroup, fileSizes chan<- int64) {
 var sema = make(chan struct{}, 20)
 
 // dirents returns the entries of directory dir.
-func dirents(dir string) []os.FileInfo {
+func dirents(dir string) []os.DirEntry {
 	sema <- struct{}{}        // acquire token
 	defer func() { <-sema }() // release token
 
-	entries, err := ioutil.ReadDir(dir)
+	entries, err := os.ReadDir(dir)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "du: %v\n", err)
 		return nil

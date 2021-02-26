@@ -1,11 +1,10 @@
-// Copyright © 2016, 2017 Yoshiki Shibata
+// Copyright © 2016, 2017, 2021 Yoshiki Shibata. All rights reserved.
 
 package main
 
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 
@@ -109,7 +108,7 @@ func saveIssueNo(issueNo int) {
 }
 
 func invokeEditor() string {
-	f, err := ioutil.TempFile("", "body.")
+	f, err := os.CreateTemp("", "body.")
 	if err != nil {
 		panic(fmt.Errorf("Cannot crete a temp file: %v", err))
 	}
@@ -126,7 +125,7 @@ func invokeEditor() string {
 		panic(fmt.Errorf("Cannot invoke vim: %v", err))
 	}
 
-	bytes, err := ioutil.ReadFile(name)
+	bytes, err := os.ReadFile(name)
 	if err != nil {
 		panic(fmt.Errorf("Cannot read a temp file: %v", err))
 	}

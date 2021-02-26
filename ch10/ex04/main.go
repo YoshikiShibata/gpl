@@ -1,4 +1,4 @@
-// Copyright © 2016 Yoshiki Shibata. All rights reserved.
+// Copyright © 2016, 2021 Yoshiki Shibata. All rights reserved.
 
 package main
 
@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
@@ -59,7 +58,7 @@ func executeGoList(packages ...string) ([]*packageInfo, error) {
 	}
 
 	go func() {
-		io.Copy(ioutil.Discard, stderr)
+		io.Copy(io.Discard, stderr)
 		stderr.Close()
 	}()
 

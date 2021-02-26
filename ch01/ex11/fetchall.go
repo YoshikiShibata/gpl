@@ -1,11 +1,10 @@
-// Copyright © 2015 Yoshiki Shibata. All rights reserved.
+// Copyright © 2015, 2021 Yoshiki Shibata. All rights reserved.
 
 package main
 
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"strings"
@@ -34,7 +33,7 @@ func fetch(url string, ch chan<- string) {
 		ch <- fmt.Sprint(err) // send to channel
 		return
 	}
-	nbytes, err := io.Copy(ioutil.Discard, resp.Body)
+	nbytes, err := io.Copy(io.Discard, resp.Body)
 	resp.Body.Close() // don't leak resources
 	if err != nil {
 		ch <- fmt.Sprintf("while reading %s: %v", url, err)

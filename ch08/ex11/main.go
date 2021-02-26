@@ -1,5 +1,5 @@
 // Copyright © 2016 Alan A. A. Donovan & Brian W. Kernighan.
-// Copyright © 2016 Yoshiki Shibata. All rights reserved.
+// Copyright © 2016, 2021 Yoshiki Shibata. All rights reserved.
 // License: https://creativecommons.org/licenses/by-nc-sa/4.0/
 
 // Fetchall fetches URLs in parallel and reports their times and sizes.
@@ -8,7 +8,6 @@ package main
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"sync"
@@ -73,7 +72,7 @@ func fetch(url string, ch chan<- string) {
 		return
 	}
 
-	nbytes, err := io.Copy(ioutil.Discard, resp.Body)
+	nbytes, err := io.Copy(io.Discard, resp.Body)
 	resp.Body.Close() // don't leak resources
 	if err != nil {
 		ch <- fmt.Sprintf("while reading %s: %v", url, err)

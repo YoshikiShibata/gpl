@@ -1,10 +1,10 @@
-// Copyright © 2015 Yoshiki Shibata. All rights reserved.
+// Copyright © 2015, 2021 Yoshiki Shibata. All rights reserved.
 
 package main
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
 	"strconv"
@@ -40,7 +40,7 @@ func fetch(url string, ch chan<- string, ofile string) {
 		return
 	}
 	fmt.Println("Status Code =", resp.StatusCode)
-	b, err := ioutil.ReadAll(resp.Body)
+	b, err := io.ReadAll(resp.Body)
 	resp.Body.Close()
 
 	if err != nil {
