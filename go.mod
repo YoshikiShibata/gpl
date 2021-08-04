@@ -1,9 +1,9 @@
 module github.com/YoshikiShibata/gpl
 
-go 1.12
+go 1.16
 
 require (
-	golang.org/x/crypto v0.0.0-20210220033148-5ea612d1eb83 // indirect
-	golang.org/x/sys v0.0.0-20210226181700-f36f78243c0c // indirect
-	golang.org/x/term v0.0.0-20210220032956-6a3ed077a48d // indirect
+	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97
+	golang.org/x/net v0.0.0-20210726213435-c6fcb2dbf985
+	gopl.io v0.0.0-20200323155855-65c318dde95e
 )
