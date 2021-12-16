@@ -13,3 +13,4 @@ echo "// -18°C"
 echo "// 100°C"
 echo "// 0°C"
 
+rm a.out

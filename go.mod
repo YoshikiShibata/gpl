@@ -1,6 +1,6 @@
 module github.com/YoshikiShibata/gpl
 
-go 1.16
+go 1.17
 
 require (
 	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97

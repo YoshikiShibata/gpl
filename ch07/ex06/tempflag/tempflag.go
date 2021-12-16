@@ -3,9 +3,10 @@
 package tempflag
 
 import (
-	"ch07/ex06/tempconv"
 	"flag"
 	"fmt"
+
+	"github.com/YoshikiShibata/gpl/ch07/ex06/tempconv"
 )
 
 // *celsiusFlag satisfies the flag.Value interface.

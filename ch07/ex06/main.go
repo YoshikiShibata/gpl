@@ -3,9 +3,10 @@
 package main
 
 import (
-	"ch07/ex06/tempflag"
 	"flag"
 	"fmt"
+
+	"github.com/YoshikiShibata/gpl/ch07/ex06/tempflag"
 )
 
 var temp = tempflag.CelsiusFlag("temp", 20.0, "the temperature")
