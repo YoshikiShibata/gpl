@@ -7,7 +7,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/YoshikiShibata/gpl/ch09/ex02/popcount"
+	. "github.com/YoshikiShibata/gpl/ch09/ex02/popcount"
 )
 
 func TestInitPCOnce(t *testing.T) {
@@ -19,7 +19,7 @@ func TestInitPCOnce(t *testing.T) {
 		wg.Add(1)
 		go func() {
 			<-done
-			count := popcount.PopCount(0x12345678901234)
+			count := PopCount(0x12345678901234)
 			if count != 20 {
 				panic(fmt.Sprintf("count is %d, want 20\n", count))
 			}

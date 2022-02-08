@@ -8,7 +8,7 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/YoshikiShibata/gpl/ch07/ex03"
+	. "github.com/YoshikiShibata/gpl/ch07/ex03"
 )
 
 func TestSort(t *testing.T) {
@@ -16,7 +16,7 @@ func TestSort(t *testing.T) {
 	for i := range data {
 		data[i] = rand.Int() % 50
 	}
-	treesort.Sort(data)
+	Sort(data)
 	if !sort.IntsAreSorted(data) {
 		t.Errorf("not sorted: %v", data)
 	}

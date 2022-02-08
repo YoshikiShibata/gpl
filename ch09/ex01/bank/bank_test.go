@@ -7,28 +7,28 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/YoshikiShibata/gpl/ch09/ex01/bank"
+	. "github.com/YoshikiShibata/gpl/ch09/ex01/bank"
 )
 
 func TestWithdrawNormal(t *testing.T) {
-	bank.Deposit(200)
-	ok := bank.Withdraw(100)
+	Deposit(200)
+	ok := Withdraw(100)
 	if !ok {
 		t.Error("Result is false, want true")
 		return
 	}
-	ok = bank.Withdraw(100)
+	ok = Withdraw(100)
 	if !ok {
 		t.Error("Result is false, want true")
 		return
 	}
-	ok = bank.Withdraw(100)
+	ok = Withdraw(100)
 	if ok {
 		t.Error("Result is true, want false")
 		return
 	}
-	if bank.Balance() != 0 {
-		t.Errorf("Result is %d, want 0", bank.Balance())
+	if Balance() != 0 {
+		t.Errorf("Result is %d, want 0", Balance())
 	}
 }
 
@@ -37,14 +37,14 @@ func TestBank(t *testing.T) {
 
 	// Alice
 	go func() {
-		bank.Deposit(200)
-		fmt.Println("=", bank.Balance())
+		Deposit(200)
+		fmt.Println("=", Balance())
 		done <- struct{}{}
 	}()
 
 	// Bob
 	go func() {
-		bank.Deposit(100)
+		Deposit(100)
 		done <- struct{}{}
 	}()
 
@@ -52,7 +52,7 @@ func TestBank(t *testing.T) {
 	<-done
 	<-done
 
-	if got, want := bank.Balance(), 300; got != want {
+	if got, want := Balance(), 300; got != want {
 		t.Errorf("Balance = %d, want %d", got, want)
 	}
 }
@@ -66,17 +66,17 @@ func TestConcurrentBankAccess(t *testing.T) {
 	}
 }
 func concurrentBankAccess(t *testing.T) {
-	balance := bank.Balance()
+	balance := Balance()
 	if balance > 0 {
-		_ = bank.Withdraw(balance)
+		_ = Withdraw(balance)
 	}
-	balance = bank.Balance()
+	balance = Balance()
 	if balance != 0 {
-		t.Errorf("bank.Balance is %d, but want 0", balance)
+		t.Errorf("Balance is %d, but want 0", balance)
 		return
 	}
 
-	bank.Deposit(100)
+	Deposit(100)
 
 	readyGo := make(chan struct{})
 	result := make(chan bool)
@@ -87,7 +87,7 @@ func concurrentBankAccess(t *testing.T) {
 		go func() {
 			wg.Done()
 			<-readyGo
-			result <- bank.Withdraw(60)
+			result <- Withdraw(60)
 		}()
 	}
 	wg.Wait()
