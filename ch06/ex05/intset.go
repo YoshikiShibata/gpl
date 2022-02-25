@@ -84,22 +84,22 @@ func (s *IntSet) SymmetricDifference(t *IntSet) {
 	}
 }
 
-// Enums returns a slice containing all values
-func (s *IntSet) Enums() []int {
+// Elems returns a slice containing all values
+func (s *IntSet) Elems() []int {
 	len := s.Len()
 	if len == 0 {
 		return []int{}
 	}
 
-	enums := make([]int, 0, len)
+	elems := make([]int, 0, len)
 	for i, sword := range s.words {
 		for bit := uint(0); bit < UINT_SIZE; bit++ {
 			if sword&(1<<bit) != 0 {
-				enums = append(enums, i*UINT_SIZE+int(bit))
+				elems = append(elems, i*UINT_SIZE+int(bit))
 			}
 		}
 	}
-	return enums
+	return elems
 }
 
 // String returns the set as a string of the form "{1 2 3}".

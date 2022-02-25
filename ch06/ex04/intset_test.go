@@ -278,7 +278,7 @@ func TestEnums(t *testing.T) {
 		var x IntSet
 		x.AddAll(tc.t...)
 
-		enums := x.Enums()
+		enums := x.Elems()
 		if len(enums) != len(tc.t) {
 			t.Errorf("len(enums) is %d, but want %d", len(enums), len(tc.t))
 			t.Errorf("enums is %v, t is %v", enums, tc.t)
