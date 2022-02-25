@@ -94,7 +94,7 @@ func (s *IntSet) Remove(x int) {
 
 // Clear removes all elements from the set
 func (s *IntSet) Clear() {
-	s.words = []uint64{}
+	s.words = nil
 }
 
 // Copy returns a copy of the set
