@@ -29,7 +29,7 @@ func main() {
 			if err != nil {
 				log.Fatal(err)
 			}
-			_, err = io.Copy(os.Stdout, rc)
+			_, err = io.CopyN(os.Stdout, rc, 1024*1024*256)
 			if err != nil {
 				log.Fatal(err)
 			}

@@ -36,7 +36,7 @@ func main() {
 			fmt.Printf("Directory\n")
 		} else {
 			fmt.Printf("Plain file\n")
-			_, err = io.Copy(os.Stdout, r)
+			_, err = io.CopyN(os.Stdout, r, 1024*1024*256)
 			if err != nil {
 				log.Fatal(err)
 			}
