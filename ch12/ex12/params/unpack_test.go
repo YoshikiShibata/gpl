@@ -11,7 +11,7 @@ import (
 	"github.com/YoshikiShibata/gpl/ch12/ex12/params"
 )
 
-//+ Exercise 12.12
+// + Exercise 12.12
 // Added test for verify the original Unpack function.
 func TestUnpack(t *testing.T) {
 	type Data struct {

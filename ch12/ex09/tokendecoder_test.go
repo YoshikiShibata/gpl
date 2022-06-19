@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-//+ Exercise 12.9
+// + Exercise 12.9
 func TestTokenDecoder(t *testing.T) {
 	for _, test := range []struct {
 		sexpr  string

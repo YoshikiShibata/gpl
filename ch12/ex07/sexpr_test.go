@@ -68,8 +68,7 @@ var strangelove = Movie{
 // nondeterministic.  The output of the t.Log statements can be
 // inspected by running the test with the -v flag:
 //
-// 	$ go test -v gopl.io/ch12/sexpr
-//
+//	$ go test -v gopl.io/ch12/sexpr
 func TestSExpression(t *testing.T) {
 	// Encode it
 	data, err := Marshal(strangelove)
@@ -98,7 +97,7 @@ func TestSExpression(t *testing.T) {
 	t.Logf("MarshalIdent() = \n%s\n", data)
 }
 
-//+ Exercise 12.7
+// + Exercise 12.7
 func TestStreamEncoderDecoder(t *testing.T) {
 	// Encode it
 	var buf bytes.Buffer
@@ -127,7 +126,7 @@ func TestStreamEncoderDecoder(t *testing.T) {
 
 //- Exercise 12.7
 
-//+ Exercise 12.6
+// + Exercise 12.6
 func TestZeroValue(t *testing.T) {
 	// Encode it
 	var zeroMovie Movie

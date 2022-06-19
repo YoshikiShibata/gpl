@@ -88,7 +88,7 @@ func formatAtom(v reflect.Value) string {
 	}
 }
 
-//!+display
+// !+display
 func display(path string, v reflect.Value) {
 	//+ Exercise 12.2
 	nestLevel++

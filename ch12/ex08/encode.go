@@ -13,7 +13,7 @@ import (
 	"reflect"
 )
 
-//!+Marshal
+// !+Marshal
 // Marshal encodes a Go value in S-expression form.
 func Marshal(v interface{}) ([]byte, error) {
 	var buf bytes.Buffer
@@ -25,7 +25,7 @@ func Marshal(v interface{}) ([]byte, error) {
 
 //!-Marshal
 
-//+ Exercise 12.7
+// + Exercise 12.7
 type Encoder struct {
 	writer io.Writer
 }
@@ -49,7 +49,7 @@ func writeByte(w io.Writer, c byte) {
 }
 
 // encode writes to buf an S-expression representation of v.
-//!+encode
+// !+encode
 func encode(buf io.Writer, v reflect.Value) error {
 	switch v.Kind() {
 	case reflect.Invalid:

@@ -9,7 +9,7 @@ import (
 	"sync"
 )
 
-//+ Exericse 13.4
+// + Exericse 13.4
 type writer struct {
 	sync.Mutex
 	cmd *exec.Cmd

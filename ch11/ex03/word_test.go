@@ -17,7 +17,7 @@ import (
 
 //!-bench
 
-//!+test
+// !+test
 func TestIsPalindrome(t *testing.T) {
 	var tests = []struct {
 		input string
@@ -46,7 +46,7 @@ func TestIsPalindrome(t *testing.T) {
 
 //!-test
 
-//!+bench
+// !+bench
 func BenchmarkIsPalindrome(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		IsPalindrome("A man, a plan, a canal: Panama")
@@ -74,7 +74,7 @@ import "math/rand"
 //!-random
 */
 
-//!+random
+// !+random
 // randomPalindrome returns a palindrome whose length and contents
 // are derived from the pseudo-random number generator rng.
 func randomPalindrome(rng *rand.Rand) string {

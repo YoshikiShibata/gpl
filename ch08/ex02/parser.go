@@ -13,7 +13,9 @@ import (
 // returns an address which can be passed to net.Dial.
 //
 // A port command would be:
-//           PORT h1,h2,h3,h4,p1,p2
+//
+//	PORT h1,h2,h3,h4,p1,p2
+//
 // where h1 is the high order 8 bits of the internet host address.
 // See RFC959
 func parsePORTAddress(address string) (string, error) {

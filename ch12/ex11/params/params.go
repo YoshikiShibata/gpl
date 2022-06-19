@@ -61,7 +61,7 @@ func Unpack(req *http.Request, ptr interface{}) error {
 
 //!-Unpack
 
-//!+populate
+// !+populate
 func populate(v reflect.Value, value string) error {
 	switch v.Kind() {
 	case reflect.String:

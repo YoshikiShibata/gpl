@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-//!+Eval
+// !+Eval
 func TestEval(t *testing.T) {
 	tests := []struct {
 		expr string

@@ -19,7 +19,7 @@ import (
 	"gopl.io/ch5/links"
 )
 
-//!+breadthFirst
+// !+breadthFirst
 // breadthFirst calls f for each item in the worklist.
 // Any items returned by f are added to the worklist.
 // f is called at most once for each item.

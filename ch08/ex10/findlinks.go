@@ -6,7 +6,6 @@
 //
 // This version uses bounded parallelism.
 // For simplicity, it does not address the termination problem.
-//
 package main
 
 import (

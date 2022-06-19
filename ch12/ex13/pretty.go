@@ -95,7 +95,7 @@ func (p *printer) space() {
 	p.rtotal++
 }
 
-//+ Exercise 12.4
+// + Exercise 12.4
 func (p *printer) newline() {
 	t := &token{kind: '\n', size: -p.rtotal}
 	p.tokens = append(p.tokens, t)

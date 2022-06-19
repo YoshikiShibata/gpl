@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-//!+TestCoverage
+// !+TestCoverage
 func TestCoverage(t *testing.T) {
 	var tests = []struct {
 		input string

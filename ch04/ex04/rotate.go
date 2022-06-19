@@ -11,10 +11,8 @@ func main() {
 	fmt.Printf("%v\n", data)
 }
 
-//
 // This implementation is based on the Section 10.4 Rotate Algorithm
 // from "Elements of Programming"
-//
 func cycleTo(i int, f func(int) int, exchangeValues func(int, int)) {
 	k := f(i)
 	for k != i {

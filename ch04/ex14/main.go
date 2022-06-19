@@ -14,11 +14,12 @@ import (
 )
 
 // This web server caches following information for a specific repository:
-//   issues
-//   milestones
+//
+//	issues
+//	milestones
+//
 // To get this information, the "/:owner/:repo" format is used as owner and repository:
 // e.g.) localhost:8000/golang/go  the go repository
-//
 func main() {
 	http.HandleFunc("/", handler) // each request calls handler
 	http.HandleFunc("/favicon.ico", faviconHandler)

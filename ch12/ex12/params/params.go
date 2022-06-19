@@ -78,7 +78,7 @@ func Unpack(req *http.Request, ptr interface{}) error {
 
 //!-Unpack
 
-//!+populate
+// !+populate
 func populate(v reflect.Value, value string) error {
 	switch v.Kind() {
 	case reflect.String:
@@ -106,7 +106,7 @@ func populate(v reflect.Value, value string) error {
 
 //!-populate
 
-//+ Exercise 12.12
+// + Exercise 12.12
 var emailPattern = regexp.MustCompile(`^[a-zA-Z0-9\-.]+@[a-zA-Z0-9\-.]+$`)
 var creditPattern = regexp.MustCompile(`^[0-9]{10}$`)
 var zipPattern = regexp.MustCompile(`^[0-9]{7}$`)

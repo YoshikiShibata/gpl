@@ -1,5 +1,5 @@
 // Copyright © 2015 Alan A. A. Donovan & Brian W. Kernighan.
-//!+
+// !+
 // Surface computes an SVG rendering of a 3-D surface function.
 package main
 

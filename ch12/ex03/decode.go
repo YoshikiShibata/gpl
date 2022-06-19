@@ -16,7 +16,7 @@ import (
 	"text/scanner"
 )
 
-//!+Unmarshal
+// !+Unmarshal
 // Unmarshal parses S-expression data and populates the variable
 // whose address is in the non-nil pointer out.
 func Unmarshal(data []byte, out interface{}) (err error) {
@@ -35,7 +35,7 @@ func Unmarshal(data []byte, out interface{}) (err error) {
 
 //!-Unmarshal
 
-//!+lexer
+// !+lexer
 type lexer struct {
 	scan  scanner.Scanner
 	token rune // the current token
@@ -74,7 +74,7 @@ func (lex *lexer) consume(want rune) {
 //   type and doesn't need clearing.
 // - that if v is a numeric variable, it is a signed integer.
 
-//!+read
+// !+read
 func read(lex *lexer, v reflect.Value) {
 	switch lex.token {
 	case scanner.Ident:
@@ -157,7 +157,7 @@ func read(lex *lexer, v reflect.Value) {
 
 //!-read
 
-//!+readlist
+// !+readlist
 func readList(lex *lexer, v reflect.Value) {
 	switch v.Kind() {
 	case reflect.Array: // (item ...)
