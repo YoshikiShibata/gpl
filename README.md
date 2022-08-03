@@ -4,4 +4,4 @@ This repository contains my own answers of all exercises of "The Go Programming 
 
 Note that my answers might be incorrect. I encourage you to try exercises by yourself.
 
-Enjoy Go programming!
+Enjoy Go programming!!
